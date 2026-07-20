@@ -209,8 +209,8 @@
         <div id="main-wrapper">
             <div class="main-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
                 <div class="mb-10 hidden md:flex items-baseline flex-wrap gap-4 select-none cursor-pointer" id="secret-trigger-pc">
-                    <h1 class="text-5xl font-black tracking-tight text-gray-900 title-gradient">暑期「游戏浪一夏」</h1>
-                    <span class="text-2xl text-gray-500 font-light tracking-wide border-l-2 border-gray-300 pl-4">东方侠影游戏安利时间</span>
+                    <h1 id="desktop-main-title" class="text-5xl font-black tracking-tight text-gray-900 title-gradient">暑期「游戏浪一夏」</h1>
+                    <span id="desktop-subtitle" class="text-2xl text-gray-500 font-light tracking-wide border-l-2 border-gray-300 pl-4">东方侠影游戏安利时间</span>
                 </div>
 
                 <div class="md:hidden mb-6">
@@ -757,7 +757,11 @@
             }
 
             const cards = Array.from(document.querySelectorAll('.game-card'));
+            const title = document.getElementById('desktop-main-title');
+            const subtitle = document.getElementById('desktop-subtitle');
             const firstRects = new Map(cards.map(card => [card, card.getBoundingClientRect()]));
+            const firstTitleRect = title?.getBoundingClientRect();
+            const firstSubtitleRect = subtitle?.getBoundingClientRect();
             changeLayout();
             void document.getElementById('game-list-container').offsetWidth;
 
@@ -773,6 +777,27 @@
                     card.animate([
                         { transform: `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})` },
                         { transform: 'translate(0, 0) scale(1, 1)' }
+                    ], {
+                        duration: 500,
+                        easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
+                    });
+                }
+            });
+
+            [
+                [title, firstTitleRect],
+                [subtitle, firstSubtitleRect]
+            ].forEach(([element, firstRect]) => {
+                if (!element || !firstRect) return;
+
+                const lastRect = element.getBoundingClientRect();
+                const translateX = firstRect.left - lastRect.left;
+                const translateY = firstRect.top - lastRect.top;
+
+                if (translateX || translateY) {
+                    element.animate([
+                        { transform: `translate(${translateX}px, ${translateY}px)` },
+                        { transform: 'translate(0, 0)' }
                     ], {
                         duration: 500,
                         easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
