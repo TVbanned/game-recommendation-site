@@ -61,7 +61,8 @@
             z-index: 50;
             transform: translateX(100%);
             transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow-y: auto;
+            overflow-y: scroll;
+            scrollbar-gutter: stable;
             box-shadow: -20px 0 50px rgba(0,0,0,0.1);
         }
         
@@ -308,6 +309,20 @@
                     </section>
 
                     <section class="rounded-2xl border border-slate-200 bg-white p-6">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800">Steam 愿望单能力</h3>
+                                <p class="text-sm text-slate-500 mt-1">预留知乎账号绑定 Steam 后的一键加愿望单入口；关闭时前端不会展示该按钮。</p>
+                            </div>
+                            <label class="inline-flex items-center gap-3 cursor-pointer select-none">
+                                <input id="wishlist-enabled-toggle" type="checkbox" class="sr-only peer" onchange="saveWishlistSetting()">
+                                <span class="relative w-12 h-7 rounded-full bg-slate-300 transition-colors peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-1 after:left-1 after:w-5 after:h-5 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-5"></span>
+                                <span id="wishlist-enabled-label" class="text-sm font-bold text-slate-600">已关闭</span>
+                            </label>
+                        </div>
+                    </section>
+
+                    <section class="rounded-2xl border border-slate-200 bg-white p-6">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
                             <div>
                                 <h3 class="text-lg font-bold text-slate-800">已发布游戏管理 (<span id="game-count">0</span>)</h3>
@@ -341,6 +356,19 @@
 
                     <form id="admin-form" class="space-y-5">
                         <input type="hidden" id="form-id">
+
+                        <div class="rounded-xl border border-indigo-100 bg-indigo-50/60 p-4">
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+                                <div class="flex-1">
+                                    <label class="block text-sm font-semibold text-indigo-800 mb-1">Steam App ID</label>
+                                    <input type="text" inputmode="numeric" id="form-steam-app-id" placeholder="如：570" class="w-full rounded-lg border-indigo-200 shadow-sm border p-2.5 bg-white">
+                                </div>
+                                <button type="button" onclick="fillGameFromSteam()" id="steam-fill-btn" class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-400 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow-sm transition-colors whitespace-nowrap">
+                                    <i class="fab fa-steam mr-1"></i>从 Steam 填充
+                                </button>
+                            </div>
+                            <p class="text-xs text-indigo-600 mt-2">仅填充当前表单，可继续手动修改后再保存。</p>
+                        </div>
 
                         <div class="grid grid-cols-2 gap-5">
                             <div>
@@ -403,9 +431,14 @@
 
                         <div class="bg-indigo-50/50 p-5 rounded-xl border border-indigo-100">
                             <h4 class="font-bold text-indigo-900 mb-2 flex items-center gap-2">
-                                <i class="fab fa-zhihu text-blue-500 text-lg"></i> 开发者手记
+                                <i class="fab fa-zhihu text-blue-500 text-lg"></i> 知乎内容
                             </h4>
-                            <p class="text-xs text-indigo-600 mb-3">支持抓取知乎内容，也支持富文本编辑、上传图片、粘贴图片、分割线和超链接。</p>
+                            <div class="flex gap-2 mb-3">
+                                <button id="cms-content-tab-developer" type="button" onclick="switchCmsContentEditor('developer')" class="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-bold text-white">开发者说</button>
+                                <button id="cms-content-tab-player" type="button" onclick="switchCmsContentEditor('player')" class="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-indigo-600 ring-1 ring-indigo-200">答主游戏体验</button>
+                            </div>
+                            <p class="text-xs text-indigo-600 mb-3">两套内容均支持富文本编辑、上传图片、粘贴图片、分割线和超链接。</p>
+                            <div id="cms-developer-fields">
                             <label class="block text-xs font-semibold text-indigo-700 mb-1">阅读原文链接</label>
                             <div class="flex gap-3 mb-3">
                                 <input type="url" id="form-zhihu-url" placeholder="https://www.zhihu.com/question/.../answer/..." class="flex-1 rounded-lg border-indigo-200 shadow-sm border p-2.5 text-sm focus:ring-indigo-500 focus:border-indigo-500">
@@ -434,7 +467,7 @@
                                     <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="triggerRichImageUpload()"><i class="fas fa-image mr-1"></i>上传图片</button>
                                     <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="removeRichLink()"><i class="fas fa-link-slash mr-1"></i>取消链接</button>
                                     <div class="flex items-center gap-2 ml-auto shrink-0">
-                                        <input type="url" id="rich-link-url" placeholder="先选中文字，再粘贴 https:// 链接" class="w-44 sm:w-56 md:w-64 min-w-[140px] rounded-lg border border-indigo-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none" onfocus="saveRichSelection()">
+                                        <input type="url" id="rich-link-url" placeholder="先选中文字，再粘贴 https:// 链接" class="rich-link-url w-44 sm:w-56 md:w-64 min-w-[140px] rounded-lg border border-indigo-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none" onfocus="saveRichSelection()">
                                         <button type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-sm font-bold transition-colors" onmousedown="event.preventDefault()" onclick="insertRichLink()">超链接</button>
                                     </div>
                                 </div>
@@ -445,6 +478,38 @@
                                 </div>
                             </div>
                             <p class="text-[10px] text-indigo-400 mt-1">提示：保存后会保留当前富文本内容作为默认内容；也支持从知乎直接复制图文粘贴到这里。</p>
+                            </div>
+                            <div id="cms-player-fields" class="hidden">
+                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-indigo-700 mb-1">答主昵称</label>
+                                        <input type="text" id="form-player-experience-author" placeholder="如：日暮如旧、" class="w-full rounded-lg border-indigo-200 shadow-sm border p-2 bg-white text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-indigo-700 mb-1">答主头像 URL</label>
+                                        <input type="text" id="form-player-experience-avatar" placeholder="https://..." class="w-full rounded-lg border-indigo-200 shadow-sm border p-2 bg-white text-sm">
+                                    </div>
+                                </div>
+                                <div class="border border-indigo-200 rounded-xl overflow-hidden bg-white">
+                                    <div class="flex flex-nowrap items-center gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-3 overflow-x-auto overflow-y-hidden">
+                                        <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="applyRichCommand('bold')"><i class="fas fa-bold mr-1"></i>加粗</button>
+                                        <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="applyRichCommand('italic')"><i class="fas fa-italic mr-1"></i>斜体</button>
+                                        <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="applyRichCommand('formatBlock', 'h3')"><i class="fas fa-heading mr-1"></i>标题</button>
+                                        <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="applyRichCommand('formatBlock', 'blockquote')"><i class="fas fa-quote-left mr-1"></i>引用</button>
+                                        <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="applyRichCommand('insertUnorderedList')"><i class="fas fa-list-ul mr-1"></i>无序列表</button>
+                                        <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="applyRichCommand('insertOrderedList')"><i class="fas fa-list-ol mr-1"></i>有序列表</button>
+                                        <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="insertRichDivider()"><i class="fas fa-minus mr-1"></i>分割线</button>
+                                        <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="triggerRichImageUpload()"><i class="fas fa-image mr-1"></i>上传图片</button>
+                                        <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="removeRichLink()"><i class="fas fa-link-slash mr-1"></i>取消链接</button>
+                                        <div class="flex items-center gap-2 ml-auto shrink-0">
+                                            <input type="url" class="rich-link-url w-44 sm:w-56 md:w-64 min-w-[140px] rounded-lg border border-indigo-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none" placeholder="先选中文字，再粘贴 https:// 链接" onfocus="saveRichSelection()">
+                                            <button type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-sm font-bold transition-colors" onmousedown="event.preventDefault()" onclick="insertRichLink()">超链接</button>
+                                        </div>
+                                    </div>
+                                    <label class="block text-xs font-semibold text-indigo-700 mb-1 px-3 pt-3">答主游戏体验正文</label>
+                                    <div id="form-player-experience-content" contenteditable="true" placeholder="编辑答主的游戏体验..." class="w-full min-h-[180px] rounded-b-xl p-3 bg-white text-sm leading-relaxed outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition overflow-y-auto prose-zhihu" style="white-space: pre-wrap;"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="pt-6 flex gap-4">
@@ -528,7 +593,8 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const appState = {
             games: [],
-            mobileBannerUrls: []
+            mobileBannerUrls: [],
+            wishlistEnabled: false
         };
 
         function getGames() {
@@ -551,6 +617,7 @@
         function mapDbGameToView(row) {
             return {
                 id: row.id,
+                steamAppId: row.steam_app_id || '',
                 title: row.title,
                 team: row.team,
                 type: row.type || '',
@@ -564,13 +631,17 @@
                 zhihuUrl: row.zhihu_url || '',
                 zhihuAuthor: row.zhihu_author || '知乎答主',
                 zhihuAvatar: row.zhihu_avatar || 'https://placehold.co/100x100/3b82f6/ffffff?text=User',
-                zhihuContent: row.zhihu_content || ''
+                zhihuContent: row.zhihu_content || '',
+                playerExperienceAuthor: row.player_experience_author || '知乎用户',
+                playerExperienceAvatar: row.player_experience_avatar || 'https://placehold.co/100x100/3b82f6/ffffff?text=User',
+                playerExperienceContent: row.player_experience_content || ''
             };
         }
 
         function mapViewGameToDb(game) {
             return {
                 id: game.id,
+                steam_app_id: game.steamAppId || '',
                 title: game.title,
                 team: game.team,
                 type: game.type,
@@ -584,7 +655,10 @@
                 zhihu_author: game.zhihuAuthor || '',
                 zhihu_avatar: game.zhihuAvatar || '',
                 zhihu_content: game.zhihuContent || '',
-                zhihu_url: game.zhihuUrl || ''
+                zhihu_url: game.zhihuUrl || '',
+                player_experience_author: game.playerExperienceAuthor || '',
+                player_experience_avatar: game.playerExperienceAvatar || '',
+                player_experience_content: game.playerExperienceContent || ''
             };
         }
 
@@ -648,6 +722,48 @@
             appState.mobileBannerUrls = sanitizedUrls;
         }
 
+        async function loadWishlistSetting() {
+            const { data, error } = await supabaseClient
+                .from('site_settings')
+                .select('value')
+                .eq('key', 'steam_wishlist_enabled')
+                .maybeSingle();
+
+            if (error) throw error;
+            appState.wishlistEnabled = data?.value === true;
+            return appState.wishlistEnabled;
+        }
+
+        function renderWishlistSetting() {
+            const toggle = document.getElementById('wishlist-enabled-toggle');
+            const label = document.getElementById('wishlist-enabled-label');
+            if (!toggle || !label) return;
+            toggle.checked = appState.wishlistEnabled;
+            label.textContent = appState.wishlistEnabled ? '已开启' : '已关闭';
+            label.className = `text-sm font-bold ${appState.wishlistEnabled ? 'text-indigo-600' : 'text-slate-600'}`;
+        }
+
+        window.saveWishlistSetting = async function() {
+            const enabled = document.getElementById('wishlist-enabled-toggle').checked;
+            try {
+                const { error } = await supabaseClient
+                    .from('site_settings')
+                    .upsert([{ key: 'steam_wishlist_enabled', value: enabled }], { onConflict: 'key' });
+                if (error) throw error;
+                appState.wishlistEnabled = enabled;
+                renderWishlistSetting();
+                showSaveStatus(`一键加愿望单入口已${enabled ? '开启' : '关闭'}`);
+            } catch (error) {
+                console.error('保存愿望单开关失败:', error);
+                renderWishlistSetting();
+                showSaveStatus('愿望单开关保存失败，请检查 Supabase 连接');
+            }
+        };
+
+        window.handleWishlistAction = function() {
+            showSaveStatus('Steam 愿望单接口尚未接入，当前为预留入口');
+        };
+
         let mobileBannerInterval;
         let mobileBannerIndex = 0;
 
@@ -709,6 +825,19 @@
             document.getElementById('tab-global-btn').classList.toggle('active', tab === 'global');
             document.getElementById('tab-game-btn').classList.toggle('active', tab === 'game');
         }
+
+        window.switchCmsContentEditor = function(tab) {
+            const developer = tab === 'developer';
+            document.getElementById('cms-developer-fields').classList.toggle('hidden', !developer);
+            document.getElementById('cms-player-fields').classList.toggle('hidden', developer);
+            document.getElementById('cms-content-tab-developer').className = developer
+                ? 'rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-bold text-white'
+                : 'rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-indigo-600 ring-1 ring-indigo-200';
+            document.getElementById('cms-content-tab-player').className = developer
+                ? 'rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-indigo-600 ring-1 ring-indigo-200'
+                : 'rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-bold text-white';
+            richSelectionRange = null;
+        };
 
         function updateGameEditorLabels(isEditing, title = '') {
             const label = isEditing ? '更新当前游戏' : '创建并保存';
@@ -900,6 +1029,26 @@
             }
 
             const linkUrl = game.targetUrl || '#';
+            const hasDeveloperContent = Boolean(game.zhihuContent && game.zhihuContent.replace(/<[^>]*>/g, '').trim());
+            const hasPlayerExperience = Boolean(game.playerExperienceContent && game.playerExperienceContent.replace(/<[^>]*>/g, '').trim());
+            const defaultExperienceTab = hasDeveloperContent ? 'developer' : 'player';
+            const developerPanel = `
+                <div id="experience-panel-developer" class="${defaultExperienceTab === 'developer' ? '' : 'hidden'}">
+                    <p class="font-bold text-slate-800 text-lg mb-5 leading-relaxed"><i class="fas fa-quote-left text-indigo-300 mr-1.5"></i>请说出至少一个理由，为什么玩家要体验你开发的这款游戏，最好玩的点在哪里？</p>
+                    <div class="flex items-center gap-4 mb-4">
+                        <img src="${game.zhihuAvatar}" class="w-12 h-12 rounded-full shadow-sm object-cover border-2 border-white" alt="开发者头像" onerror="this.onerror=null;this.src='https://placehold.co/100x100/3b82f6/ffffff?text=User';">
+                        <div class="font-bold text-slate-800 text-base">${game.zhihuAuthor || '知乎用户'}</div>
+                    </div>
+                    <div class="text-slate-600 text-base leading-loose prose-zhihu">${processZhihuContent(game.zhihuContent || '')}</div>
+                </div>`;
+            const playerPanel = `
+                <div id="experience-panel-player" class="${defaultExperienceTab === 'player' ? '' : 'hidden'}">
+                    <div class="flex items-center gap-4 mb-4">
+                        <img src="${game.playerExperienceAvatar}" class="w-12 h-12 rounded-full shadow-sm object-cover border-2 border-white" alt="答主头像" onerror="this.onerror=null;this.src='https://placehold.co/100x100/3b82f6/ffffff?text=User';">
+                        <div class="font-bold text-slate-800 text-base">${game.playerExperienceAuthor || '知乎用户'}</div>
+                    </div>
+                    <div class="text-slate-600 text-base leading-loose prose-zhihu">${processZhihuContent(game.playerExperienceContent || '暂未添加答主游戏体验。')}</div>
+                </div>`;
 
             contentContainer.innerHTML = `
                 <div class="relative w-full h-64 md:h-72 bg-slate-900 carousel-container" id="carousel-container">
@@ -914,9 +1063,16 @@
                 <div class="p-6 md:p-8">
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-8 gap-4">
                         <h2 class="text-3xl font-black text-slate-800 leading-tight">${game.title}</h2>
-                        <a href="${linkUrl}" target="_blank" class="shrink-0 bg-slate-800 text-white px-5 py-2.5 rounded-full text-sm font-bold flex items-center justify-center gap-2 hover:bg-indigo-600 transition-colors shadow-md">
-                            去Steam页面瞅瞅! <i class="fab fa-steam text-lg"></i>
-                        </a>
+                        <div class="flex flex-wrap items-center justify-end gap-3 shrink-0">
+                            ${appState.wishlistEnabled ? `
+                                <button type="button" onclick="handleWishlistAction()" class="h-11 bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-5 rounded-full text-sm font-bold flex items-center justify-center gap-2 hover:from-indigo-700 hover:to-violet-700 transition-colors shadow-md">
+                                    <i class="fas fa-heart text-base"></i> 一键加愿望单
+                                </button>
+                            ` : ''}
+                            <a href="${linkUrl}" target="_blank" rel="noopener noreferrer" class="h-11 bg-slate-800 text-white px-5 rounded-full text-sm font-bold flex items-center justify-center gap-2 hover:bg-indigo-600 transition-colors shadow-md">
+                                去Steam页面瞅瞅! <i class="fab fa-steam text-lg"></i>
+                            </a>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-y-4 gap-x-3 mb-10">
@@ -937,30 +1093,16 @@
 
                     <div class="mb-4">
                         <div class="zhihu-box">
-                            <div class="flex items-center justify-between mb-5 pb-4 border-b border-slate-200">
-                                <div class="flex items-center gap-3">
-                                        <div class="bg-blue-100 text-blue-600 rounded-lg w-9 h-9 flex items-center justify-center">
-                                            <i class="fab fa-zhihu text-lg"></i>
-                                        </div>
-                                        <span class="font-bold text-slate-700 text-lg">游戏开发者说</span>
-                                    </div>
-                                    ${game.zhihuUrl ? `<a href="${game.zhihuUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-blue-600 shadow-sm ring-1 ring-blue-100 transition hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white hover:shadow-md shrink-0"><span>阅读原文</span><i class="fas fa-arrow-up-right-from-square text-[10px]"></i></a>` : ''}
-                            </div>
-                            
-                            <p class="font-bold text-slate-800 text-lg mb-5 leading-relaxed">
-                                <i class="fas fa-quote-left text-indigo-300 mr-1.5"></i>请说出至少一个理由，为什么玩家要体验你开发的这款游戏，最好玩的点在哪里？
-                            </p>
-                            
-                            <div class="flex items-center gap-4 mb-4">
-                                <img src="${game.zhihuAvatar}" class="w-12 h-12 rounded-full shadow-sm object-cover border-2 border-white" alt="Avatar" onerror="this.onerror=null;this.src='https://placehold.co/100x100/3b82f6/ffffff?text=User';">
-                                <div>
-                                    <div class="font-bold text-slate-800 text-base">${game.zhihuAuthor || '知乎用户'}</div>
+                            <div class="flex flex-wrap items-center gap-2 mb-5 pb-4 border-b border-slate-200">
+                                <div class="bg-blue-100 text-blue-600 rounded-lg w-9 h-9 flex items-center justify-center mr-1">
+                                    <i class="fab fa-zhihu text-lg"></i>
                                 </div>
+                                ${hasDeveloperContent ? `<button id="experience-tab-developer" type="button" onclick="switchExperienceTab('developer')" class="rounded-lg px-3 py-2 text-base font-bold transition-colors ${defaultExperienceTab === 'developer' ? 'bg-[#6B42E8] text-white' : 'bg-white text-slate-500 hover:bg-slate-100'}">游戏开发者说</button>` : ''}
+                                <button id="experience-tab-player" type="button" onclick="switchExperienceTab('player')" class="rounded-lg px-3 py-2 text-base font-bold transition-colors ${defaultExperienceTab === 'player' ? 'bg-[#6B42E8] text-white' : 'bg-white text-slate-500 hover:bg-slate-100'}">答主游戏评价</button>
+                                ${hasDeveloperContent && game.zhihuUrl ? `<a id="experience-original-link" href="${game.zhihuUrl}" target="_blank" rel="noopener noreferrer" class="ml-auto inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-blue-600 shadow-sm ring-1 ring-blue-100 transition hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white hover:shadow-md shrink-0"><span>阅读原文</span><i class="fas fa-arrow-up-right-from-square text-[10px]"></i></a>` : ''}
                             </div>
-
-                            <div class="text-slate-600 text-base leading-loose prose-zhihu">
-                                ${processZhihuContent(game.zhihuContent || '暂无内容...')}
-                            </div>
+                            ${developerPanel}
+                            ${playerPanel}
                         </div>
                     </div>
                 </div>
@@ -972,6 +1114,24 @@
             detailPanel.classList.add('active');
             overlay.classList.remove('hidden');
         }
+
+        window.switchExperienceTab = function(tab) {
+            const developer = tab === 'developer';
+            const developerPanel = document.getElementById('experience-panel-developer');
+            const playerPanel = document.getElementById('experience-panel-player');
+            const developerTab = document.getElementById('experience-tab-developer');
+            const playerTab = document.getElementById('experience-tab-player');
+            const originalLink = document.getElementById('experience-original-link');
+            if (developerPanel) developerPanel.classList.toggle('hidden', !developer);
+            if (playerPanel) playerPanel.classList.toggle('hidden', developer);
+            if (developerTab) developerTab.className = developer
+                ? 'rounded-lg px-3 py-2 text-base font-bold transition-colors bg-[#6B42E8] text-white'
+                : 'rounded-lg px-3 py-2 text-base font-bold transition-colors bg-white text-slate-500 hover:bg-slate-100';
+            playerTab.className = developer
+                ? 'rounded-lg px-3 py-2 text-base font-bold transition-colors bg-white text-slate-500 hover:bg-slate-100'
+                : 'rounded-lg px-3 py-2 text-base font-bold transition-colors bg-[#6B42E8] text-white';
+            if (originalLink) originalLink.classList.toggle('hidden', !developer);
+        };
 
         function initCarousel() {
             carouselTrack = document.getElementById('carousel-track');
@@ -1170,6 +1330,7 @@
         function collectGameFormData() {
             return {
                 id: document.getElementById('form-id').value || Date.now().toString(),
+                steamAppId: document.getElementById('form-steam-app-id').value.trim(),
                 title: document.getElementById('form-title').value,
                 team: document.getElementById('form-team').value,
                 type: document.getElementById('form-type').value,
@@ -1182,13 +1343,17 @@
                 desc: document.getElementById('form-desc').value,
                 zhihuAuthor: document.getElementById('form-zhihu-author').value || '知乎答主',
                 zhihuAvatar: document.getElementById('form-zhihu-avatar').value || 'https://placehold.co/100x100/3b82f6/ffffff?text=User',
-                zhihuContent: document.getElementById('form-zhihu-content').innerHTML || '暂无内容。',
-                zhihuUrl: document.getElementById('form-zhihu-url').value || ''
+                zhihuContent: document.getElementById('form-zhihu-content').innerHTML || '',
+                zhihuUrl: document.getElementById('form-zhihu-url').value || '',
+                playerExperienceAuthor: document.getElementById('form-player-experience-author').value || '知乎用户',
+                playerExperienceAvatar: document.getElementById('form-player-experience-avatar').value || 'https://placehold.co/100x100/3b82f6/ffffff?text=User',
+                playerExperienceContent: document.getElementById('form-player-experience-content').innerHTML || ''
             };
         }
 
         function loadGameIntoForm(game) {
             document.getElementById('form-id').value = game.id || '';
+            document.getElementById('form-steam-app-id').value = game.steamAppId || '';
             document.getElementById('form-title').value = game.title || '';
             document.getElementById('form-team').value = game.team || '';
             document.getElementById('form-type').value = game.type || '';
@@ -1201,6 +1366,10 @@
             document.getElementById('form-zhihu-avatar').value = game.zhihuAvatar || '';
             document.getElementById('form-zhihu-content').innerHTML = game.zhihuContent || '';
             document.getElementById('form-zhihu-url').value = game.zhihuUrl || '';
+            document.getElementById('form-player-experience-author').value = game.playerExperienceAuthor || '';
+            document.getElementById('form-player-experience-avatar').value = game.playerExperienceAvatar || '';
+            document.getElementById('form-player-experience-content').innerHTML = game.playerExperienceContent || '';
+            switchCmsContentEditor('developer');
             document.getElementById('scrape-status').classList.add('hidden');
 
             const previewContainer = document.getElementById('cover-preview-container');
@@ -1219,6 +1388,49 @@
             savedFormSnapshot = JSON.parse(JSON.stringify(game));
             updateGameEditorLabels(Boolean(game.id), game.title || '');
         }
+
+        window.fillGameFromSteam = async function() {
+            const appId = document.getElementById('form-steam-app-id').value.trim();
+            if (!/^\d+$/.test(appId)) {
+                showSaveStatus('请输入有效的 Steam App ID');
+                return;
+            }
+
+            const button = document.getElementById('steam-fill-btn');
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>读取中';
+            try {
+                const fnUrl = `${SUPABASE_URL}/functions/v1/steam-appdetails`;
+                const response = await fetch(fnUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({ appId })
+                });
+                const { success, game, error: fnError } = await response.json();
+                if (!success || !game) {
+                    throw new Error(fnError || '未找到该 Steam 游戏');
+                }
+                document.getElementById('form-title').value = game.title || '';
+                document.getElementById('form-team').value = game.team || '';
+                document.getElementById('form-type').value = game.type || '';
+                document.getElementById('form-price').value = game.price || '';
+                document.getElementById('form-desc').value = game.desc || '';
+                document.getElementById('form-url').value = game.targetUrl || '';
+                document.getElementById('form-cover').value = game.cover || '';
+                handleCoverInput();
+                showSaveStatus('已从 Steam 填充，可继续手动修改');
+            } catch (error) {
+                console.error('读取 Steam 数据失败:', error);
+                showSaveStatus('Steam 数据读取失败，请检查 App ID、函数部署或网络访问');
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<i class="fab fa-steam mr-1"></i>从 Steam 填充';
+            }
+        };
 
         function submitAdminForm() {
             document.getElementById('admin-form').requestSubmit();
@@ -1433,13 +1645,18 @@
                 f.value = '';
             });
             document.getElementById('form-id').value = '';
+            document.getElementById('form-steam-app-id').value = '';
             document.getElementById('screenshot-fields').innerHTML = '';
             addScreenshotField();
             document.getElementById('form-zhihu-author').value = '';
             document.getElementById('form-zhihu-content').innerHTML = '';
             document.getElementById('form-zhihu-url').value = '';
             document.getElementById('form-zhihu-avatar').value = '';
-            document.getElementById('rich-link-url').value = '';
+            document.getElementById('form-player-experience-author').value = '';
+            document.getElementById('form-player-experience-avatar').value = '';
+            document.getElementById('form-player-experience-content').innerHTML = '';
+            document.querySelectorAll('.rich-link-url').forEach(input => input.value = '');
+            switchCmsContentEditor('developer');
             document.getElementById('scrape-status').classList.add('hidden');
             const previewContainer = document.getElementById('cover-preview-container');
             previewContainer.classList.add('hidden');
@@ -1448,8 +1665,20 @@
             if (extractTimeout) clearTimeout(extractTimeout);
         }
 
+        function getActiveRichEditor() {
+            return document.getElementById('cms-player-fields').classList.contains('hidden')
+                ? document.getElementById('form-zhihu-content')
+                : document.getElementById('form-player-experience-content');
+        }
+
+        function getActiveRichLinkInput() {
+            return document.getElementById('cms-player-fields').classList.contains('hidden')
+                ? document.getElementById('rich-link-url')
+                : document.querySelector('#cms-player-fields .rich-link-url');
+        }
+
         function saveRichSelection() {
-            const editor = document.getElementById('form-zhihu-content');
+            const editor = getActiveRichEditor();
             const selection = window.getSelection();
             if (!selection || selection.rangeCount === 0) return;
             const range = selection.getRangeAt(0);
@@ -1466,7 +1695,7 @@
         }
 
         function focusRichEditor() {
-            const editor = document.getElementById('form-zhihu-content');
+            const editor = getActiveRichEditor();
             editor.focus();
             if (richSelectionRange) {
                 restoreRichSelection();
@@ -1474,7 +1703,7 @@
         }
 
         function normalizeRichEditorContent() {
-            document.getElementById('form-zhihu-content').querySelectorAll('a').forEach(link => {
+            getActiveRichEditor().querySelectorAll('a').forEach(link => {
                 link.setAttribute('target', '_blank');
                 link.setAttribute('rel', 'noopener noreferrer');
             });
@@ -1508,7 +1737,8 @@
         }
 
         function insertRichLink() {
-            const url = document.getElementById('rich-link-url').value.trim();
+            const linkInput = getActiveRichLinkInput();
+            const url = linkInput.value.trim();
             if (!url) {
                 showSaveStatus('请先粘贴链接地址');
                 return;
@@ -1523,7 +1753,7 @@
 
             document.execCommand('createLink', false, url);
             normalizeRichEditorContent();
-            document.getElementById('rich-link-url').value = '';
+            linkInput.value = '';
             saveRichSelection();
         }
 
@@ -1739,10 +1969,12 @@
             try {
                 const [games, bannerUrls] = await Promise.all([
                     loadGames(),
-                    loadMobileBannerSettings()
+                    loadMobileBannerSettings(),
+                    loadWishlistSetting()
                 ]);
                 renderMobileBannerFields(bannerUrls);
                 renderMobileBanner(bannerUrls);
+                renderWishlistSetting();
                 document.getElementById('mobile-banner-fields').addEventListener('change', () => saveMobileBanners(false));
                 renderClientList();
                 renderAdminList();
@@ -1753,6 +1985,7 @@
                 appState.mobileBannerUrls = [];
                 renderMobileBannerFields([]);
                 renderMobileBanner([]);
+                renderWishlistSetting();
                 document.getElementById('mobile-banner-fields').addEventListener('change', () => saveMobileBanners(false));
                 renderClientList();
                 renderAdminList();
@@ -1763,25 +1996,24 @@
 
         initializeApp();
 
-        // 支持在 contenteditable 中粘贴图片
-        document.getElementById('form-zhihu-content').addEventListener('paste', function(e) {
-            const items = e.clipboardData?.items;
-            if (!items) return;
-            const imageFiles = [];
-            for (const item of items) {
-                if (item.type.startsWith('image/')) {
-                    imageFiles.push(item.getAsFile());
+        // 支持在两个富文本编辑器中粘贴图片。
+        [document.getElementById('form-zhihu-content'), document.getElementById('form-player-experience-content')].forEach(editor => {
+            editor.addEventListener('paste', function(e) {
+                const items = e.clipboardData?.items;
+                if (!items) return;
+                const imageFiles = [];
+                for (const item of items) {
+                    if (item.type.startsWith('image/')) imageFiles.push(item.getAsFile());
                 }
-            }
-            if (imageFiles.length > 0) {
-                e.preventDefault();
-                insertRichImageFiles(imageFiles);
-            }
+                if (imageFiles.length > 0) {
+                    e.preventDefault();
+                    insertRichImageFiles(imageFiles);
+                }
+            });
+            editor.addEventListener('blur', saveRichSelection);
+            editor.addEventListener('keyup', saveRichSelection);
+            editor.addEventListener('mouseup', saveRichSelection);
         });
-
-        document.getElementById('form-zhihu-content').addEventListener('blur', saveRichSelection);
-        document.getElementById('form-zhihu-content').addEventListener('keyup', saveRichSelection);
-        document.getElementById('form-zhihu-content').addEventListener('mouseup', saveRichSelection);
     </script>
 </body>
 </html>
