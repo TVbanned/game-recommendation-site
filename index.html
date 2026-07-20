@@ -6,6 +6,7 @@
     <title>暑期「游戏浪一夏」- 全栈原型演示</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&display=swap');
@@ -246,7 +247,7 @@
             <div class="bg-slate-900 px-8 py-5 flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-white tracking-wide">内容配置后台 (CMS)</h2>
                 <div class="flex items-center gap-4">
-                    <span class="text-slate-400 text-sm hidden sm:inline"><i class="fas fa-database mr-1"></i> 数据保存在本地</span>
+                    <span class="text-slate-400 text-sm hidden sm:inline"><i class="fas fa-database mr-1"></i> 数据存储于 Supabase</span>
                     <button onclick="toggleMode()" class="bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 rounded-lg text-sm font-bold shadow-md transition-colors">退出后台</button>
                 </div>
             </div>
@@ -495,13 +496,128 @@
             }
         ];
 
+        const SUPABASE_URL = 'https://ihbegkpvqrtycsfmklag.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloYmVna3B2cXJ0eWNzZm1rbGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwOTkyODQsImV4cCI6MjA5OTY3NTI4NH0.6jmPv9_4S5zWzcmLo5tc2U4klU4tC4nZAeRcKrOrmVo';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const appState = {
+            games: [],
+            mobileBannerUrls: []
+        };
+
         function getGames() {
-            const data = localStorage.getItem('gamesData');
-            return data ? JSON.parse(data) : defaultData;
+            return appState.games;
         }
 
-        function saveGames(games) {
-            localStorage.setItem('gamesData', JSON.stringify(games));
+        function normalizeScreenshots(value) {
+            if (Array.isArray(value)) return value.filter(Boolean);
+            if (typeof value === 'string') {
+                try {
+                    const parsed = JSON.parse(value);
+                    return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+                } catch {
+                    return value.split(',').map(item => item.trim()).filter(Boolean);
+                }
+            }
+            return [];
+        }
+
+        function mapDbGameToView(row) {
+            return {
+                id: row.id,
+                title: row.title,
+                team: row.team,
+                type: row.type || '',
+                price: row.price,
+                color: row.color || '#6366f1',
+                cover: row.cover,
+                screenshots: normalizeScreenshots(row.screenshots),
+                targetUrl: row.target_url || '',
+                date: row.date || '',
+                desc: row.description || '',
+                zhihuUrl: '',
+                zhihuAuthor: row.zhihu_author || '知乎答主',
+                zhihuAvatar: row.zhihu_avatar || 'https://placehold.co/100x100/3b82f6/ffffff?text=User',
+                zhihuContent: row.zhihu_content || ''
+            };
+        }
+
+        function mapViewGameToDb(game) {
+            return {
+                id: game.id,
+                title: game.title,
+                team: game.team,
+                type: game.type,
+                price: game.price,
+                color: game.color,
+                cover: game.cover,
+                screenshots: game.screenshots || [],
+                target_url: game.targetUrl || '',
+                date: game.date || '',
+                description: game.desc || '',
+                zhihu_author: game.zhihuAuthor || '',
+                zhihu_avatar: game.zhihuAvatar || '',
+                zhihu_content: game.zhihuContent || ''
+            };
+        }
+
+        async function loadGames() {
+            const { data, error } = await supabaseClient
+                .from('games')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            appState.games = (data || []).map(mapDbGameToView);
+            if (appState.games.length === 0) {
+                appState.games = defaultData;
+            }
+            return appState.games;
+        }
+
+        async function upsertGame(game) {
+            const payload = mapViewGameToDb(game);
+            const { data, error } = await supabaseClient
+                .from('games')
+                .upsert([payload], { onConflict: 'id' })
+                .select()
+                .single();
+
+            if (error) throw error;
+            return mapDbGameToView(data);
+        }
+
+        async function deleteGameRecord(id) {
+            const { error } = await supabaseClient
+                .from('games')
+                .delete()
+                .eq('id', id);
+
+            if (error) throw error;
+        }
+
+        async function loadMobileBannerSettings() {
+            const { data, error } = await supabaseClient
+                .from('site_settings')
+                .select('value')
+                .eq('key', 'mobile_banner_urls')
+                .maybeSingle();
+
+            if (error) throw error;
+            appState.mobileBannerUrls = Array.isArray(data?.value) ? data.value.filter(Boolean) : [];
+            return appState.mobileBannerUrls;
+        }
+
+        async function persistMobileBannerSettings(urls) {
+            const sanitizedUrls = urls.filter(Boolean);
+            const { error } = await supabaseClient
+                .from('site_settings')
+                .upsert([{
+                    key: 'mobile_banner_urls',
+                    value: sanitizedUrls
+                }], { onConflict: 'key' });
+
+            if (error) throw error;
+            appState.mobileBannerUrls = sanitizedUrls;
         }
 
         let mobileBannerInterval;
@@ -573,22 +689,22 @@
             document.getElementById('game-editor-title').textContent = isEditing ? (title || '未命名游戏') : '新增游戏';
         }
 
-        function saveMobileBanners(showMessage = false) {
-            const urls = getMobileBannerUrls();
-            localStorage.setItem('mobileBannerUrls', JSON.stringify(urls));
-            renderMobileBanner(urls);
-            if (showMessage) showSaveStatus('Banner 已保存');
+        function renderMobileBannerFields(urls) {
+            const mobileBannerFields = document.getElementById('mobile-banner-fields');
+            mobileBannerFields.innerHTML = '';
+            (urls.length ? urls : ['']).forEach(url => addMobileBannerField(url));
         }
 
-        const savedMobileBanners = JSON.parse(localStorage.getItem('mobileBannerUrls') || 'null') || (localStorage.getItem('mobileBannerUrl') ? [localStorage.getItem('mobileBannerUrl')] : []);
-        const mobileBannerFields = document.getElementById('mobile-banner-fields');
-        mobileBannerFields.innerHTML = '';
-        (savedMobileBanners.length ? savedMobileBanners : ['']).forEach(url => addMobileBannerField(url));
-        mobileBannerFields.addEventListener('change', () => saveMobileBanners(false));
-        renderMobileBanner(savedMobileBanners);
-
-        if (!localStorage.getItem('gamesData')) {
-            saveGames(defaultData);
+        async function saveMobileBanners(showMessage = false) {
+            const urls = getMobileBannerUrls();
+            try {
+                await persistMobileBannerSettings(urls);
+                renderMobileBanner(urls);
+                if (showMessage) showSaveStatus('Banner 已保存');
+            } catch (error) {
+                console.error('保存 Banner 到 Supabase 失败:', error);
+                showSaveStatus('Banner 保存失败，请检查 Supabase 连接');
+            }
         }
 
         function renderClientList() {
@@ -1055,29 +1171,38 @@
             document.getElementById('admin-form').requestSubmit();
         }
 
-        document.getElementById('admin-form').addEventListener('submit', function(e) {
+        document.getElementById('admin-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             savingData = true;
-            const games = getGames();
             const formId = document.getElementById('form-id').value;
             const gameData = collectGameFormData();
 
-            if (formId) {
-                const index = games.findIndex(g => g.id === formId);
-                if(index > -1) games[index] = {...games[index], ...gameData};
-            } else {
-                games.unshift(gameData);
+            if (!formId) {
+                gameData.id = Date.now().toString();
             }
 
-            saveGames(games);
-            loadGameIntoForm(gameData);
-            switchAdminTab('game');
-            showSaveStatus(formId ? '更新成功，内容已保留在编辑器中。' : '创建成功，已进入该游戏的内容管理。');
-            requestAnimationFrame(() => {
-                renderAdminList();
-                renderClientList();
+            try {
+                const savedGame = await upsertGame(gameData);
+                const existingIndex = appState.games.findIndex(g => g.id === savedGame.id);
+                if (existingIndex > -1) {
+                    appState.games[existingIndex] = savedGame;
+                } else {
+                    appState.games.unshift(savedGame);
+                }
+
+                loadGameIntoForm(savedGame);
+                switchAdminTab('game');
+                showSaveStatus(formId ? '更新成功，内容已保留在编辑器中。' : '创建成功，已进入该游戏的内容管理。');
+                requestAnimationFrame(() => {
+                    renderAdminList();
+                    renderClientList();
+                });
+            } catch (error) {
+                console.error('保存游戏到 Supabase 失败:', error);
+                showSaveStatus('保存失败，请检查 Supabase 连接或表权限');
+            } finally {
                 savingData = false;
-            });
+            }
         });
 
         async function mockZhihuScrape() {
@@ -1223,18 +1348,22 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        window.deleteGame = function(id) {
-            let games = getGames();
-            games = games.filter(g => g.id !== id);
-            saveGames(games);
-            if (document.getElementById('form-id').value === id) {
-                savedFormSnapshot = null;
-                resetForm(true);
-                switchAdminTab('global');
+        window.deleteGame = async function(id) {
+            try {
+                await deleteGameRecord(id);
+                appState.games = appState.games.filter(g => g.id !== id);
+                if (document.getElementById('form-id').value === id) {
+                    savedFormSnapshot = null;
+                    resetForm(true);
+                    switchAdminTab('global');
+                }
+                showSaveStatus('游戏已删除');
+                renderAdminList();
+                renderClientList();
+            } catch (error) {
+                console.error('删除游戏失败:', error);
+                showSaveStatus('删除失败，请检查 Supabase 连接或表权限');
             }
-            showSaveStatus('游戏已删除');
-            renderAdminList();
-            renderClientList();
         };
 
         function resetForm(forceBlank = false) {
@@ -1525,7 +1654,33 @@
             }
         }
 
-        renderClientList();
+        async function initializeApp() {
+            try {
+                const [games, bannerUrls] = await Promise.all([
+                    loadGames(),
+                    loadMobileBannerSettings()
+                ]);
+                renderMobileBannerFields(bannerUrls);
+                renderMobileBanner(bannerUrls);
+                document.getElementById('mobile-banner-fields').addEventListener('change', () => saveMobileBanners(false));
+                renderClientList();
+                renderAdminList();
+                updateGameEditorLabels(false);
+            } catch (error) {
+                console.error('初始化 Supabase 数据失败:', error);
+                appState.games = defaultData;
+                appState.mobileBannerUrls = [];
+                renderMobileBannerFields([]);
+                renderMobileBanner([]);
+                document.getElementById('mobile-banner-fields').addEventListener('change', () => saveMobileBanners(false));
+                renderClientList();
+                renderAdminList();
+                updateGameEditorLabels(false);
+                showSaveStatus('Supabase 连接失败，已回退到默认数据预览');
+            }
+        }
+
+        initializeApp();
 
         // 支持在 contenteditable 中粘贴图片
         document.getElementById('form-zhihu-content').addEventListener('paste', function(e) {
