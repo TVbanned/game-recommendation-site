@@ -87,11 +87,34 @@
         
         .zhihu-box { 
             background-color: #f8fafc;
-            border-left: 4px solid #ef4444; 
-            border-radius: 0 16px 16px 0;
-            padding: 24px;
+            border-radius: 16px;
+            padding: 24px 24px 24px 32px;
             box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
             position: relative;
+            overflow: hidden;
+        }
+
+        .zhihu-box::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            bottom: 24px;
+            left: 0;
+            width: 7px;
+            border-radius: 0 999px 999px 0;
+            background: linear-gradient(180deg, #fb7185 0%, #ef4444 48%, #f97316 100%);
+            box-shadow: 3px 0 14px rgba(239, 68, 68, 0.22);
+        }
+
+        .zhihu-box::after {
+            content: '';
+            position: absolute;
+            top: 31px;
+            left: 2px;
+            width: 3px;
+            height: 32px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.78);
         }
 
         .prose-zhihu { font-size: 1rem; line-height: 1.9; font-style: normal; }
@@ -146,6 +169,8 @@
             border-radius: 10px;
             font-size: 0.875rem;
             font-weight: 600;
+            flex: 0 0 auto;
+            white-space: nowrap;
             transition: background-color 0.2s ease;
         }
 
@@ -381,8 +406,9 @@
                                 <i class="fab fa-zhihu text-blue-500 text-lg"></i> 开发者手记
                             </h4>
                             <p class="text-xs text-indigo-600 mb-3">支持抓取知乎内容，也支持富文本编辑、上传图片、粘贴图片、分割线和超链接。</p>
+                            <label class="block text-xs font-semibold text-indigo-700 mb-1">阅读原文链接</label>
                             <div class="flex gap-3 mb-3">
-                                <input type="text" id="form-zhihu-url" placeholder="https://www.zhihu.com/question/.../answer/..." class="flex-1 rounded-lg border-indigo-200 shadow-sm border p-2.5 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="url" id="form-zhihu-url" placeholder="https://www.zhihu.com/question/.../answer/..." class="flex-1 rounded-lg border-indigo-200 shadow-sm border p-2.5 text-sm focus:ring-indigo-500 focus:border-indigo-500">
                                 <button type="button" onclick="mockZhihuScrape()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-md transition-colors whitespace-nowrap">抓取内容</button>
                             </div>
                             <div id="scrape-status" class="text-sm font-medium hidden mb-3"></div>
@@ -397,7 +423,7 @@
                                 </div>
                             </div>
                             <div class="border border-indigo-200 rounded-xl overflow-hidden bg-white">
-                                <div class="flex flex-wrap items-center gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-3">
+                                <div class="flex flex-nowrap items-center gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-3 overflow-x-auto overflow-y-hidden">
                                     <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="applyRichCommand('bold')"><i class="fas fa-bold mr-1"></i>加粗</button>
                                     <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="applyRichCommand('italic')"><i class="fas fa-italic mr-1"></i>斜体</button>
                                     <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="applyRichCommand('formatBlock', 'h3')"><i class="fas fa-heading mr-1"></i>标题</button>
@@ -406,9 +432,10 @@
                                     <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="applyRichCommand('insertOrderedList')"><i class="fas fa-list-ol mr-1"></i>有序列表</button>
                                     <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="insertRichDivider()"><i class="fas fa-minus mr-1"></i>分割线</button>
                                     <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="triggerRichImageUpload()"><i class="fas fa-image mr-1"></i>上传图片</button>
-                                    <div class="flex items-center gap-2 ml-auto w-full md:w-auto">
-                                        <input type="url" id="rich-link-url" placeholder="https:// 链接地址" class="min-w-0 flex-1 md:w-64 rounded-lg border border-indigo-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none" onfocus="saveRichSelection()">
-                                        <button type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-sm font-bold transition-colors" onmousedown="event.preventDefault()" onclick="insertRichLink()">插入链接</button>
+                                    <button type="button" class="editor-toolbar-btn" onmousedown="event.preventDefault()" onclick="removeRichLink()"><i class="fas fa-link-slash mr-1"></i>取消链接</button>
+                                    <div class="flex items-center gap-2 ml-auto shrink-0">
+                                        <input type="url" id="rich-link-url" placeholder="先选中文字，再粘贴 https:// 链接" class="w-44 sm:w-56 md:w-64 min-w-[140px] rounded-lg border border-indigo-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none" onfocus="saveRichSelection()">
+                                        <button type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-sm font-bold transition-colors" onmousedown="event.preventDefault()" onclick="insertRichLink()">超链接</button>
                                     </div>
                                 </div>
                                 <div>
@@ -534,7 +561,7 @@
                 targetUrl: row.target_url || '',
                 date: row.date || '',
                 desc: row.description || '',
-                zhihuUrl: '',
+                zhihuUrl: row.zhihu_url || '',
                 zhihuAuthor: row.zhihu_author || '知乎答主',
                 zhihuAvatar: row.zhihu_avatar || 'https://placehold.co/100x100/3b82f6/ffffff?text=User',
                 zhihuContent: row.zhihu_content || ''
@@ -556,7 +583,8 @@
                 description: game.desc || '',
                 zhihu_author: game.zhihuAuthor || '',
                 zhihu_avatar: game.zhihuAvatar || '',
-                zhihu_content: game.zhihuContent || ''
+                zhihu_content: game.zhihuContent || '',
+                zhihu_url: game.zhihuUrl || ''
             };
         }
 
@@ -911,12 +939,12 @@
                         <div class="zhihu-box">
                             <div class="flex items-center justify-between mb-5 pb-4 border-b border-slate-200">
                                 <div class="flex items-center gap-3">
-                                    <div class="bg-blue-100 text-blue-600 rounded-lg w-9 h-9 flex items-center justify-center">
-                                        <i class="fab fa-zhihu text-lg"></i>
+                                        <div class="bg-blue-100 text-blue-600 rounded-lg w-9 h-9 flex items-center justify-center">
+                                            <i class="fab fa-zhihu text-lg"></i>
+                                        </div>
+                                        <span class="font-bold text-slate-700 text-lg">游戏开发者说</span>
                                     </div>
-                                    <span class="font-bold text-slate-700 text-lg">游戏开发者说</span>
-                                </div>
-                                ${game.zhihuUrl ? `<a href="${game.zhihuUrl}" target="_blank" class="text-xs text-blue-500 hover:text-blue-700 hover:underline transition-colors shrink-0"><i class="fas fa-external-link-alt mr-1"></i>在知乎查看原文</a>` : ''}
+                                    ${game.zhihuUrl ? `<a href="${game.zhihuUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-blue-600 shadow-sm ring-1 ring-blue-100 transition hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white hover:shadow-md shrink-0"><span>阅读原文</span><i class="fas fa-arrow-up-right-from-square text-[10px]"></i></a>` : ''}
                             </div>
                             
                             <p class="font-bold text-slate-800 text-lg mb-5 leading-relaxed">
@@ -1481,17 +1509,45 @@
 
         function insertRichLink() {
             const url = document.getElementById('rich-link-url').value.trim();
-            if (!url) return;
+            if (!url) {
+                showSaveStatus('请先粘贴链接地址');
+                return;
+            }
 
             focusRichEditor();
             const selection = window.getSelection();
-            if (selection && !selection.isCollapsed) {
-                document.execCommand('createLink', false, url);
-                normalizeRichEditorContent();
-            } else {
-                insertRichHtml(`<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>`);
+            if (!selection || selection.isCollapsed) {
+                showSaveStatus('请先在手记正文中选中需要跳转的文字');
+                return;
             }
+
+            document.execCommand('createLink', false, url);
+            normalizeRichEditorContent();
             document.getElementById('rich-link-url').value = '';
+            saveRichSelection();
+        }
+
+        function removeRichLink() {
+            focusRichEditor();
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) {
+                showSaveStatus('请先选中需要取消链接的文字');
+                return;
+            }
+
+            if (selection.isCollapsed) {
+                const range = selection.getRangeAt(0);
+                const startNode = range.startContainer;
+                const startElement = startNode?.nodeType === 1 ? startNode : startNode?.parentElement;
+                const anchor = startElement?.closest?.('a');
+                if (!anchor) {
+                    showSaveStatus('请先选中要取消的链接文本，或将光标放在链接文字上');
+                    return;
+                }
+            }
+
+            document.execCommand('unlink');
+            normalizeRichEditorContent();
             saveRichSelection();
         }
 
