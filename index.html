@@ -6,6 +6,7 @@
     <title>暑期「游戏浪一夏」- 全栈原型演示</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&display=swap');
         
@@ -22,11 +23,1304 @@
             -webkit-text-fill-color: transparent;
             font-family: 'Noto Serif SC', serif; 
         }
+
+        #main-wrapper {
+            width: 100%;
+        }
+
+        .game-waterfall {
+            column-count: 2;
+            column-gap: 16px;
+            padding: 16px;
+        }
+        
+        .game-card {
+            break-inside: avoid;
+            margin-bottom: 16px;
+            background: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid #f1f5f9;
+        }
+        .game-card:hover { 
+            transform: translateY(-6px) scale(1.01); 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); 
+        }
+        
+        .detail-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff; 
+            z-index: 50;
+            transform: translateX(100%);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+            box-shadow: -20px 0 50px rgba(0,0,0,0.1);
+        }
+        
+        .detail-panel.active { transform: translateX(0); }
+        
+        .detail-panel::-webkit-scrollbar { width: 6px; }
+        .detail-panel::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+        
+        .info-tag {
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+        .info-tag:hover { background-color: #e2e8f0; }
+        .info-tag i { color: #64748b; font-size: 1rem; }
+        
+        .zhihu-box { 
+            background-color: #f8fafc;
+            border-left: 4px solid #ef4444; 
+            border-radius: 0 16px 16px 0;
+            padding: 24px;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+            position: relative;
+        }
+
+        .prose-zhihu { font-size: 1rem; line-height: 1.9; font-style: normal; }
+        .prose-zhihu > p,
+        .prose-zhihu > div { margin: 0 0 24px; font-size: 1rem !important; line-height: 1.9 !important; }
+        .prose-zhihu > p:last-child,
+        .prose-zhihu > div:last-child { margin-bottom: 0; }
+        .prose-zhihu > p *,
+        .prose-zhihu > div * { font-size: inherit !important; line-height: inherit !important; }
+        .prose-zhihu img { display: block; max-width: 100%; border-radius: 12px; margin: 18px 0; }
+        .prose-zhihu h2,.prose-zhihu h3 { font-weight: 700; margin: 24px 0 10px; color: #1e293b; }
+        .prose-zhihu blockquote { border-left: 3px solid #cbd5e1; padding: 4px 0 4px 16px; margin: 16px 0; color: #64748b; }
+        .prose-zhihu > br { display: block; content: ''; margin-bottom: 10px; }
+        .prose-zhihu ul,.prose-zhihu ol { padding-left: 1.5em; margin: 0 0 16px; }
+        .prose-zhihu li { margin-bottom: 5px; }
+
+        #form-zhihu-content:empty::before {
+            content: attr(placeholder);
+            color: #94a3b8;
+            pointer-events: none;
+        }
+
+        .carousel-container {
+            overflow: hidden;
+            position: relative;
+            touch-action: pan-y; 
+        }
+        .carousel-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.3s ease-out;
+            will-change: transform;
+        }
+        .carousel-slide {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+            user-select: none; 
+            -webkit-user-drag: none; 
+        }
+        .carousel-slide img {
+             pointer-events: none; 
+        }
+
+        @media (min-width: 768px) {
+            .mobile-banner { display: none; }
+            
+            .game-waterfall {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 24px;
+                padding: 32px 0;
+                column-count: auto;
+            }
+            .game-card { margin-bottom: 0; }
+            
+            .detail-panel {
+                width: 50%; 
+                border-left: 1px solid #e2e8f0;
+            }
+
+            body.panel-open #main-wrapper {
+                width: 50%;
+            }
+        }
+
+        #admin-view { display: none; }
+        .admin-active #client-view { display: none; }
+        .admin-active #admin-view { display: block; }
     </style>
-  <script type="module" crossorigin src="/game-recommendation-site/assets/index-D8ILqk-P.js"></script>
-  <link rel="stylesheet" crossorigin href="/game-recommendation-site/assets/index-BEEmUAlQ.css">
 </head>
 <body>
-    <div id="app"></div>
+
+    <div id="client-view" class="min-h-screen relative w-full overflow-hidden">
+        
+        <div id="main-wrapper">
+            <div class="main-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <div class="mb-10 hidden md:flex items-baseline flex-wrap gap-4 select-none cursor-pointer" id="secret-trigger-pc">
+                    <h1 class="text-5xl font-black tracking-tight text-gray-900 title-gradient">暑期「游戏浪一夏」</h1>
+                    <span class="text-2xl text-gray-500 font-light tracking-wide border-l-2 border-gray-300 pl-4">东方侠影游戏安利时间</span>
+                </div>
+
+                <div class="md:hidden mb-6">
+                    <div id="secret-trigger-mobile" class="select-none cursor-pointer mb-4">
+                         <h1 class="text-3xl font-black tracking-tight text-gray-900 title-gradient mb-1">暑期「游戏浪一夏」</h1>
+                         <p class="text-md text-gray-500 font-light tracking-wide">东方侠影游戏安利时间</p>
+                    </div>
+                    <div id="mobile-banner" class="mobile-banner w-full h-48 bg-slate-200 rounded-2xl overflow-hidden relative shadow-inner carousel-container">
+                        <div id="mobile-banner-track" class="carousel-track"></div>
+                        <div id="mobile-banner-dots" class="absolute bottom-3 w-full flex justify-center gap-2 z-10"></div>
+                    </div>
+                </div>
+
+                <div id="game-list-container" class="game-waterfall">
+                </div>
+            </div>
+        </div>
+
+        <div id="detail-panel" class="detail-panel">
+            <button id="close-btn" class="absolute top-5 right-5 z-20 w-10 h-10 bg-white/50 backdrop-blur-md hover:bg-white/80 text-gray-800 rounded-full flex items-center justify-center transition-all shadow-sm border border-white/60 focus:outline-none">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <div id="detail-content" class="pb-12">
+            </div>
+        </div>
+        
+        <div id="overlay" class="fixed inset-0 bg-transparent z-40 hidden md:hidden transition-opacity"></div>
+    </div>
+
+
+    <div id="admin-view" class="min-h-screen bg-slate-100 py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+            <div class="bg-slate-900 px-8 py-5 flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-white tracking-wide">内容配置后台 (CMS)</h2>
+                <div class="flex items-center gap-4">
+                    <span class="text-slate-400 text-sm hidden sm:inline"><i class="fas fa-database mr-1"></i> 数据保存在本地</span>
+                    <button onclick="toggleMode()" class="bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 rounded-lg text-sm font-bold shadow-md transition-colors">退出后台</button>
+                </div>
+            </div>
+            
+            <div class="p-8 flex flex-col lg:flex-row gap-10">
+                <div class="flex-1">
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">手机端 Banner 图片 URL</label>
+                        <div id="mobile-banner-fields" class="space-y-2">
+                            <div class="flex gap-2">
+                                <input type="url" name="mobile-banner" placeholder="https://..." class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-slate-50">
+                                <button type="button" onclick="addMobileBannerField()" class="text-rose-500 text-3xl leading-none px-2" aria-label="添加 Banner 图片">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 border-b-2 border-slate-100 pb-3 mb-6">新增 / 编辑游戏数据</h3>
+                    <form id="admin-form" class="space-y-5">
+                        <input type="hidden" id="form-id">
+                        
+                        <div class="grid grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">游戏名称</label>
+                                <input type="text" id="form-title" required class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">开发团队</label>
+                                <input type="text" id="form-team" required class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-5">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">游戏类型</label>
+                                <input type="text" id="form-type" placeholder="如：悬疑逃生" required class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">售价 (元)</label>
+                                <input type="text" id="form-price" required class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">主题色 (底边条)</label>
+                                <input type="color" id="form-color" value="#6366f1" class="w-full h-11 rounded-lg border-slate-300 shadow-sm border p-1 cursor-pointer bg-slate-50">
+                            </div>
+                        </div>
+                        
+                         <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">详情页跳转链接 (URL)</label>
+                            <input type="url" id="form-url" placeholder="https://store.steampowered.com/..." class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">封面图片 URL</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="form-cover" required placeholder="https://..." oninput="handleCoverInput()" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-slate-50">
+                                <button type="button" onclick="extractColorFromCover()" id="extract-color-btn" class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow-md transition-colors whitespace-nowrap">
+                                    <i class="fas fa-eye-dropper mr-1"></i>自动取色
+                                </button>
+                            </div>
+                            <div id="cover-preview-container" class="mt-2 hidden">
+                                <img id="cover-preview" alt="封面预览" class="max-h-32 rounded shadow" onload="handleCoverLoad()" onerror="handleCoverError()">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">游戏截图 URL</label>
+                            <div id="screenshot-fields" class="space-y-2">
+                                <div class="flex gap-2">
+                                    <input type="url" name="screenshot" placeholder="https://..." class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-slate-50">
+                                    <button type="button" onclick="addScreenshotField()" class="text-rose-500 text-3xl leading-none px-2" aria-label="添加游戏截图">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">游戏简介</label>
+                            <textarea id="form-desc" rows="3" required class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 bg-slate-50"></textarea>
+                        </div>
+
+                        <div class="bg-indigo-50/50 p-5 rounded-xl border border-indigo-100">
+                            <h4 class="font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                                <i class="fab fa-zhihu text-blue-500 text-lg"></i> 游戏开发者说 (知乎内容抓取)
+                            </h4>
+                            <p class="text-xs text-indigo-600 mb-3">输入知乎回答链接抓取正文和答主信息；支持直接粘贴图片。</p>
+                            <div class="flex gap-3 mb-3">
+                                <input type="text" id="form-zhihu-url" placeholder="https://www.zhihu.com/question/.../answer/..." class="flex-1 rounded-lg border-indigo-200 shadow-sm border p-2.5 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <button type="button" onclick="mockZhihuScrape()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-md transition-colors whitespace-nowrap">抓取内容</button>
+                            </div>
+                            <div id="scrape-status" class="text-sm font-medium hidden mb-3"></div>
+                            <div class="grid grid-cols-2 gap-3 mb-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-indigo-700 mb-1">答主昵称</label>
+                                    <input type="text" id="form-zhihu-author" placeholder="自动抓取" class="w-full rounded-lg border-indigo-200 shadow-sm border p-2 bg-white text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-indigo-700 mb-1">答主头像 URL</label>
+                                    <input type="text" id="form-zhihu-avatar" placeholder="自动抓取" class="w-full rounded-lg border-indigo-200 shadow-sm border p-2 bg-white text-sm">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-indigo-700 mb-1">回答正文 (支持粘贴图片)</label>
+                                <div id="form-zhihu-content" contenteditable="true" placeholder="自动抓取或手动粘贴知乎回答正文..." class="w-full min-h-[140px] rounded-lg border border-indigo-200 shadow-sm p-3 bg-white text-sm leading-relaxed outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition overflow-y-auto prose-zhihu" style="white-space: pre-wrap;"></div>
+                                <p class="text-[10px] text-indigo-400 mt-1">提示：可从知乎直接复制图文内容粘贴到这里；也可拖入图片。</p>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 flex gap-4">
+                            <button type="submit" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition-transform active:scale-95">发布数据至 H5</button>
+                            <button type="button" onclick="resetForm()" class="bg-white border-2 border-slate-200 text-slate-600 font-bold py-3.5 px-6 rounded-xl hover:bg-slate-50 transition-colors">清空</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="flex-1 lg:border-l border-slate-200 lg:pl-10 mt-10 lg:mt-0">
+                    <h3 class="text-lg font-bold text-slate-800 border-b-2 border-slate-100 pb-3 mb-6">已发布游戏管理 (<span id="game-count">0</span>)</h3>
+                    <div id="admin-data-list" class="space-y-4 max-h-[700px] overflow-y-auto pr-2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const defaultData = [
+            {
+                id: '1700000001',
+                title: '绍宋：还我河山',
+                team: '互动之星开发组',
+                type: '影视互动游戏',
+                price: '18.20',
+                color: '#8b5cf6',
+                cover: 'https://placehold.co/600x340/3f3f46/ffffff?text=Zhao+Song+Cover',
+                screenshots: [
+                    'https://placehold.co/800x600/475569/ffffff?text=Screenshot+1',
+                    'https://placehold.co/800x600/334155/ffffff?text=Screenshot+2',
+                    'https://placehold.co/800x600/1e293b/ffffff?text=Screenshot+3'
+                ],
+                targetUrl: 'https://store.steampowered.com/',
+                date: '2026.8',
+                desc: '这是一沉浸式真人互动历史权谋影视游戏！你将化身赵玖，魂穿南宋最具争议的皇帝赵构，每次抉择都将左右王朝气运、定夺天下兴亡！面对靖康之变后的山河破碎，你能否打破宿命再造山河？',
+                zhihuUrl: '',
+                zhihuAuthor: '李制作 (制作人)',
+                zhihuAvatar: 'https://placehold.co/100x100/fbbf24/000000?text=Dev',
+                zhihuContent: '开发这款游戏最大的乐趣在于历史的推演。我们在剧本上花费了数年时间，考证了大量的宋史资料。最核心的玩法是势，玩家不仅要在朝堂上平衡文武，还要考虑到金国的军事压力。每一次在选项前的犹豫，都是我们希望带给玩家的历史沉重感。'
+            },
+            {
+                id: '1700000002',
+                title: '隐形守护者',
+                team: 'NewOne Studio',
+                type: '谍战互动影像',
+                price: '38.00',
+                color: '#0f766e', 
+                cover: 'https://placehold.co/600x340/1c1917/ffffff?text=Invisible+Guardian',
+                screenshots: [
+                    'https://placehold.co/800x600/000000/ffffff?text=Spy+Game+Pic+1'
+                ],
+                targetUrl: 'https://store.steampowered.com/',
+                date: '2019.1',
+                desc: '你叫肖途，两年前的你，还是上海一个名噪一时的爱国学生。现在，你成为了潜伏在敌后的一名谍报人员。你的每一个选择都生死攸关。',
+                zhihuUrl: '',
+                zhihuAuthor: '谍战策划组',
+                zhihuAvatar: 'https://placehold.co/100x100/10b981/ffffff?text=Spy',
+                zhihuContent: '为了还原那个年代的质感，所有的服装、道具都是定制的。我们希望玩家不仅是在玩游戏，更像是在经历一部能够自己主导结局的谍战大片。'
+            },
+             {
+                id: '1700000003',
+                title: '飞越13号房',
+                team: 'ALT Lab',
+                type: '悬疑逃生',
+                price: '42.00',
+                color: '#b45309', 
+                cover: 'https://placehold.co/600x340/451a03/ffffff?text=Room+13',
+                screenshots: [
+                    'https://placehold.co/800x600/27272a/ffffff?text=Escape+1',
+                    'https://placehold.co/800x600/3f3f46/ffffff?text=Escape+2'
+                ],
+                targetUrl: 'https://store.steampowered.com/',
+                date: '2023.1',
+                desc: '属于中国青年的悬疑互动影像作品。背景设定在21世纪初，你将扮演一名驰骋游戏世界的叛逆少年，被送入了一所行为矫正中心。',
+                zhihuUrl: '',
+                zhihuAuthor: 'ALT主策',
+                zhihuAvatar: 'https://placehold.co/100x100/dc2626/ffffff?text=ALT',
+                zhihuContent: '这不是一个轻松的故事。我们深入调查了许多真实的案例。游戏里最难的设计是如何在绝望中给玩家留下一线生机，以及同伴之间的羁绊和背叛。'
+            }
+        ];
+
+        function getGames() {
+            const data = localStorage.getItem('gamesData');
+            return data ? JSON.parse(data) : defaultData;
+        }
+
+        function saveGames(games) {
+            localStorage.setItem('gamesData', JSON.stringify(games));
+        }
+
+        let mobileBannerInterval;
+        let mobileBannerIndex = 0;
+
+        function createUrlField(name, addAction, value = '') {
+            const row = document.createElement('div');
+            row.className = 'flex gap-2';
+            row.innerHTML = `
+                <input type="url" name="${name}" placeholder="https://..." value="${value}" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-slate-50">
+                <button type="button" onclick="${addAction}()" class="text-rose-500 text-3xl leading-none px-2" aria-label="添加图片">+</button>
+            `;
+            return row;
+        }
+
+        window.addMobileBannerField = function(value = '') {
+            document.getElementById('mobile-banner-fields').appendChild(createUrlField('mobile-banner', 'addMobileBannerField', value));
+        };
+
+        window.addScreenshotField = function(value = '') {
+            document.getElementById('screenshot-fields').appendChild(createUrlField('screenshot', 'addScreenshotField', value));
+        };
+
+        function getMobileBannerUrls() {
+            return Array.from(document.querySelectorAll('[name="mobile-banner"]')).map(input => input.value.trim()).filter(Boolean);
+        }
+
+        function renderMobileBanner(urls) {
+            const bannerUrls = urls.length ? urls : ['https://placehold.co/800x400/e2e8f0/64748b?text=Summer+Game+Banner'];
+            const track = document.getElementById('mobile-banner-track');
+            const dots = document.getElementById('mobile-banner-dots');
+            clearInterval(mobileBannerInterval);
+            mobileBannerIndex = 0;
+            track.innerHTML = bannerUrls.concat(bannerUrls.length > 1 ? bannerUrls[0] : []).map((url, index) => `<div class="carousel-slide"><img src="${url}" class="w-full h-full object-cover" alt="Banner ${index + 1}"></div>`).join('');
+            dots.innerHTML = bannerUrls.map((_, index) => `<div class="w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white w-6' : 'bg-white/40'}"></div>`).join('');
+            if (bannerUrls.length > 1) {
+                mobileBannerInterval = setInterval(() => {
+                    mobileBannerIndex++;
+                    track.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    track.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
+                    Array.from(dots.children).forEach((dot, index) => dot.className = `rounded-full transition-all duration-300 ${index === mobileBannerIndex % bannerUrls.length ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`);
+                    if (mobileBannerIndex === bannerUrls.length) {
+                        setTimeout(() => {
+                            mobileBannerIndex = 0;
+                            track.style.transition = 'none';
+                            track.style.transform = 'translateX(0)';
+                        }, 350);
+                    }
+                }, 3000);
+            }
+        }
+
+        function saveMobileBanners() {
+            const urls = getMobileBannerUrls();
+            localStorage.setItem('mobileBannerUrls', JSON.stringify(urls));
+            renderMobileBanner(urls);
+        }
+
+        const savedMobileBanners = JSON.parse(localStorage.getItem('mobileBannerUrls') || 'null') || (localStorage.getItem('mobileBannerUrl') ? [localStorage.getItem('mobileBannerUrl')] : []);
+        const mobileBannerFields = document.getElementById('mobile-banner-fields');
+        mobileBannerFields.innerHTML = '';
+        (savedMobileBanners.length ? savedMobileBanners : ['']).forEach(url => addMobileBannerField(url));
+        mobileBannerFields.addEventListener('change', saveMobileBanners);
+        renderMobileBanner(savedMobileBanners);
+
+        if (!localStorage.getItem('gamesData')) {
+            saveGames(defaultData);
+        }
+
+        function renderClientList() {
+            const games = getGames();
+            const container = document.getElementById('game-list-container');
+            container.innerHTML = ''; 
+
+            games.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card flex flex-col group';
+                card.onclick = () => openDetail(game.id);
+
+                card.innerHTML = `
+                    <div class="relative pt-[56.25%] w-full bg-slate-100 overflow-hidden">
+                        <img src="${game.cover}" alt="${game.title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                    </div>
+                    <div class="flex justify-between items-center px-4 py-2 text-white text-xs font-semibold tracking-wider" style="background-color: ${game.color};">
+                        <span>售价 ${game.price}</span>
+                        <i class="fab fa-steam opacity-90 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-bold text-slate-800 text-lg leading-tight mb-2 truncate group-hover:text-indigo-600 transition-colors">${game.title}</h3>
+                        <p class="text-sm text-slate-500 truncate">${game.team}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        const detailPanel = document.getElementById('detail-panel');
+        const overlay = document.getElementById('overlay');
+        const body = document.body;
+        let panelStartX = 0;
+
+        let currentSlide = 0;
+        let slideCount = 0;
+        let carouselInterval;
+        let carouselTrack;
+        let carouselDots;
+        
+        let isDragging = false;
+        let startPos = 0;
+        let currentTranslate = 0;
+        let prevTranslate = 0;
+
+        function animateGameGrid(changeLayout) {
+            if (window.innerWidth < 768) {
+                changeLayout();
+                return;
+            }
+
+            const cards = Array.from(document.querySelectorAll('.game-card'));
+            const firstRects = new Map(cards.map(card => [card, card.getBoundingClientRect()]));
+            changeLayout();
+            void document.getElementById('game-list-container').offsetWidth;
+
+            cards.forEach(card => {
+                const first = firstRects.get(card);
+                const last = card.getBoundingClientRect();
+                const translateX = first.left - last.left;
+                const translateY = first.top - last.top;
+                const scaleX = first.width / last.width;
+                const scaleY = first.height / last.height;
+
+                if (translateX || translateY || scaleX !== 1 || scaleY !== 1) {
+                    card.animate([
+                        { transform: `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})` },
+                        { transform: 'translate(0, 0) scale(1, 1)' }
+                    ], {
+                        duration: 500,
+                        easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
+                    });
+                }
+            });
+        }
+
+        function processZhihuContent(content) {
+            if (!content) return '';
+
+            const source = document.createElement('div');
+            source.innerHTML = content;
+            const result = document.createElement('div');
+            const paragraph = document.createElement('p');
+            const appendParagraph = () => {
+                if (!paragraph.textContent.trim() && !paragraph.querySelector('img')) return;
+                result.appendChild(paragraph.cloneNode(true));
+                paragraph.replaceChildren();
+            };
+
+            const blockTags = new Set(['DIV', 'P', 'H1', 'H2', 'H3', 'H4', 'LI', 'BLOCKQUOTE']);
+            const processNodes = nodes => {
+                Array.from(nodes).forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        node.textContent.replace(/\u00a0/g, ' ').split(/\r?\n/).forEach((line, index, lines) => {
+                            if (line.trim()) paragraph.append(document.createTextNode(line));
+                            if (index < lines.length - 1) appendParagraph();
+                        });
+                        return;
+                    }
+
+                    if (node.nodeType !== Node.ELEMENT_NODE) return;
+                    if (node.tagName === 'BR') {
+                        appendParagraph();
+                        return;
+                    }
+                    if (node.tagName === 'IMG') {
+                        appendParagraph();
+                        const imageParagraph = document.createElement('p');
+                        imageParagraph.append(node.cloneNode(true));
+                        result.appendChild(imageParagraph);
+                        return;
+                    }
+
+                    if (blockTags.has(node.tagName)) appendParagraph();
+                    processNodes(node.childNodes);
+                    if (blockTags.has(node.tagName)) appendParagraph();
+                });
+            };
+
+            processNodes(source.childNodes);
+            appendParagraph();
+
+            const walker = document.createTreeWalker(result, NodeFilter.SHOW_TEXT);
+            const textNodes = [];
+            while (walker.nextNode()) textNodes.push(walker.currentNode);
+            textNodes.forEach(node => {
+                let useLeftQuote = true;
+                node.textContent = node.textContent.replace(/[“”]/g, quote => quote === '“' ? '「' : '」').replace(/"/g, () => {
+                    const quote = useLeftQuote ? '「' : '」';
+                    useLeftQuote = !useLeftQuote;
+                    return quote;
+                });
+            });
+
+            return result.innerHTML;
+        }
+
+        function openDetail(id) {
+            const games = getGames();
+            const game = games.find(g => g.id === id);
+            if(!game) return;
+
+            const contentContainer = document.getElementById('detail-content');
+            
+            let shots = [];
+            if (Array.isArray(game.screenshots) && game.screenshots.length > 0) {
+                 shots = game.screenshots;
+            } else if (game.screenshot) { 
+                 shots = [game.screenshot];
+            } else {
+                 shots = [game.cover]; 
+            }
+            
+            slideCount = shots.length;
+            currentSlide = 0;
+
+            let slidesHtml = '';
+            let dotsHtml = '';
+            shots.forEach((shot, index) => {
+                slidesHtml += `<div class="carousel-slide"><img src="${shot}" class="w-full h-full object-cover" alt="截图${index+1}"></div>`;
+                dotsHtml += `<div class="w-2.5 h-2.5 rounded-full cursor-pointer transition-all duration-300 shadow-sm ${index === 0 ? 'bg-white w-6' : 'bg-white/40 hover:bg-white/70'}" onclick="goToSlide(${index})"></div>`;
+            });
+            // 末尾追加第一张副本，实现无限循环
+            if (shots.length > 1) {
+                slidesHtml += `<div class="carousel-slide"><img src="${shots[0]}" class="w-full h-full object-cover" alt="截图1"></div>`;
+            }
+
+            const linkUrl = game.targetUrl || '#';
+
+            contentContainer.innerHTML = `
+                <div class="relative w-full h-64 md:h-72 bg-slate-900 carousel-container" id="carousel-container">
+                    <div class="carousel-track" id="carousel-track">
+                        ${slidesHtml}
+                    </div>
+                    <div class="absolute bottom-4 w-full flex justify-center gap-2 z-10" id="carousel-dots">
+                        ${dotsHtml}
+                    </div>
+                </div>
+
+                <div class="p-6 md:p-8">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-8 gap-4">
+                        <h2 class="text-3xl font-black text-slate-800 leading-tight">${game.title}</h2>
+                        <a href="${linkUrl}" target="_blank" class="shrink-0 bg-slate-800 text-white px-5 py-2.5 rounded-full text-sm font-bold flex items-center justify-center gap-2 hover:bg-indigo-600 transition-colors shadow-md">
+                            去Steam页面瞅瞅! <i class="fab fa-steam text-lg"></i>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-y-4 gap-x-3 mb-10">
+                        <div class="info-tag"><i class="fas fa-gamepad"></i> ${game.type || '未设置'}</div>
+                        <div class="info-tag"><i class="far fa-calendar-alt"></i> ${game.date || '待定'}</div>
+                        <div class="info-tag"><i class="fas fa-tag"></i> ${game.price ? '¥'+game.price : '免费'}</div>
+                        <div class="info-tag truncate"><i class="fas fa-users"></i> ${game.team}</div>
+                    </div>
+
+                    <div class="mb-12">
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-3">
+                            <span class="w-2 h-6 bg-indigo-500 rounded-full inline-block"></span> 游戏介绍
+                        </h3>
+                        <p class="text-slate-600 text-base leading-loose text-justify font-normal">
+                            ${game.desc}
+                        </p>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="zhihu-box">
+                            <div class="flex items-center justify-between mb-5 pb-4 border-b border-slate-200">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-blue-100 text-blue-600 rounded-lg w-9 h-9 flex items-center justify-center">
+                                        <i class="fab fa-zhihu text-lg"></i>
+                                    </div>
+                                    <span class="font-bold text-slate-700 text-lg">游戏开发者说</span>
+                                </div>
+                                ${game.zhihuUrl ? `<a href="${game.zhihuUrl}" target="_blank" class="text-xs text-blue-500 hover:text-blue-700 hover:underline transition-colors shrink-0"><i class="fas fa-external-link-alt mr-1"></i>在知乎查看原文</a>` : ''}
+                            </div>
+                            
+                            <p class="font-bold text-slate-800 text-lg mb-5 leading-relaxed">
+                                <i class="fas fa-quote-left text-indigo-300 mr-1.5"></i>请说出至少一个理由，为什么玩家要体验你开发的这款游戏，最好玩的点在哪里？
+                            </p>
+                            
+                            <div class="flex items-center gap-4 mb-4">
+                                <img src="${game.zhihuAvatar}" class="w-12 h-12 rounded-full shadow-sm object-cover border-2 border-white" alt="Avatar" onerror="this.onerror=null;this.src='https://placehold.co/100x100/3b82f6/ffffff?text=User';">
+                                <div>
+                                    <div class="font-bold text-slate-800 text-base">${game.zhihuAuthor || '知乎用户'}</div>
+                                </div>
+                            </div>
+
+                            <div class="text-slate-600 text-base leading-loose prose-zhihu">
+                                ${processZhihuContent(game.zhihuContent || '暂无内容...')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            initCarousel();
+
+            animateGameGrid(() => body.classList.add('panel-open'));
+            detailPanel.classList.add('active');
+            overlay.classList.remove('hidden');
+        }
+
+        function initCarousel() {
+            carouselTrack = document.getElementById('carousel-track');
+            carouselDots = document.getElementById('carousel-dots').children;
+            const container = document.getElementById('carousel-container');
+            
+            updateCarousel();
+            startAutoSlide();
+
+            container.addEventListener('mousedown', touchStart);
+            container.addEventListener('touchstart', touchStart, {passive: true});
+            
+            window.addEventListener('mousemove', touchMove);
+            window.addEventListener('touchmove', touchMove, {passive: false});
+            window.addEventListener('mouseup', touchEnd);
+            window.addEventListener('touchend', touchEnd);
+        }
+
+        function startAutoSlide() {
+            if(slideCount <= 1) return;
+            clearInterval(carouselInterval);
+            carouselInterval = setInterval(() => {
+                currentSlide++;
+                if (currentSlide >= slideCount) {
+                    updateCarousel(true);
+                    currentSlide = 0;
+                    setTimeout(() => updateCarousel(false), 350);
+                } else {
+                    updateCarousel(true);
+                }
+            }, 3000);
+        }
+
+        function stopAutoSlide() {
+            clearInterval(carouselInterval);
+        }
+
+        window.goToSlide = function(index) {
+            if (index < 0 || index >= slideCount) return;
+            currentSlide = index;
+            updateCarousel(true);
+            startAutoSlide();
+        }
+
+        function updateCarousel(animate) {
+            if(!carouselTrack) return;
+            const containerWidth = document.getElementById('carousel-container').offsetWidth;
+            const displayIdx = currentSlide >= slideCount ? slideCount : currentSlide;
+            currentTranslate = displayIdx * -containerWidth;
+            prevTranslate = currentTranslate;
+            
+            carouselTrack.style.transition = animate ? 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none';
+            setSliderPosition();
+            
+            Array.from(carouselDots).forEach((dot, idx) => {
+                const activeIdx = currentSlide >= slideCount ? 0 : currentSlide;
+                if (idx === activeIdx) {
+                    dot.className = 'w-6 h-2.5 rounded-full cursor-pointer transition-all duration-300 bg-white shadow-sm';
+                } else {
+                    dot.className = 'w-2.5 h-2.5 rounded-full cursor-pointer transition-all duration-300 bg-white/40 hover:bg-white/70 shadow-sm';
+                }
+            });
+        }
+
+        function setSliderPosition() {
+            carouselTrack.style.transform = `translateX(${currentTranslate}px)`;
+        }
+
+        function touchStart(event) {
+            if(slideCount <= 1) return;
+            if(!event.target.closest('#carousel-container')) return;
+            
+            isDragging = true;
+            startPos = getPositionX(event);
+            stopAutoSlide();
+            carouselTrack.style.transition = 'none'; 
+        }
+
+        function touchMove(event) {
+            if (!isDragging) return;
+             if(event.type === 'touchmove') {
+                 event.preventDefault();
+             }
+            const currentPosition = getPositionX(event);
+            const diff = currentPosition - startPos;
+            currentTranslate = prevTranslate + diff;
+            setSliderPosition();
+        }
+
+        function touchEnd() {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const movedBy = currentTranslate - prevTranslate;
+            const threshold = document.getElementById('carousel-container').offsetWidth * 0.2; 
+            
+            if (movedBy < -threshold) {
+                currentSlide++;
+                if (currentSlide >= slideCount) {
+                    updateCarousel(true);
+                    currentSlide = 0;
+                    setTimeout(() => updateCarousel(false), 350);
+                } else {
+                    updateCarousel(true);
+                }
+            } else if (movedBy > threshold) {
+                currentSlide = (currentSlide - 1 + slideCount) % slideCount;
+                updateCarousel(true);
+            } else {
+                updateCarousel(true);
+            }
+            
+            startAutoSlide();
+        }
+
+        function getPositionX(event) {
+            return event.type.includes('mouse') ? event.clientX : event.touches[0].clientX;
+        }
+
+        function closeDetail() {
+            animateGameGrid(() => body.classList.remove('panel-open'));
+            detailPanel.classList.remove('active');
+            overlay.classList.add('hidden');
+            stopAutoSlide(); 
+        }
+
+        document.getElementById('close-btn').addEventListener('click', closeDetail);
+        overlay.addEventListener('click', closeDetail);
+
+        document.getElementById('main-wrapper').addEventListener('click', (e) => {
+            if (!detailPanel.classList.contains('active')) return;
+            if (e.target.closest('.game-card, a, button, input, textarea, select, [contenteditable="true"]')) return;
+            closeDetail();
+        });
+
+        detailPanel.addEventListener('touchstart', (e) => {
+            if(e.target.closest('#carousel-container')) return;
+            panelStartX = e.touches[0].clientX;
+        }, {passive: true});
+
+        detailPanel.addEventListener('touchend', (e) => {
+            if(e.target.closest('#carousel-container')) return;
+            const endX = e.changedTouches[0].clientX;
+            if (endX - panelStartX > 100 && window.innerWidth < 768) {
+                closeDetail();
+            }
+        });
+
+        function showSaveStatus(message) {
+            let statusEl = document.getElementById('save-status-toast');
+            if (!statusEl) {
+                statusEl = document.createElement('div');
+                statusEl.id = 'save-status-toast';
+                statusEl.className = 'fixed top-5 left-1/2 -translate-x-1/2 z-[100] bg-emerald-500 text-white px-5 py-3 rounded-xl shadow-lg font-bold text-sm transition-all duration-300 opacity-0 pointer-events-none';
+                document.body.appendChild(statusEl);
+            }
+
+            statusEl.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${message}`;
+            statusEl.classList.remove('opacity-0');
+            statusEl.classList.add('opacity-100');
+
+            clearTimeout(statusEl._hideTimer);
+            statusEl._hideTimer = setTimeout(() => {
+                statusEl.classList.remove('opacity-100');
+                statusEl.classList.add('opacity-0');
+            }, 2000);
+        }
+
+        function renderAdminList() {
+            const games = getGames();
+            const listContainer = document.getElementById('admin-data-list');
+            document.getElementById('game-count').innerText = games.length;
+            listContainer.innerHTML = '';
+
+            games.forEach(game => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:shadow-md transition-shadow';
+                item.innerHTML = `
+                    <div class="flex items-center gap-4 overflow-hidden">
+                        <img src="${game.cover}" class="w-16 h-12 object-cover rounded shadow-sm border">
+                        <div class="truncate">
+                            <div class="font-bold text-slate-800 truncate">${game.title}</div>
+                            <div class="text-sm text-slate-500">${game.type || '未分类'} | ¥${game.price}</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 shrink-0 ml-4">
+                        <button type="button" onclick="editGame('${game.id}')" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"><i class="fas fa-edit mr-1"></i>编辑</button>
+                        <button type="button" onclick="deleteGame('${game.id}')" class="text-rose-600 hover:text-rose-800 bg-rose-50 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        document.getElementById('admin-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            savingData = true;
+            const games = getGames();
+            const formId = document.getElementById('form-id').value;
+            
+            const screenshotsArray = Array.from(document.querySelectorAll('[name="screenshot"]')).map(input => input.value.trim()).filter(Boolean);
+
+            const gameData = {
+                id: formId || Date.now().toString(),
+                title: document.getElementById('form-title').value,
+                team: document.getElementById('form-team').value,
+                type: document.getElementById('form-type').value, 
+                price: document.getElementById('form-price').value,
+                color: document.getElementById('form-color').value,
+                cover: document.getElementById('form-cover').value,
+                screenshots: screenshotsArray,
+                targetUrl: document.getElementById('form-url').value,
+                date: new Date().toISOString().split('T')[0],
+                desc: document.getElementById('form-desc').value,
+                zhihuAuthor: document.getElementById('form-zhihu-author').value || '知乎答主',
+                zhihuAvatar: document.getElementById('form-zhihu-avatar').value || 'https://placehold.co/100x100/3b82f6/ffffff?text=User', 
+                zhihuContent: document.getElementById('form-zhihu-content').innerHTML || '暂无内容。',
+                zhihuUrl: document.getElementById('form-zhihu-url').value || ''
+            };
+
+            if (formId) {
+                const index = games.findIndex(g => g.id === formId);
+                if(index > -1) games[index] = {...games[index], ...gameData};
+            } else {
+                games.unshift(gameData);
+            }
+
+            saveGames(games);
+            showSaveStatus('发布成功！数据已更新。');
+            resetForm();
+            requestAnimationFrame(() => {
+                renderAdminList();
+                renderClientList();
+                savingData = false;
+            });
+        });
+
+        async function mockZhihuScrape() {
+            const url = document.getElementById('form-zhihu-url').value.trim();
+            if(!url) { showSaveStatus('请输入知乎回答链接'); return; }
+            if(!url.includes('zhihu.com')) { showSaveStatus('只能抓取包含 zhihu.com 的链接'); return; }
+
+            const btn = event.target;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 抓取中';
+            btn.disabled = true;
+
+            const statusEl = document.getElementById('scrape-status');
+            statusEl.classList.add('hidden');
+
+            try {
+                const proxies = [
+                    (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+                    (u) => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+                    (u) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+                    (u) => `https://cors-anywhere.herokuapp.com/${u}`,
+                    (u) => `https://thingproxy.freeboard.io/fetch/${u}`,
+                ];
+                
+                let html = null;
+                for (const proxyFn of proxies) {
+                    try {
+                        const resp = await fetch(proxyFn(url), { signal: AbortSignal.timeout(10000) });
+                        if (resp.ok) { html = await resp.text(); break; }
+                    } catch(e) { continue; }
+                }
+
+                if (!html) throw new Error('所有代理均无法获取内容');
+
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                let author = '知乎答主';
+                let avatar = 'https://placehold.co/100x100/3b82f6/ffffff?text=User';
+                let content = '';
+
+                const dataScript = doc.getElementById('js-initialData');
+                if (dataScript) {
+                    try {
+                        const json = JSON.parse(dataScript.textContent);
+                        const state = json.initialState || {};
+                        const answers = state.entities?.answers || {};
+                        const answerIds = Object.keys(answers);
+                        
+                        if (answerIds.length > 0) {
+                            const urlMatch = url.match(/answer\/(\d+)/);
+                            let ansId = urlMatch ? urlMatch[1] : answerIds[0];
+                            if (!answers[ansId] && answerIds.length > 0) ansId = answerIds[0];
+                            
+                            const ans = answers[ansId];
+                            if (ans) {
+                                content = ans.content || '';
+                                const users = state.entities?.users || {};
+                                let authorId = '';
+                                if (typeof ans.author === 'object' && ans.author) {
+                                    author = ans.author.name || ans.author.headline || '';
+                                    avatar = ans.author.avatarUrl || ans.author.avatar_url || '';
+                                    if (ans.author.id) authorId = ans.author.id;
+                                } else if (typeof ans.author === 'string') {
+                                    authorId = ans.author;
+                                }
+                                if (authorId && users[authorId]) {
+                                    const u = users[authorId];
+                                    if (!author) author = u.name || u.headline || '';
+                                    if (!avatar || avatar === 'https://placehold.co/100x100/3b82f6/ffffff?text=User')
+                                        avatar = u.avatarUrl || u.avatar_url || avatar;
+                                }
+                            }
+                        }
+                    } catch(e) { console.warn('js-initialData 解析失败:', e); }
+                }
+
+                if (!content) {
+                    const contentEl = doc.querySelector('.RichContent-inner') || doc.querySelector('.RichText');
+                    if (contentEl) {
+                        contentEl.querySelectorAll('img').forEach(img => {
+                            let src = img.getAttribute('data-src') || img.getAttribute('data-original') || img.src || '';
+                            if (src && src.startsWith('//')) src = 'https:' + src;
+                            if (src) img.src = src;
+                        });
+                        contentEl.querySelectorAll('.ContentItem-time, .ContentItem-actions, .copyright, script, style, noscript').forEach(el => el.remove());
+                        content = contentEl.innerHTML.trim();
+                    }
+                }
+                
+                if (!author || author === '知乎答主') {
+                    const aEl = doc.querySelector('[itemprop="name"]') || doc.querySelector('.AuthorInfo-name');
+                    if (aEl) author = aEl.textContent.trim();
+                }
+                if (!avatar || avatar === 'https://placehold.co/100x100/3b82f6/ffffff?text=User') {
+                    const avEl = doc.querySelector('.AuthorInfo-avatar img') || doc.querySelector('[itemprop="image"]');
+                    if (avEl) {
+                        avatar = avEl.getAttribute('data-src') || avEl.src || '';
+                        if (avatar.startsWith('//')) avatar = 'https:' + avatar;
+                    }
+                }
+
+                if (!content) content = '<p>未能提取正文，请确认链接是有效的知乎回答页面。</p>';
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = content;
+                tempDiv.querySelectorAll('img').forEach(img => {
+                    if (img.src.startsWith('//')) img.src = 'https:' + img.src;
+                });
+                content = tempDiv.innerHTML;
+
+                document.getElementById('form-zhihu-author').value = author;
+                document.getElementById('form-zhihu-content').innerHTML = content;
+                document.getElementById('form-zhihu-avatar').value = avatar;
+                statusEl.classList.remove('hidden');
+                statusEl.className = 'text-sm font-medium mt-2 text-emerald-600';
+                statusEl.innerHTML = '<i class="fas fa-check-circle mr-1"></i>抓取成功！已自动填入下方字段。';
+                btn.innerHTML = '<i class="fas fa-check mr-1"></i> 抓取成功';
+                setTimeout(() => { btn.innerHTML = originalHTML; btn.disabled = false; }, 1500);
+            } catch (error) {
+                console.error('知乎抓取失败:', error);
+                statusEl.classList.remove('hidden');
+                statusEl.className = 'text-sm font-medium mt-2 text-amber-600';
+                statusEl.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i>自动抓取失败，请在下方手动粘贴内容。';
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+
+        window.editGame = function(id) {
+            const game = getGames().find(g => g.id === id);
+            if(!game) return;
+
+            document.getElementById('form-id').value = game.id;
+            document.getElementById('form-title').value = game.title;
+            document.getElementById('form-team').value = game.team;
+            document.getElementById('form-type').value = game.type || ''; 
+            document.getElementById('form-price').value = game.price;
+            document.getElementById('form-color').value = game.color || '#6366f1';
+            document.getElementById('form-cover').value = game.cover;
+            
+            const previewContainer = document.getElementById('cover-preview-container');
+            const previewImg = document.getElementById('cover-preview');
+            if (game.cover) {
+                previewContainer.classList.remove('hidden');
+                previewImg.src = game.cover;
+            } else {
+                previewContainer.classList.add('hidden');
+            }
+            
+            const screenshotFields = document.getElementById('screenshot-fields');
+            screenshotFields.innerHTML = '';
+            (Array.isArray(game.screenshots) && game.screenshots.length ? game.screenshots : ['']).forEach(url => addScreenshotField(url));
+            document.getElementById('form-url').value = game.targetUrl || '';
+            document.getElementById('form-desc').value = game.desc || '';
+            
+            document.getElementById('form-zhihu-author').value = game.zhihuAuthor || '';
+            document.getElementById('form-zhihu-avatar').value = game.zhihuAvatar || '';
+            document.getElementById('form-zhihu-content').innerHTML = game.zhihuContent || '';
+            document.getElementById('form-zhihu-url').value = game.zhihuUrl || '';
+            document.getElementById('scrape-status').classList.add('hidden');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.deleteGame = function(id) {
+            let games = getGames();
+            games = games.filter(g => g.id !== id);
+            saveGames(games);
+            showSaveStatus('游戏已删除');
+            renderAdminList();
+            renderClientList();
+        };
+
+        function resetForm() {
+            // 逐字段手动重置，避免 form.reset() 触发 oninput 事件链
+            const fields = document.getElementById('admin-form').querySelectorAll('input, textarea');
+            fields.forEach(f => {
+                if (f.type === 'hidden') return;
+                if (f.type === 'color') { f.value = '#6366f1'; return; }
+                if (f.type === 'submit' || f.type === 'button') return;
+                f.value = '';
+            });
+            document.getElementById('form-id').value = '';
+            document.getElementById('screenshot-fields').innerHTML = '';
+            addScreenshotField();
+            document.getElementById('form-zhihu-author').value = '';
+            document.getElementById('form-zhihu-content').value = '';
+            document.getElementById('scrape-status').classList.add('hidden');
+            
+            const previewContainer = document.getElementById('cover-preview-container');
+            previewContainer.classList.add('hidden');
+            if (extractTimeout) clearTimeout(extractTimeout);
+        }
+
+        let secretClickCount = 0;
+        let secretClickTimer = null;
+        let extractTimeout = null;
+        let savingData = false;
+
+        function rgbToHex(r, g, b) {
+            const toHex = (n) => {
+                const hex = Math.round(n).toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            };
+            return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+        }
+
+        function extractDominantColor(img) {
+            return new Promise((resolve, reject) => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    const scale = Math.min(100 / img.width, 100 / img.height, 1);
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const pixels = imageData.data;
+                    
+                    let r = 0, g = 0, b = 0, count = 0;
+                    
+                    for (let i = 0; i < pixels.length; i += 4) {
+                        if (pixels[i + 3] > 128) {
+                            r += pixels[i];
+                            g += pixels[i + 1];
+                            b += pixels[i + 2];
+                            count++;
+                        }
+                    }
+                    
+                    if (count === 0) {
+                        resolve('#6366f1');
+                        return;
+                    }
+                    
+                    r /= count;
+                    g /= count;
+                    b /= count;
+                    
+                    resolve(rgbToHex(r, g, b));
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        let isExtracting = false;
+        function extractColorFromCover() {
+            const coverUrl = document.getElementById('form-cover').value;
+            if (!coverUrl) return;
+            
+            const btn = document.getElementById('extract-color-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>提取中';
+            isExtracting = true;
+            
+            try {
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                
+                img.onload = async () => {
+                    try {
+                        const color = await extractDominantColor(img);
+                        document.getElementById('form-color').value = color;
+                    } catch (error) {
+                        console.error('提取颜色失败:', error);
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-eye-dropper mr-1"></i>自动取色';
+                        isExtracting = false;
+                    }
+                };
+                
+                img.onerror = () => {
+                    console.error('图片加载失败');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-eye-dropper mr-1"></i>自动取色';
+                    isExtracting = false;
+                };
+                
+                img.src = coverUrl;
+            } catch (error) {
+                console.error('提取颜色出错:', error);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-eye-dropper mr-1"></i>自动取色';
+                isExtracting = false;
+            }
+        }
+
+        function handleCoverInput() {
+            if (savingData) return;
+            if (extractTimeout) clearTimeout(extractTimeout);
+            
+            const coverUrl = document.getElementById('form-cover').value;
+            const previewContainer = document.getElementById('cover-preview-container');
+            const previewImg = document.getElementById('cover-preview');
+            
+            if (coverUrl) {
+                previewContainer.classList.remove('hidden');
+                previewImg.src = coverUrl;
+            } else {
+                previewContainer.classList.add('hidden');
+            }
+            
+            const formId = document.getElementById('form-id').value;
+            extractTimeout = setTimeout(() => {
+                if (coverUrl && !formId) {
+                    extractColorFromCover();
+                }
+            }, 800);
+        }
+
+        function handleCoverLoad() {
+            const formId = document.getElementById('form-id').value;
+            const currentColor = document.getElementById('form-color').value;
+            
+            if (!formId && currentColor === '#6366f1') {
+                extractColorFromCover();
+            }
+        }
+
+        function handleCoverError() {
+            console.error('封面图片加载失败');
+        }
+
+        function handleSecretTrigger() {
+            secretClickCount++;
+            if (secretClickCount >= 5) {
+                toggleMode();
+                secretClickCount = 0; 
+            }
+            clearTimeout(secretClickTimer);
+            secretClickTimer = setTimeout(() => {
+                secretClickCount = 0;
+            }, 1000);
+        }
+
+        document.getElementById('secret-trigger-pc').addEventListener('click', handleSecretTrigger);
+        document.getElementById('secret-trigger-mobile').addEventListener('click', handleSecretTrigger);
+
+        function toggleMode() {
+            body.classList.toggle('admin-active');
+            if (body.classList.contains('admin-active')) {
+                closeDetail();
+                renderAdminList();
+            } else {
+                renderClientList(); 
+                window.scrollTo(0,0);
+            }
+        }
+
+        renderClientList();
+
+        // 支持在 contenteditable 中粘贴图片
+        document.getElementById('form-zhihu-content').addEventListener('paste', function(e) {
+            const items = e.clipboardData?.items;
+            if (!items) return;
+            for (const item of items) {
+                if (item.type.startsWith('image/')) {
+                    e.preventDefault();
+                    const blob = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        const img = document.createElement('img');
+                        img.src = ev.target.result;
+                        img.style.maxWidth = '100%';
+                        img.style.borderRadius = '8px';
+                        img.style.margin = '8px 0';
+                        document.getElementById('form-zhihu-content').appendChild(img);
+                    };
+                    reader.readAsDataURL(blob);
+                    break;
+                }
+            }
+        });
+    </script>
 </body>
 </html>
