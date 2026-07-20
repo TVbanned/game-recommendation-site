@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>颜色提取测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="p-8 max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">图片主色调提取功能测试</h1>
+    
+    <div class="mb-8">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">测试图片 URL</label>
+        <div class="flex gap-2 mb-4">
+            <input type="text" id="testImageUrl" placeholder="输入图片 URL" 
+                   class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-slate-50"
+                   value="https://picsum.photos/600/340?random=1">
+            <button onclick="testColorExtraction()" 
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow-md transition-colors">
+                <i class="fas fa-eye-dropper mr-1"></i>测试提取
+            </button>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+            <h2 class="text-xl font-semibold mb-4">图片预览</h2>
+            <div id="testImageContainer" class="bg-slate-100 rounded-xl overflow-hidden">
+                <img id="testImage" src="https://picsum.photos/600/340?random=1" 
+                     alt="测试图片" class="w-full">
+            </div>
+        </div>
+        
+        <div>
+            <h2 class="text-xl font-semibold mb-4">提取的颜色</h2>
+            <div id="extractedColor" class="h-32 rounded-xl mb-4 flex items-center justify-center" style="background-color: #6366f1;">
+                <span id="colorHex" class="text-white font-mono text-xl font-bold">#6366f1</span>
+            </div>
+            
+            <div class="bg-slate-50 p-4 rounded-xl">
+                <h3 class="font-semibold mb-2">功能说明：</h3>
+                <ul class="text-sm text-slate-600 space-y-1">
+                    <li>✅ 自动计算图片平均颜色</li>
+                    <li>✅ 跳过透明像素</li>
+                    <li>✅ 图片缩小处理提高速度</li>
+                    <li>✅ 支持手动取色覆盖</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-8">
+        <h2 class="text-xl font-semibold mb-4">快速测试图片</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button onclick="testWithUrl('https://picsum.photos/600/340?random=1')" 
+                    class="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition">随机图片 1</button>
+            <button onclick="testWithUrl('https://picsum.photos/600/340?random=2')" 
+                    class="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition">随机图片 2</button>
+            <button onclick="testWithUrl('https://picsum.photos/600/340?random=3')" 
+                    class="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition">随机图片 3</button>
+            <button onclick="testWithUrl('https://picsum.photos/600/340?random=4')" 
+                    class="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition">随机图片 4</button>
+        </div>
+    </div>
+
+    <script>
+        function rgbToHex(r, g, b) {
+            const toHex = (n) => {
+                const hex = Math.round(n).toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            };
+            return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+        }
+
+        function extractDominantColor(img) {
+            return new Promise((resolve, reject) => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    const scale = Math.min(100 / img.width, 100 / img.height, 1);
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const pixels = imageData.data;
+                    
+                    let r = 0, g = 0, b = 0, count = 0;
+                    
+                    for (let i = 0; i < pixels.length; i += 4) {
+                        if (pixels[i + 3] > 128) {
+                            r += pixels[i];
+                            g += pixels[i + 1];
+                            b += pixels[i + 2];
+                            count++;
+                        }
+                    }
+                    
+                    if (count === 0) {
+                        resolve('#6366f1');
+                        return;
+                    }
+                    
+                    r /= count;
+                    g /= count;
+                    b /= count;
+                    
+                    resolve(rgbToHex(r, g, b));
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        function testColorExtraction() {
+            const url = document.getElementById('testImageUrl').value;
+            if (!url) {
+                alert('请输入图片 URL');
+                return;
+            }
+            
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            
+            img.onload = async () => {
+                try {
+                    const color = await extractDominantColor(img);
+                    document.getElementById('extractedColor').style.backgroundColor = color;
+                    document.getElementById('colorHex').textContent = color;
+                    console.log('提取的颜色:', color);
+                } catch (error) {
+                    alert('提取颜色失败: ' + error.message);
+                }
+            };
+            
+            img.onerror = () => {
+                alert('图片加载失败');
+            };
+            
+            img.src = url;
+            document.getElementById('testImage').src = url;
+        }
+
+        function testWithUrl(url) {
+            document.getElementById('testImageUrl').value = url;
+            testColorExtraction();
+        }
+
+        document.getElementById('testImageUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                testColorExtraction();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -46,7 +46,16 @@
 
             <div>
               <label class="block text-sm font-semibold text-slate-700 mb-1">封面图片 URL</label>
-              <input v-model="form.cover" type="text" required placeholder="https://..." class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 bg-slate-50">
+              <div class="flex gap-2">
+                <input v-model="form.cover" type="text" @input="handleCoverInput" required placeholder="https://..." class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-slate-50">
+                <button type="button" @click="extractColorFromCover" :disabled="!form.cover || isExtracting" class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow-md transition-colors whitespace-nowrap">
+                  <span v-if="isExtracting"><i class="fas fa-spinner fa-spin mr-1"></i>提取中</span>
+                  <span v-else><i class="fas fa-eye-dropper mr-1"></i>自动取色</span>
+                </button>
+              </div>
+              <div v-if="form.cover" class="mt-2">
+                <img :src="form.cover" alt="封面预览" class="max-h-32 rounded shadow" @load="handleCoverLoad" @error="handleCoverError">
+              </div>
             </div>
 
             <div>
@@ -135,10 +144,13 @@ const defaultForm = () => ({
 
 const form = ref(defaultForm())
 const screenshotsInput = ref('')
+const isExtracting = ref(false)
+let extractTimeout = null
 
 const resetForm = () => {
   form.value = defaultForm()
   screenshotsInput.value = ''
+  if (extractTimeout) clearTimeout(extractTimeout)
 }
 
 const editGame = (game) => {
@@ -182,5 +194,113 @@ const handleSubmit = async () => {
 
 const onToggleMode = () => {
   emit('toggle-mode')
+}
+
+// 图片主色调提取功能
+const rgbToHex = (r, g, b) => {
+  const toHex = (n) => {
+    const hex = Math.round(n).toString(16)
+    return hex.length === 1 ? '0' + hex : hex
+  }
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+}
+
+const extractDominantColor = (img) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      
+      // 缩小图片以提高处理速度
+      const scale = Math.min(100 / img.width, 100 / img.height, 1)
+      canvas.width = img.width * scale
+      canvas.height = img.height * scale
+      
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+      
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+      const pixels = imageData.data
+      
+      let r = 0, g = 0, b = 0, count = 0
+      
+      // 计算平均颜色，跳过透明像素
+      for (let i = 0; i < pixels.length; i += 4) {
+        if (pixels[i + 3] > 128) { // 只统计不透明像素
+          r += pixels[i]
+          g += pixels[i + 1]
+          b += pixels[i + 2]
+          count++
+        }
+      }
+      
+      if (count === 0) {
+        resolve('#6366f1') // 默认颜色
+        return
+      }
+      
+      r /= count
+      g /= count
+      b /= count
+      
+      resolve(rgbToHex(r, g, b))
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+const extractColorFromCover = async () => {
+  if (!form.value.cover) return
+  
+  isExtracting.value = true
+  
+  try {
+    const img = new Image()
+    img.crossOrigin = 'Anonymous'
+    
+    img.onload = async () => {
+      try {
+        const color = await extractDominantColor(img)
+        form.value.color = color
+        isExtracting.value = false
+      } catch (error) {
+        console.error('提取颜色失败:', error)
+        isExtracting.value = false
+      }
+    }
+    
+    img.onerror = () => {
+      console.error('图片加载失败')
+      isExtracting.value = false
+    }
+    
+    img.src = form.value.cover
+  } catch (error) {
+    console.error('提取颜色出错:', error)
+    isExtracting.value = false
+  }
+}
+
+const handleCoverInput = () => {
+  // 输入时清除之前的超时
+  if (extractTimeout) clearTimeout(extractTimeout)
+  
+  // 延迟自动提取，避免频繁请求
+  extractTimeout = setTimeout(() => {
+    if (form.value.cover && !form.value.id) { // 只有新增时自动提取
+      extractColorFromCover()
+    }
+  }, 800)
+}
+
+const handleCoverLoad = () => {
+  // 图片加载完成后，仅在新增模式且未设置颜色时自动提取
+  if (!form.value.id && form.value.color === '#6366f1') {
+    extractColorFromCover()
+  }
+}
+
+const handleCoverError = () => {
+  console.error('封面图片加载失败')
 }
 </script>
