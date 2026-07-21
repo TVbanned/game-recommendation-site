@@ -335,9 +335,10 @@
                             </button>
                         </div>
                         <div id="mobile-banner-fields" class="space-y-2">
-                            <div class="flex gap-2">
-                                <input type="url" name="mobile-banner" placeholder="https://..." class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white">
-                                <button type="button" onclick="addMobileBannerField()" class="text-rose-500 text-3xl leading-none px-2" aria-label="添加 Banner 图片">+</button>
+                            <div class="flex gap-2 items-center">
+                                <input type="url" name="mobile-banner-url" placeholder="图片 URL" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white">
+                                <input type="url" name="mobile-banner-link" placeholder="跳转链接（可选）" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white">
+                                <button type="button" onclick="addMobileBannerField()" class="text-rose-500 text-3xl leading-none px-2 shrink-0" aria-label="添加 Banner">+</button>
                             </div>
                         </div>
                     </section>
@@ -797,21 +798,25 @@
                 .maybeSingle();
 
             if (error) throw error;
-            appState.mobileBannerUrls = Array.isArray(data?.value) ? data.value.filter(Boolean) : [];
+            const raw = Array.isArray(data?.value) ? data.value : [];
+            // 兼容旧格式：纯字符串数组转为 {url,link} 对象
+            appState.mobileBannerUrls = raw.map(item =>
+                typeof item === 'string' ? { url: item, link: '' } : item
+            ).filter(item => item.url);
             return appState.mobileBannerUrls;
         }
 
-        async function persistMobileBannerSettings(urls) {
-            const sanitizedUrls = urls.filter(Boolean);
+        async function persistMobileBannerSettings(items) {
+            const sanitized = items.filter(item => item && item.url);
             const { error } = await supabaseClient
                 .from('site_settings')
                 .upsert([{
                     key: 'mobile_banner_urls',
-                    value: sanitizedUrls
+                    value: sanitized
                 }], { onConflict: 'key' });
 
             if (error) throw error;
-            appState.mobileBannerUrls = sanitizedUrls;
+            appState.mobileBannerUrls = sanitized;
         }
 
         async function loadWishlistSetting() {
@@ -869,8 +874,20 @@
             return row;
         }
 
+        function createBannerField(data = {}) {
+            const row = document.createElement('div');
+            row.className = 'flex gap-2 items-center';
+            row.innerHTML = `
+                <input type="url" name="mobile-banner-url" placeholder="图片 URL" value="${data.url || ''}" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white">
+                <input type="url" name="mobile-banner-link" placeholder="跳转链接（可选）" value="${data.link || ''}" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white">
+                <button type="button" onclick="addMobileBannerField()" class="text-rose-500 text-3xl leading-none px-2 shrink-0" aria-label="添加 Banner">+</button>
+            `;
+            return row;
+        }
+
         window.addMobileBannerField = function(value = '') {
-            document.getElementById('mobile-banner-fields').appendChild(createUrlField('mobile-banner', 'addMobileBannerField', value));
+            const data = typeof value === 'object' ? value : { url: value || '', link: '' };
+            document.getElementById('mobile-banner-fields').appendChild(createBannerField(data));
         };
 
         window.addScreenshotField = function(value = '') {
@@ -878,24 +895,33 @@
         };
 
         function getMobileBannerUrls() {
-            return Array.from(document.querySelectorAll('[name="mobile-banner"]')).map(input => input.value.trim()).filter(Boolean);
+            const urlInputs = document.querySelectorAll('[name="mobile-banner-url"]');
+            const linkInputs = document.querySelectorAll('[name="mobile-banner-link"]');
+            return Array.from(urlInputs).map((input, i) => ({
+                url: input.value.trim(),
+                link: (linkInputs[i]?.value || '').trim()
+            })).filter(item => item.url);
         }
 
-        function renderMobileBanner(urls) {
-            const bannerUrls = urls.length ? urls : ['https://placehold.co/800x400/e2e8f0/64748b?text=Summer+Game+Banner'];
+        function renderMobileBanner(items) {
+            const bannerItems = items.length ? items : [{ url: 'https://placehold.co/800x400/e2e8f0/64748b?text=Summer+Game+Banner', link: '' }];
             const track = document.getElementById('mobile-banner-track');
             const dots = document.getElementById('mobile-banner-dots');
             clearInterval(mobileBannerInterval);
             mobileBannerIndex = 0;
-            track.innerHTML = bannerUrls.concat(bannerUrls.length > 1 ? bannerUrls[0] : []).map((url, index) => `<div class="carousel-slide"><img src="${url}" loading="lazy" class="w-full h-full object-cover" alt="Banner ${index + 1}"></div>`).join('');
-            dots.innerHTML = bannerUrls.map((_, index) => `<div class="w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white w-6' : 'bg-white/40'}"></div>`).join('');
-            if (bannerUrls.length > 1) {
+            const slides = bannerItems.concat(bannerItems.length > 1 ? bannerItems[0] : []);
+            track.innerHTML = slides.map((item, index) => {
+                const img = `<img src="${item.url}" loading="lazy" class="w-full h-full object-cover" alt="Banner ${index + 1}">`;
+                return `<div class="carousel-slide">${item.link ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer">${img}</a>` : img}</div>`;
+            }).join('');
+            dots.innerHTML = bannerItems.map((_, index) => `<div class="w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white w-6' : 'bg-white/40'}"></div>`).join('');
+            if (bannerItems.length > 1) {
                 mobileBannerInterval = setInterval(() => {
                     mobileBannerIndex++;
                     track.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                     track.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
-                    Array.from(dots.children).forEach((dot, index) => dot.className = `rounded-full transition-all duration-300 ${index === mobileBannerIndex % bannerUrls.length ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`);
-                    if (mobileBannerIndex === bannerUrls.length) {
+                    Array.from(dots.children).forEach((dot, index) => dot.className = `rounded-full transition-all duration-300 ${index === mobileBannerIndex % bannerItems.length ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`);
+                    if (mobileBannerIndex === bannerItems.length) {
                         setTimeout(() => {
                             mobileBannerIndex = 0;
                             track.style.transition = 'none';
@@ -964,10 +990,11 @@
             document.getElementById('game-editor-title').textContent = isEditing ? (title || '未命名游戏') : '新增游戏';
         }
 
-        function renderMobileBannerFields(urls) {
+        function renderMobileBannerFields(items) {
             const mobileBannerFields = document.getElementById('mobile-banner-fields');
             mobileBannerFields.innerHTML = '';
-            (urls.length ? urls : ['']).forEach(url => addMobileBannerField(url));
+            const entries = items.length ? items : [{ url: '', link: '' }];
+            entries.forEach(item => addMobileBannerField(item));
         }
 
         async function saveMobileBanners(showMessage = false) {
@@ -993,7 +1020,7 @@
                 card.onclick = () => openDetail(game.id);
 
                 card.innerHTML = `
-                    <div class="relative pt-[56.25%] w-full bg-slate-100 overflow-hidden">
+                    <div class="relative pt-[50%] w-full bg-slate-100 overflow-hidden">
                         <img src="${game.cover}" loading="lazy" alt="${game.title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                     </div>
                     <div class="flex justify-between items-center px-4 py-2 text-white text-xs font-semibold tracking-wider" style="background-color: ${game.color};">
@@ -1220,7 +1247,7 @@
                     </div>
                 </div>
 
-                <div class="p-6 md:p-8">
+                <div class="p-4 md:p-8">
                     <div class="flex flex-wrap items-start justify-between gap-4 mb-5">
                         <h2 class="text-3xl font-black text-slate-800 leading-tight" style="flex: 1 1 auto; min-width: 200px;">${game.title}</h2>
                         <div class="flex flex-wrap items-center gap-3 shrink-0">
@@ -1246,7 +1273,7 @@
                             <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-2 md:mb-3 flex items-center gap-3">
                                 <span class="w-2 h-6 bg-indigo-500 rounded-full inline-block"></span> 游戏介绍
                             </h3>
-                            <p class="text-slate-600 text-sm md:text-base leading-relaxed md:leading-loose text-justify font-normal line-clamp-5 min-h-[114px] md:min-h-[160px]">
+                            <p class="text-slate-600 text-sm md:text-base leading-relaxed md:leading-loose text-justify font-normal line-clamp-5 md:min-h-[160px]">
                                 ${game.desc}
                             </p>
                         </div>
@@ -1255,8 +1282,8 @@
                     <div class="mb-0">
                         <div class="zhihu-box">
                             <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-5 pb-4 border-b border-slate-200">
-                                <div class="rounded-lg w-7 h-7 md:w-9 md:h-9 flex items-center justify-center mr-0.5 md:mr-1 shrink-0" style="background:#0767FB; color:#fff;">
-                                    <i class="fab fa-zhihu text-sm md:text-lg"></i>
+                                <div class="hidden md:flex rounded-lg w-9 h-9 items-center justify-center mr-1 shrink-0" style="background:#0767FB; color:#fff;">
+                                    <i class="fab fa-zhihu text-lg"></i>
                                 </div>
                                 ${hasDeveloperContent ? `<button id="experience-tab-developer" type="button" onclick="switchExperienceTab('developer')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors ${defaultExperienceTab === 'developer' ? 'bg-[#6B42E8] text-white' : 'bg-white text-slate-500 hover:bg-slate-100'}">游戏开发者说</button>` : ''}
                                 <button id="experience-tab-player" type="button" onclick="switchExperienceTab('player')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors ${defaultExperienceTab === 'player' ? 'bg-[#6B42E8] text-white' : 'bg-white text-slate-500 hover:bg-slate-100'}">答主游戏评价</button>
@@ -1449,7 +1476,7 @@
         function updateZhihuHighlight() {
             if (!detailPanel.classList.contains('active')) return;
             const panelRect = detailPanel.getBoundingClientRect();
-            const panelCenterY = panelRect.top + panelRect.height / 2;
+            const panelCenterY = panelRect.top + panelRect.height / 3;
             const boxes = detailPanel.querySelectorAll('.zhihu-box');
             boxes.forEach(box => {
                 const boxRect = box.getBoundingClientRect();
