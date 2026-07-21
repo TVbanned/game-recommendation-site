@@ -30,14 +30,14 @@
         }
 
         .game-waterfall {
-            column-count: 2;
-            column-gap: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
             padding: 16px 0;
         }
         
         .game-card {
-            break-inside: avoid;
-            margin-bottom: 16px;
+            margin-bottom: 0;
             background: #ffffff;
             border-radius: 20px;
             overflow: hidden;
@@ -93,6 +93,16 @@
             box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
             position: relative;
             overflow: hidden;
+        }
+
+        @media (max-width: 767px) {
+            .zhihu-box {
+                padding: 20px 16px 20px 24px;
+            }
+            .zhihu-box::before {
+                top: 20px;
+                bottom: 20px;
+            }
         }
 
         .zhihu-box::before {
@@ -1281,8 +1291,8 @@
             if (developerPanel) developerPanel.classList.toggle('hidden', !isDeveloper);
             if (playerPanel) playerPanel.classList.toggle('hidden', !isPlayer);
             if (discussionPanel) discussionPanel.classList.toggle('hidden', tab !== 'discussion');
-            const activeClass = 'rounded-lg px-3 py-2 text-base font-bold transition-colors bg-[#6B42E8] text-white';
-            const inactiveClass = 'rounded-lg px-3 py-2 text-base font-bold transition-colors bg-white text-slate-500 hover:bg-slate-100';
+            const activeClass = 'rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors bg-[#6B42E8] text-white';
+            const inactiveClass = 'rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors bg-white text-slate-500 hover:bg-slate-100';
             if (developerTab) developerTab.className = isDeveloper ? activeClass : inactiveClass;
             if (playerTab) playerTab.className = isPlayer ? activeClass : inactiveClass;
             if (discussionTab) discussionTab.className = tab === 'discussion' ? activeClass : inactiveClass;
