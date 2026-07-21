@@ -276,7 +276,7 @@
                     <span id="desktop-subtitle" class="text-2xl text-gray-500 font-light tracking-wide border-l-2 border-gray-300 pl-4">东方侠影游戏安利时间</span>
                 </div>
 
-                <div class="md:hidden mb-6">
+                <div class="md:hidden mb-0">
                     <div id="secret-trigger-mobile" class="select-none cursor-pointer mb-4">
                          <h1 class="text-3xl font-black tracking-tight text-gray-900 title-gradient mb-1">暑期「游戏浪一夏」</h1>
                          <p class="text-md text-gray-500 font-light tracking-wide">东方侠影游戏安利时间</p>
@@ -306,7 +306,7 @@
 
 
     <div id="admin-view" class="min-h-screen bg-slate-100 py-8 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+        <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-200">
             <div class="bg-slate-900 px-8 py-5 flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-white tracking-wide">内容配置后台 (CMS)</h2>
                 <div class="flex items-center gap-4">
@@ -370,7 +370,7 @@
                                 <i class="fas fa-plus mr-1"></i>新增游戏
                             </button>
                         </div>
-                        <div id="admin-data-list" class="space-y-4 max-h-[700px] overflow-y-auto pr-2"></div>
+                        <div id="admin-data-list" class="space-y-4 pr-2"></div>
                     </section>
                 </div>
 
@@ -867,6 +867,31 @@
         let mobileBannerInterval;
         let mobileBannerIndex = 0;
 
+        function startMobileBannerAutoSlide() {
+            const track = document.getElementById('mobile-banner-track');
+            const dotsEl = document.getElementById('mobile-banner-dots');
+            if (!track || !dotsEl) return;
+            const realCount = dotsEl.children.length;
+            if (realCount <= 1) return;
+            clearInterval(mobileBannerInterval);
+            mobileBannerInterval = setInterval(() => {
+                mobileBannerIndex++;
+                const realIndex = mobileBannerIndex % realCount;
+                track.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                track.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
+                Array.from(dotsEl.children).forEach((dot, i) => {
+                    dot.className = `rounded-full transition-all duration-300 ${i === realIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
+                });
+                if (mobileBannerIndex >= realCount) {
+                    setTimeout(() => {
+                        mobileBannerIndex = 0;
+                        track.style.transition = 'none';
+                        track.style.transform = 'translateX(0)';
+                    }, 350);
+                }
+            }, 3000);
+        }
+
         function createUrlField(name, addAction, value = '') {
             const row = document.createElement('div');
             row.className = 'flex gap-2';
@@ -919,19 +944,7 @@
             }).join('');
             dots.innerHTML = bannerItems.map((_, index) => `<div class="w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white w-6' : 'bg-white/40'}"></div>`).join('');
             if (bannerItems.length > 1) {
-                mobileBannerInterval = setInterval(() => {
-                    mobileBannerIndex++;
-                    track.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    track.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
-                    Array.from(dots.children).forEach((dot, index) => dot.className = `rounded-full transition-all duration-300 ${index === mobileBannerIndex % bannerItems.length ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`);
-                    if (mobileBannerIndex === bannerItems.length) {
-                        setTimeout(() => {
-                            mobileBannerIndex = 0;
-                            track.style.transition = 'none';
-                            track.style.transform = 'translateX(0)';
-                        }, 350);
-                    }
-                }, 3000);
+                startMobileBannerAutoSlide();
             }
             initMobileBannerSwipe();
         }
@@ -944,11 +957,21 @@
             mobileBannerSwipeReady = true;
             let isSwiping = false, swipeStartX = 0, swipeStartY = 0, swipeCurrentX = 0;
             let swipeDirection = null;
+            let didSwipe = false;
 
             const getTrack = () => document.getElementById('mobile-banner-track');
 
+            bannerContainer.addEventListener('click', (e) => {
+                if (didSwipe) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    didSwipe = false;
+                }
+            }, true);
+
             const onStart = (e) => {
                 isSwiping = true;
+                didSwipe = false;
                 swipeDirection = null;
                 swipeStartX = (e.touches ? e.touches[0].clientX : e.clientX);
                 swipeStartY = (e.touches ? e.touches[0].clientY : e.clientY);
@@ -984,6 +1007,7 @@
                 const t = getTrack();
                 if (t) t.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                 if (Math.abs(diff) > 50) {
+                    didSwipe = true;
                     if (diff < 0) mobileBannerIndex++;
                     else mobileBannerIndex--;
                 }
@@ -994,18 +1018,7 @@
                 Array.from(document.getElementById('mobile-banner-dots').children).forEach((dot, i) => {
                     dot.className = `rounded-full transition-all duration-300 ${i === mobileBannerIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
                 });
-                if (bannerCount > 1) {
-                    mobileBannerInterval = setInterval(() => {
-                        mobileBannerIndex++;
-                        if (mobileBannerIndex >= bannerCount) mobileBannerIndex = 0;
-                        const tr = getTrack();
-                        if (tr) tr.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                        if (tr) tr.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
-                        Array.from(document.getElementById('mobile-banner-dots').children).forEach((dot, i) => {
-                            dot.className = `rounded-full transition-all duration-300 ${i === mobileBannerIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
-                        });
-                    }, 3000);
-                }
+                startMobileBannerAutoSlide();
             };
 
             bannerContainer.addEventListener('touchstart', onStart, {passive: true});
@@ -1107,13 +1120,13 @@
                     <div class="relative pt-[50%] w-full bg-slate-100 overflow-hidden">
                         <img src="${game.cover}" loading="lazy" alt="${game.title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                     </div>
-                    <div class="flex justify-between items-center px-4 py-2 text-white text-xs font-semibold tracking-wider" style="background-color: ${game.color};">
+                    <div class="flex justify-between items-center px-3 md:px-4 py-2 text-white text-xs font-semibold tracking-wider" style="background-color: ${game.color};">
                         <span>${formatPriceDisplay(game.price, game.released)}</span>
                         <i class="fab fa-steam opacity-90 group-hover:scale-110 transition-transform"></i>
                     </div>
-                    <div class="p-5">
-                        <h3 class="font-bold text-slate-800 text-lg leading-tight mb-2 truncate group-hover:text-indigo-600 transition-colors">${game.title}</h3>
-                        <p class="text-sm text-slate-500 truncate">${game.team}</p>
+                    <div class="p-3 md:p-5">
+                        <h3 class="font-bold text-slate-800 text-sm md:text-lg leading-tight mb-1 md:mb-2 truncate group-hover:text-indigo-600 transition-colors">${game.title}</h3>
+                        <p class="text-xs md:text-sm text-slate-500 truncate">${game.team}</p>
                     </div>
                 `;
                 container.appendChild(card);
