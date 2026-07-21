@@ -218,6 +218,9 @@
             position: relative;
             touch-action: pan-y; 
         }
+        #mobile-banner.carousel-container {
+            touch-action: manipulation;
+        }
         .carousel-track {
             display: flex;
             height: 100%;
@@ -912,7 +915,7 @@
             const slides = bannerItems.concat(bannerItems.length > 1 ? bannerItems[0] : []);
             track.innerHTML = slides.map((item, index) => {
                 const img = `<img src="${item.url}" loading="lazy" class="w-full h-full object-cover" alt="Banner ${index + 1}">`;
-                return `<div class="carousel-slide">${item.link ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer">${img}</a>` : img}</div>`;
+                return `<div class="carousel-slide">${item.link ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="block w-full h-full">${img}</a>` : img}</div>`;
             }).join('');
             dots.innerHTML = bannerItems.map((_, index) => `<div class="w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white w-6' : 'bg-white/40'}"></div>`).join('');
             if (bannerItems.length > 1) {
@@ -930,6 +933,87 @@
                     }
                 }, 3000);
             }
+            initMobileBannerSwipe();
+        }
+
+        let mobileBannerSwipeReady = false;
+        function initMobileBannerSwipe() {
+            if (mobileBannerSwipeReady) return;
+            const bannerContainer = document.getElementById('mobile-banner');
+            if (!bannerContainer) return;
+            mobileBannerSwipeReady = true;
+            let isSwiping = false, swipeStartX = 0, swipeStartY = 0, swipeCurrentX = 0;
+            let swipeDirection = null;
+
+            const getTrack = () => document.getElementById('mobile-banner-track');
+
+            const onStart = (e) => {
+                isSwiping = true;
+                swipeDirection = null;
+                swipeStartX = (e.touches ? e.touches[0].clientX : e.clientX);
+                swipeStartY = (e.touches ? e.touches[0].clientY : e.clientY);
+                swipeCurrentX = swipeStartX;
+                const t = getTrack();
+                if (t) t.style.transition = 'none';
+                clearInterval(mobileBannerInterval);
+            };
+            const onMove = (e) => {
+                if (!isSwiping) return;
+                const currentX = (e.touches ? e.touches[0].clientX : e.clientX);
+                const currentY = (e.touches ? e.touches[0].clientY : e.clientY);
+                const diffX = Math.abs(currentX - swipeStartX);
+                const diffY = Math.abs(currentY - swipeStartY);
+                if (swipeDirection === null && (diffX > 5 || diffY > 5)) {
+                    swipeDirection = diffX > diffY ? 'horizontal' : 'vertical';
+                }
+                if (swipeDirection === 'vertical') return;
+                if (swipeDirection === 'horizontal') {
+                    e.preventDefault();
+                }
+                swipeCurrentX = currentX;
+                const diff = swipeCurrentX - swipeStartX;
+                const containerWidth = bannerContainer.offsetWidth;
+                const baseTranslate = -mobileBannerIndex * containerWidth;
+                const t = getTrack();
+                if (t) t.style.transform = `translateX(${baseTranslate + diff}px)`;
+            };
+            const onEnd = () => {
+                if (!isSwiping) return;
+                isSwiping = false;
+                const diff = swipeCurrentX - swipeStartX;
+                const t = getTrack();
+                if (t) t.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                if (Math.abs(diff) > 50) {
+                    if (diff < 0) mobileBannerIndex++;
+                    else mobileBannerIndex--;
+                }
+                const bannerCount = document.querySelectorAll('#mobile-banner-dots > div').length || 1;
+                if (mobileBannerIndex < 0) mobileBannerIndex = bannerCount - 1;
+                if (mobileBannerIndex >= bannerCount) mobileBannerIndex = 0;
+                if (t) t.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
+                Array.from(document.getElementById('mobile-banner-dots').children).forEach((dot, i) => {
+                    dot.className = `rounded-full transition-all duration-300 ${i === mobileBannerIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
+                });
+                if (bannerCount > 1) {
+                    mobileBannerInterval = setInterval(() => {
+                        mobileBannerIndex++;
+                        if (mobileBannerIndex >= bannerCount) mobileBannerIndex = 0;
+                        const tr = getTrack();
+                        if (tr) tr.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                        if (tr) tr.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
+                        Array.from(document.getElementById('mobile-banner-dots').children).forEach((dot, i) => {
+                            dot.className = `rounded-full transition-all duration-300 ${i === mobileBannerIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
+                        });
+                    }, 3000);
+                }
+            };
+
+            bannerContainer.addEventListener('touchstart', onStart, {passive: true});
+            bannerContainer.addEventListener('touchmove', onMove, {passive: false});
+            bannerContainer.addEventListener('touchend', onEnd);
+            bannerContainer.addEventListener('mousedown', onStart);
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', onEnd);
         }
 
         let currentAdminTab = 'global';
@@ -1262,7 +1346,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col md:flex-row gap-5 md:gap-6 mb-5">
+                    <div class="flex flex-col md:flex-row gap-5 md:gap-6 mb-3 md:mb-5">
                         <div class="grid grid-cols-2 md:flex md:flex-col gap-y-3 md:gap-y-4 gap-x-3 shrink-0 md:w-1/3">
                             <div class="info-tag overflow-hidden"><i class="fas fa-gamepad shrink-0"></i> <span class="truncate">${game.type || '未设置'}</span></div>
                             <div class="info-tag overflow-hidden"><i class="far fa-calendar-alt shrink-0"></i> <span class="truncate">${game.date || '待定'}</span></div>
