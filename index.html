@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>暑期「游戏浪一夏」- 全栈原型演示</title>
+    <link rel="preconnect" href="https://ihbegkpvqrtycsfmklag.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -37,14 +39,14 @@
         }
         
         .game-card {
+            display: flex;
+            flex-direction: column;
             margin-bottom: 0;
-            background: #ffffff;
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            border: 1px solid #f1f5f9;
         }
         .game-card:hover { 
             transform: translateY(-6px) scale(1.01); 
@@ -939,7 +941,7 @@
             mobileBannerIndex = 0;
             const slides = bannerItems.concat(bannerItems.length > 1 ? bannerItems[0] : []);
             track.innerHTML = slides.map((item, index) => {
-                const img = `<img src="${item.url}" loading="lazy" class="w-full h-full object-cover" alt="Banner ${index + 1}">`;
+                const img = `<img src="${item.url}" loading="lazy" decoding="async" class="w-full h-full object-cover" alt="Banner ${index + 1}">`;
                 return `<div class="carousel-slide">${item.link ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="block w-full h-full">${img}</a>` : img}</div>`;
             }).join('');
             dots.innerHTML = bannerItems.map((_, index) => `<div class="w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white w-6' : 'bg-white/40'}"></div>`).join('');
@@ -1118,7 +1120,7 @@
 
                 card.innerHTML = `
                     <div class="relative pt-[50%] w-full overflow-hidden">
-                        <img src="${game.cover}" loading="lazy" alt="${game.title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <img src="${game.cover}" loading="lazy" decoding="async" width="460" height="215" alt="${game.title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 block">
                     </div>
                     <div class="flex justify-between items-center px-3 md:px-4 py-2 text-white text-xs font-semibold tracking-wider" style="background-color: ${game.color};">
                         <span>${formatPriceDisplay(game.price, game.released)}</span>
