@@ -69,7 +69,7 @@ Deno.serve(async (req) => {
       cover: game.header_image || "",
       released: game.release_date?.coming_soon !== true,
       releaseDate: game.release_date?.date || "",
-      screenshots: (game.screenshots || []).slice(0, 4).map((s: { path_full: string }) => s.path_full),
+      screenshots: (game.screenshots || []).slice(0, 4).map((s: { path_full: string }) => s.path_full + '?imw=1200&imh=675&ima=fit'),
     };
 
     return json({ success: true, game: normalized }, 200, origin);
