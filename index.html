@@ -877,7 +877,7 @@
             const dots = document.getElementById('mobile-banner-dots');
             clearInterval(mobileBannerInterval);
             mobileBannerIndex = 0;
-            track.innerHTML = bannerUrls.concat(bannerUrls.length > 1 ? bannerUrls[0] : []).map((url, index) => `<div class="carousel-slide"><img src="${url}" class="w-full h-full object-cover" alt="Banner ${index + 1}"></div>`).join('');
+            track.innerHTML = bannerUrls.concat(bannerUrls.length > 1 ? bannerUrls[0] : []).map((url, index) => `<div class="carousel-slide"><img src="${url}" loading="lazy" class="w-full h-full object-cover" alt="Banner ${index + 1}"></div>`).join('');
             dots.innerHTML = bannerUrls.map((_, index) => `<div class="w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white w-6' : 'bg-white/40'}"></div>`).join('');
             if (bannerUrls.length > 1) {
                 mobileBannerInterval = setInterval(() => {
@@ -984,7 +984,7 @@
 
                 card.innerHTML = `
                     <div class="relative pt-[56.25%] w-full bg-slate-100 overflow-hidden">
-                        <img src="${game.cover}" alt="${game.title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <img src="${game.cover}" loading="lazy" alt="${game.title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                     </div>
                     <div class="flex justify-between items-center px-4 py-2 text-white text-xs font-semibold tracking-wider" style="background-color: ${game.color};">
                         <span>${formatPriceDisplay(game.price, game.released)}</span>
@@ -1076,7 +1076,7 @@
             const isFree = isNaN(num) || num === 0;
             const isReleased = released !== false;
             if (isReleased && isFree) return '免费开玩';
-            if (!isReleased) return '尚未发售，求关注支持！';
+            if (!isReleased) return '<span class="md:hidden">尚未发售求关注</span><span class="hidden md:inline">尚未发售，求关注支持！</span>';
             return `售价 ¥${price}`;
         }
 
@@ -1137,12 +1137,12 @@
             let slidesHtml = '';
             let dotsHtml = '';
             shots.forEach((shot, index) => {
-                slidesHtml += `<div class="carousel-slide"><img src="${shot}" class="w-full h-full object-cover" alt="截图${index+1}"></div>`;
+                slidesHtml += `<div class="carousel-slide"><img src="${shot}" loading="lazy" class="w-full h-full object-cover" alt="截图${index+1}"></div>`;
                 dotsHtml += `<div class="w-2.5 h-2.5 rounded-full cursor-pointer transition-all duration-300 shadow-sm ${index === 0 ? 'bg-white w-6' : 'bg-white/40 hover:bg-white/70'}" onclick="goToSlide(${index})"></div>`;
             });
             // 末尾追加第一张副本，实现无限循环
             if (shots.length > 1) {
-                slidesHtml += `<div class="carousel-slide"><img src="${shots[0]}" class="w-full h-full object-cover" alt="截图1"></div>`;
+                slidesHtml += `<div class="carousel-slide"><img src="${shots[0]}" loading="lazy" class="w-full h-full object-cover" alt="截图1"></div>`;
             }
 
             const linkUrl = game.targetUrl || '#';
@@ -1236,7 +1236,7 @@
                             <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-2 md:mb-3 flex items-center gap-3">
                                 <span class="w-2 h-6 bg-indigo-500 rounded-full inline-block"></span> 游戏介绍
                             </h3>
-                            <p class="text-slate-600 text-sm md:text-base leading-relaxed md:leading-loose text-justify font-normal line-clamp-5">
+                            <p class="text-slate-600 text-sm md:text-base leading-relaxed md:leading-loose text-justify font-normal line-clamp-5 min-h-[114px] md:min-h-[160px]">
                                 ${game.desc}
                             </p>
                         </div>
@@ -1244,13 +1244,13 @@
 
                     <div class="mb-0">
                         <div class="zhihu-box">
-                            <div class="flex flex-wrap items-center gap-2 mb-5 pb-4 border-b border-slate-200">
-                                <div class="bg-blue-100 text-blue-600 rounded-lg w-9 h-9 flex items-center justify-center mr-1">
-                                    <i class="fab fa-zhihu text-lg"></i>
+                            <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-5 pb-4 border-b border-slate-200">
+                                <div class="rounded-lg w-7 h-7 md:w-9 md:h-9 flex items-center justify-center mr-0.5 md:mr-1 shrink-0" style="background:#0767FB; color:#fff;">
+                                    <i class="fab fa-zhihu text-sm md:text-lg"></i>
                                 </div>
-                                ${hasDeveloperContent ? `<button id="experience-tab-developer" type="button" onclick="switchExperienceTab('developer')" class="rounded-lg px-3 py-2 text-base font-bold transition-colors ${defaultExperienceTab === 'developer' ? 'bg-[#6B42E8] text-white' : 'bg-white text-slate-500 hover:bg-slate-100'}">游戏开发者说</button>` : ''}
-                                <button id="experience-tab-player" type="button" onclick="switchExperienceTab('player')" class="rounded-lg px-3 py-2 text-base font-bold transition-colors ${defaultExperienceTab === 'player' ? 'bg-[#6B42E8] text-white' : 'bg-white text-slate-500 hover:bg-slate-100'}">答主游戏评价</button>
-                                <button id="experience-tab-discussion" type="button" onclick="switchExperienceTab('discussion')" class="rounded-lg px-3 py-2 text-base font-bold transition-colors bg-white text-slate-500 hover:bg-slate-100">游戏综合讨论</button>
+                                ${hasDeveloperContent ? `<button id="experience-tab-developer" type="button" onclick="switchExperienceTab('developer')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors ${defaultExperienceTab === 'developer' ? 'bg-[#6B42E8] text-white' : 'bg-white text-slate-500 hover:bg-slate-100'}">游戏开发者说</button>` : ''}
+                                <button id="experience-tab-player" type="button" onclick="switchExperienceTab('player')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors ${defaultExperienceTab === 'player' ? 'bg-[#6B42E8] text-white' : 'bg-white text-slate-500 hover:bg-slate-100'}">答主游戏评价</button>
+                                <button id="experience-tab-discussion" type="button" onclick="switchExperienceTab('discussion')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors bg-white text-slate-500 hover:bg-slate-100">游戏综合讨论</button>
                             </div>
                             ${developerPanel}
                             ${playerPanel}
@@ -1497,7 +1497,7 @@
                 item.innerHTML = `
                     <div class="flex items-center gap-4 overflow-hidden">
                         <span class="text-slate-300 text-lg drag-handle"><i class="fas fa-grip-vertical"></i></span>
-                        <img src="${game.cover}" class="w-20 h-14 object-cover rounded-xl shadow-sm border">
+                        <img src="${game.cover}" loading="lazy" class="w-20 h-14 object-cover rounded-xl shadow-sm border">
                         <div class="truncate min-w-0">
                             <div class="font-bold text-slate-800 truncate">${game.title}</div>
                             <div class="text-sm text-slate-500 truncate">${game.team}</div>
