@@ -624,6 +624,16 @@
                             </div>
                         </div>
 
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">AI判词（最多15字）</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="form-verdict" maxlength="15" placeholder="一句话介绍游戏，诙谐有网感" class="min-w-0 flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50">
+                                <button type="button" onclick="generateVerdict()" id="generate-verdict-btn" class="shrink-0 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 disabled:bg-slate-400 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow-sm transition-colors whitespace-nowrap">
+                                    <i class="fas fa-wand-magic-sparkles mr-1"></i>AI填入
+                                </button>
+                            </div>
+                        </div>
+
                         <!-- 玩法标签多选 -->
                         <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
                             <label class="block text-sm font-semibold text-slate-700 mb-2">玩法标签（可多选）</label>
@@ -916,6 +926,7 @@
                 team: row.team,
                 type: row.type || '',
                 price: row.price,
+                verdict: row.verdict || '',
                 released: row.released !== false, // 默认 true 兼容旧数据
                 color: row.color || '#6366f1',
                 cover: row.cover,
@@ -949,6 +960,7 @@
                 team: game.team,
                 type: game.type,
                 price: game.price,
+                verdict: (game.verdict || '').trim(),
                 released: game.released !== false,
                 color: game.color,
                 cover: game.cover,
@@ -1670,8 +1682,8 @@
                         <img src="${game.cover}" ${isAboveFold ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" referrerpolicy="no-referrer" width="460" height="215" alt="${game.title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 block" onerror="this.onerror=null;this.src='${placeholder}';">
                     </div>
                     <div class="flex justify-between items-center px-3 md:px-4 py-2 text-white text-xs font-semibold tracking-wider" style="background-color: ${game.color};">
-                        <span>${formatPriceDisplay(game.price, game.released)}</span>
-                        <i class="fab fa-steam opacity-90 group-hover:scale-110 transition-transform"></i>
+                        <span class="min-w-0 flex-1 truncate mr-2" title="${escapeHtml(game.verdict || formatPriceDisplay(game.price, game.released))}">${escapeHtml(game.verdict || formatPriceDisplay(game.price, game.released))}</span>
+                        <i class="fab fa-steam shrink-0 opacity-90 group-hover:scale-110 transition-transform"></i>
                     </div>
                     <div class="p-3 md:p-5">
                         <h3 class="font-bold text-slate-800 text-sm md:text-lg leading-tight mb-1 md:mb-2 truncate group-hover:text-indigo-600 transition-colors">${game.title}</h3>
@@ -2579,6 +2591,7 @@
             document.getElementById('form-type').value = game.type || '';
             document.getElementById('form-date').value = game.date || game.releaseDate || '';
             document.getElementById('form-price').value = game.price || '';
+            document.getElementById('form-verdict').value = game.verdict || '';
             document.getElementById('form-released').checked = game.released !== false;
             document.getElementById('form-color').value = game.color || '#6366f1';
             document.getElementById('form-cover').value = game.cover || '';
@@ -2663,6 +2676,44 @@
             } finally {
                 button.disabled = false;
                 button.innerHTML = '<i class="fab fa-steam mr-1"></i>从 Steam 填充';
+            }
+        };
+
+        window.generateVerdict = async function() {
+            const title = document.getElementById('form-title').value.trim();
+            const type = document.getElementById('form-type').value.trim();
+            const description = document.getElementById('form-desc').value.trim();
+            if (!title || !type) {
+                showSaveStatus('请先填写游戏名称和类型');
+                return;
+            }
+
+            const button = document.getElementById('generate-verdict-btn');
+            const originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>生成中';
+            try {
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/generate-verdict`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({ title, type, description })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success || !result.verdict) {
+                    throw new Error(result.error || 'AI生成失败');
+                }
+                document.getElementById('form-verdict').value = result.verdict;
+                showSaveStatus('AI判词已填入，点击保存后发布');
+            } catch (error) {
+                console.error('AI判词生成失败:', error);
+                showSaveStatus(error.message || 'AI生成失败，请稍后重试');
+            } finally {
+                button.disabled = false;
+                button.innerHTML = originalHtml;
             }
         };
 
