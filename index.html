@@ -1608,6 +1608,18 @@
             }
         }
 
+        // 将各类日期字符串解析为可比较的数值，支持：
+        // "2026 年 7 月 9 日"、"2026 年 8 月"、"2026-7-16"、"2026.8" 等
+        function parseDateForSort(dateStr) {
+            if (!dateStr) return 0;
+            const match = dateStr.match(/(\d{4})\s*[年.\-\/]\s*(\d{1,2})(?:\s*[月.\-\/]\s*(\d{1,2}))?/);
+            if (!match) return 0;
+            const y = parseInt(match[1], 10);
+            const m = parseInt(match[2], 10);
+            const d = match[3] ? parseInt(match[3], 10) : 0;
+            return y * 10000 + m * 100 + d;
+        }
+
         function renderClientList(filterType) {
             const games = getGames();
             const type = filterType !== undefined ? filterType : appState.currentFilter;
@@ -1623,14 +1635,14 @@
                     // 已发售的在前，未发售的在后
                     if (aReleased && !bReleased) return -1;
                     if (!aReleased && bReleased) return 1;
-                    const aDate = a.releaseDate || a.date || '';
-                    const bDate = b.releaseDate || b.date || '';
+                    const aTs = parseDateForSort(a.releaseDate || a.date || '');
+                    const bTs = parseDateForSort(b.releaseDate || b.date || '');
                     if (aReleased) {
                         // 已发售：最新上线排前面（降序）
-                        return bDate.localeCompare(aDate);
+                        return bTs - aTs;
                     } else {
                         // 未发售：越靠近当前日期排前面（升序）
-                        return aDate.localeCompare(bDate);
+                        return aTs - bTs;
                     }
                 });
             }
