@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@700;900&display=swap');
@@ -73,7 +74,6 @@
             .filter-bar {
                 gap: 8px;
                 margin-bottom: 16px;
-                padding: 0 4px;
             }
             .filter-tag {
                 padding: 6px 14px;
@@ -342,9 +342,6 @@
             position: relative;
             touch-action: pan-y; 
         }
-        #mobile-banner.carousel-container {
-            touch-action: manipulation;
-        }
         .carousel-track {
             display: flex;
             height: 100%;
@@ -366,7 +363,6 @@
         }
 
         @media (min-width: 768px) {
-            .mobile-banner { display: none; }
             
             .game-waterfall {
                 display: grid;
@@ -384,6 +380,34 @@
 
             body.panel-open #main-wrapper {
                 width: 50%;
+            }
+
+            /* 详情页展开时：标题收起 + 导航吸顶 + Banner 收起 */
+            #secret-trigger-pc {
+                transition: opacity 0.35s ease, max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), margin-bottom 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+                overflow: hidden;
+                max-height: 200px;
+            }
+            body.panel-open #secret-trigger-pc {
+                opacity: 0;
+                max-height: 0;
+                margin-bottom: 0;
+            }
+
+            body.panel-open #sticky-header-desktop {
+                position: sticky;
+                top: 0;
+                z-index: 40;
+                padding-top: 8px;
+                background: #f8fafc;
+            }
+
+            body.panel-open .activity-banner.visible {
+                height: 0 !important;
+                opacity: 0;
+            }
+            body.panel-open .activity-stage-inner {
+                border-radius: 14px;
             }
         }
 
@@ -427,7 +451,7 @@
 </head>
 <body>
 
-    <div id="client-view" class="min-h-screen relative w-full overflow-hidden">
+    <div id="client-view" class="min-h-screen relative w-full">
         
         <div id="main-wrapper">
             <div class="main-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -436,32 +460,32 @@
                     <span id="desktop-subtitle" class="text-2xl text-gray-500 font-light tracking-wide border-l-2 border-gray-300 pl-4">东方侠影游戏安利时间</span>
                 </div>
 
-                <div id="activity-area-desktop" class="hidden md:block mb-7">
-                    <section id="activity-stage" class="activity-stage">
-                        <div class="activity-stage-inner">
-                            <div id="activity-featured-slot" class="activity-featured-slot"></div>
-                            <nav id="activity-nav-desktop" class="activity-nav"></nav>
-                            <a id="activity-stage-link" class="activity-stage-link" target="_blank" rel="noopener noreferrer">探索活动 <i class="fas fa-arrow-up-right-from-square text-[10px]"></i></a>
-                        </div>
-                        <div id="activity-banner-desktop" class="activity-banner carousel-container">
-                            <div id="activity-banner-track" class="carousel-track" style="height:100%"></div>
-                            <div id="activity-banner-dots" class="absolute bottom-3 w-full flex justify-center gap-2 z-10"></div>
-                        </div>
-                    </section>
-                </div>
+                <!-- Desktop Sticky Header: 导航栏 + 筛选排序 -->
+                <div id="sticky-header-desktop" class="hidden md:block">
+                    <div id="activity-area-desktop" class="mb-7">
+                        <section id="activity-stage" class="activity-stage">
+                            <div class="activity-stage-inner">
+                                <div id="activity-featured-slot" class="activity-featured-slot"></div>
+                                <nav id="activity-nav-desktop" class="activity-nav"></nav>
+                                <a id="activity-stage-link" class="activity-stage-link" target="_blank" rel="noopener noreferrer">探索活动 <i class="fas fa-arrow-up-right-from-square text-[10px]"></i></a>
+                            </div>
+                            <div id="activity-banner-desktop" class="activity-banner carousel-container">
+                                <div id="activity-banner-track" class="carousel-track" style="height:100%"></div>
+                                <div id="activity-banner-dots" class="absolute bottom-3 w-full flex justify-center gap-2 z-10"></div>
+                            </div>
+                        </section>
+                    </div>
 
-                <!-- Desktop Filter Bar -->
-                <div id="filter-bar-desktop" class="filter-bar hidden md:flex"></div>
+                    <!-- Desktop Filter Bar (含排序按钮 + 标签) -->
+                    <div id="filter-bar-desktop" class="filter-bar"></div>
+                </div>
 
                 <div class="md:hidden">
                     <div id="secret-trigger-mobile" class="select-none cursor-pointer mb-4">
                          <h1 class="text-3xl font-black tracking-tight text-gray-900 title-gradient mb-1">暑期「游戏浪一夏」</h1>
                          <p class="text-md text-gray-500 font-light tracking-wide">东方侠影游戏安利时间</p>
                     </div>
-                    <div id="mobile-banner" class="mobile-banner w-full h-48 rounded-2xl overflow-hidden relative carousel-container mb-4" style="background: linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0.25) 100%); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);">
-                        <div id="mobile-banner-track" class="carousel-track"></div>
-                        <div id="mobile-banner-dots" class="absolute bottom-3 w-full flex justify-center gap-2 z-10"></div>
-                    </div>
+
                 </div>
 
                 <!-- Mobile Filter Button -->
@@ -532,23 +556,33 @@
 
             <div class="p-8">
                 <div id="admin-global-panel" class="admin-tab-panel space-y-8">
-                    <section class="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+                    <!-- 批量导入 -->
+                    <section class="rounded-2xl border border-slate-200 bg-white p-6">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
                             <div>
-                                <h3 class="text-lg font-bold text-slate-800">手机端 Banner 图片</h3>
-                                <p class="text-sm text-slate-500 mt-1">Tab1 默认管理全局内容和已发布游戏列表。</p>
+                                <h3 class="text-lg font-bold text-slate-800"><i class="fas fa-upload mr-2 text-indigo-500"></i>批量导入 Steam 游戏</h3>
+                                <p class="text-sm text-slate-500 mt-1">上传 Excel (.xlsx) 或 CSV 文件，一键导入并 AI 自动打标签 + 写判词。</p>
                             </div>
-                            <button type="button" onclick="saveMobileBanners(true)" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors">
-                                保存 Banner
-                            </button>
+                            <div class="flex gap-2 shrink-0">
+                                <button type="button" onclick="downloadImportTemplate()" class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-lg text-sm font-bold transition-colors">
+                                    <i class="fas fa-download mr-1"></i>下载模板
+                                </button>
+                                <label class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors cursor-pointer">
+                                    <i class="fas fa-file-import mr-1"></i>上传文件
+                                    <input type="file" id="import-file-input" accept=".csv,.xlsx,.xls" onchange="handleImportFile(this)" class="hidden">
+                                </label>
+                            </div>
                         </div>
-                        <div id="mobile-banner-fields" class="space-y-2">
-                            <div class="flex gap-2 items-center banner-row">
-                                <span class="banner-drag-handle text-slate-300 hover:text-slate-500 text-base cursor-grab active:cursor-grabbing shrink-0 select-none" draggable="true" title="拖拽排序"><i class="fas fa-grip-vertical"></i></span>
-                                <input type="url" name="mobile-banner-url" placeholder="图片 URL" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white">
-                                <input type="url" name="mobile-banner-link" placeholder="跳转链接（可选）" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white">
-                                <button type="button" onclick="addMobileBannerField()" class="text-rose-500 text-3xl leading-none px-2 shrink-0" aria-label="添加 Banner">+</button>
+                        <div id="import-preview" class="hidden mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600"></div>
+                        <div id="import-progress" class="hidden mt-3 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-sm text-indigo-700">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span id="import-progress-text">正在导入...</span>
                             </div>
+                            <div class="w-full bg-indigo-200 rounded-full h-2">
+                                <div id="import-progress-bar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width:0%"></div>
+                            </div>
+                            <div id="import-log" class="mt-2 max-h-32 overflow-y-auto text-xs space-y-0.5"></div>
                         </div>
                     </section>
 
@@ -966,7 +1000,6 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const appState = {
             games: [],
-            mobileBannerUrls: [],
             wishlistEnabled: false,
             currentFilter: '全部',
             gameTags: [],
@@ -1155,35 +1188,6 @@
         async function deleteActivityRecord(id) {
             const { error } = await supabaseClient.from('activities').delete().eq('id', id);
             if (error) throw error;
-        }
-
-        async function loadMobileBannerSettings() {
-            const { data, error } = await supabaseClient
-                .from('site_settings')
-                .select('value')
-                .eq('key', 'mobile_banner_urls')
-                .maybeSingle();
-
-            if (error) throw error;
-            const raw = Array.isArray(data?.value) ? data.value : [];
-            // 兼容旧格式：纯字符串数组转为 {url,link} 对象
-            appState.mobileBannerUrls = raw.map(item =>
-                typeof item === 'string' ? { url: item, link: '' } : item
-            ).filter(item => item.url);
-            return appState.mobileBannerUrls;
-        }
-
-        async function persistMobileBannerSettings(items) {
-            const sanitized = items.filter(item => item && item.url);
-            const { error } = await supabaseClient
-                .from('site_settings')
-                .upsert([{
-                    key: 'mobile_banner_urls',
-                    value: sanitized
-                }], { onConflict: 'key' });
-
-            if (error) throw error;
-            appState.mobileBannerUrls = sanitized;
         }
 
         async function loadWishlistSetting() {
@@ -1489,37 +1493,256 @@
         };
         // ===== 玩法标签管理 END =====
 
+        // ===== 批量导入 Steam 游戏 =====
+        function downloadImportTemplate() {
+            const csvContent = '\uFEFFSteam ID,Steam\u94FE\u63A5\n440,https://store.steampowered.com/app/440/\n730,https://store.steampowered.com/app/730/\n';
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'steam_\u5BFC\u5165\u6A21\u677F.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        async function handleImportFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const preview = document.getElementById('import-preview');
+            const progress = document.getElementById('import-progress');
+
+            try {
+                let rows = [];
+                if (file.name.endsWith('.csv')) {
+                    const text = await file.text();
+                    rows = parseCSV(text);
+                } else {
+                    const data = await file.arrayBuffer();
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                }
+
+                // 解析表头找到列索引
+                const headerRow = rows[0] || [];
+                let idCol = -1, linkCol = -1;
+                headerRow.forEach((cell, i) => {
+                    const h = String(cell || '').toLowerCase().replace(/\s+/g, '');
+                    if (h.includes('steamid') || h === 'id' || h.includes('steam_id')) idCol = i;
+                    if (h.includes('链接') || h.includes('link') || h.includes('url') || h.includes('地址')) linkCol = i;
+                });
+                if (idCol < 0 && linkCol < 0) {
+                    // 无表头匹配，尝试默认第0列=ID，第1列=链接
+                    idCol = 0; linkCol = 1;
+                }
+
+                const dataRows = rows.slice(1).filter(r => r && r.length);
+                const entries = [];
+                const seen = new Set();
+                dataRows.forEach(row => {
+                    const idCell = String(idCol >= 0 && row[idCol] != null ? row[idCol] : '').trim();
+                    const linkCell = String(linkCol >= 0 && row[linkCol] != null ? row[linkCol] : '').trim();
+                    const appId = idCell ? getSteamAppId(idCell) : (linkCell ? getSteamAppId(linkCell) : '');
+                    if (appId && !seen.has(appId)) {
+                        seen.add(appId);
+                        entries.push({ appId, sourceId: idCell, sourceLink: linkCell });
+                    }
+                });
+
+                if (entries.length === 0) {
+                    preview.classList.remove('hidden');
+                    preview.innerHTML = '<i class="fas fa-exclamation-triangle text-amber-500 mr-1"></i>未解析到任何有效的 Steam ID，请检查文件内容。';
+                    progress.classList.add('hidden');
+                    return;
+                }
+
+                preview.classList.remove('hidden');
+                preview.innerHTML = `<i class="fas fa-check-circle text-emerald-500 mr-1"></i>已解析 <strong>${entries.length}</strong> 个 Steam ID，点击下方按钮开始导入。`;
+                preview.innerHTML += `<div class="mt-2"><button type="button" onclick='startBatchImport(${JSON.stringify(entries.map(e => e.appId))})' class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors"><i class="fas fa-magic mr-1"></i>开始批量导入（Steam抓取 + AI打标 + AI判词）</button></div>`;
+
+                progress.classList.add('hidden');
+            } catch (error) {
+                console.error('文件解析失败:', error);
+                preview.classList.remove('hidden');
+                preview.innerHTML = '<i class="fas fa-times-circle text-rose-500 mr-1"></i>文件解析失败，请检查格式。';
+                progress.classList.add('hidden');
+            } finally {
+                input.value = '';
+            }
+        }
+
+        function parseCSV(text) {
+            const rows = [];
+            let row = [];
+            let cell = '';
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const ch = text[i];
+                if (inQuotes) {
+                    if (ch === '"') {
+                        if (text[i + 1] === '"') { cell += '"'; i++; }
+                        else inQuotes = false;
+                    } else cell += ch;
+                } else {
+                    if (ch === '"') inQuotes = true;
+                    else if (ch === ',') { row.push(cell); cell = ''; }
+                    else if (ch === '\n' || ch === '\r') {
+                        if (ch === '\r' && text[i + 1] === '\n') i++;
+                        row.push(cell); cell = '';
+                        if (row.some(c => c !== '')) rows.push(row);
+                        row = [];
+                    } else cell += ch;
+                }
+            }
+            row.push(cell);
+            if (row.some(c => c !== '')) rows.push(row);
+            return rows;
+        }
+
+        window.startBatchImport = async function(appIds) {
+            const progress = document.getElementById('import-progress');
+            const progressText = document.getElementById('import-progress-text');
+            const progressBar = document.getElementById('import-progress-bar');
+            const logEl = document.getElementById('import-log');
+            const preview = document.getElementById('import-preview');
+            preview.classList.add('hidden');
+            progress.classList.remove('hidden');
+            logEl.innerHTML = '';
+
+            const total = appIds.length;
+            let completed = 0;
+            let succeed = 0;
+            let failed = 0;
+            const failedList = [];
+
+            function updateProgress() {
+                const pct = Math.round((completed / total) * 100);
+                progressBar.style.width = pct + '%';
+                progressText.textContent = `正在导入... ${completed}/${total}`;
+            }
+
+            function log(text, ok = true) {
+                const div = document.createElement('div');
+                div.className = ok ? 'text-emerald-600' : 'text-rose-500';
+                div.textContent = text;
+                logEl.appendChild(div);
+                logEl.scrollTop = logEl.scrollHeight;
+            }
+
+            for (const appId of appIds) {
+                const label = `[Steam ${appId}]`;
+                try {
+                    // 1. 从 Steam 抓取游戏数据
+                    const steamRes = await fetch(`${SUPABASE_URL}/functions/v1/steam-appdetails`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY },
+                        body: JSON.stringify({ appId })
+                    });
+                    const { success, game, error: steamErr } = await steamRes.json();
+                    if (!success || !game) throw new Error(steamErr || 'Steam 未找到');
+
+                    // 检查是否已存在相同 Steam ID 的游戏
+                    const existing = appState.games.find(g => g.steamAppId === appId);
+                    if (existing) {
+                        log(`${label} ${game.title || appId} — 跳过（已存在：${existing.title}）`, true);
+                        completed++;
+                        updateProgress();
+                        continue;
+                    }
+
+                    // 2. 构建基础游戏数据
+                    const gameData = {
+                        id: `steam-import-${Date.now()}-${appId}`,
+                        steamAppId: appId,
+                        title: game.title || '',
+                        team: game.team || '',
+                        type: game.type || '',
+                        price: game.price || '',
+                        verdict: '',
+                        released: game.released !== false,
+                        color: game.color || '#6B42E8',
+                        cover: game.cover || '',
+                        screenshots: game.screenshots || [],
+                        targetUrl: game.targetUrl || '',
+                        date: game.releaseDate || '',
+                        desc: game.desc || '',
+                        zhihuAuthor: '知乎答主',
+                        zhihuAvatar: 'https://placehold.co/100x100/3b82f6/ffffff?text=User',
+                        zhihuContent: '',
+                        zhihuUrl: '',
+                        developerQuestion: '请说出至少一个理由，为什么玩家要体验你开发的这款游戏，最好玩的点在哪里？',
+                        developerBio: '知乎用户',
+                        playerExperienceAuthor: '知乎用户',
+                        playerExperienceAvatar: 'https://placehold.co/100x100/3b82f6/ffffff?text=User',
+                        playerExperienceContent: '',
+                        playerQuestion: '',
+                        playerBio: '知乎用户',
+                        playerExperienceZhihuUrl: '',
+                        playerExtraAnswers: [],
+                        tags: [],
+                        sortOrder: 0
+                    };
+
+                    // 3. 提取封面主色调 + AI 打标签 + AI 判词（并行）
+                    const [extractedColor, tagRes, verdictRes] = await Promise.all([
+                        extractColorFromUrl(game.cover || ''),
+                        fetch(`${SUPABASE_URL}/functions/v1/generate-game-tags`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY },
+                            body: JSON.stringify({ title: gameData.title, type: gameData.type, description: gameData.desc, tags: appState.gameTags })
+                        }),
+                        fetch(`${SUPABASE_URL}/functions/v1/generate-verdict`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY },
+                            body: JSON.stringify({ title: gameData.title, type: gameData.type, description: gameData.desc })
+                        })
+                    ]);
+
+                    const tagResult = await tagRes.json();
+                    const verdictResult = await verdictRes.json();
+
+                    if (!game.color && extractedColor !== '#6B42E8') {
+                        gameData.color = extractedColor;
+                    }
+                    if (tagResult.success && Array.isArray(tagResult.tags)) {
+                        gameData.tags = tagResult.tags;
+                    }
+                    if (verdictResult.success && verdictResult.verdict) {
+                        gameData.verdict = verdictResult.verdict;
+                    }
+
+                    // 4. 保存到 Supabase
+                    await upsertGame(gameData);
+                    appState.games.unshift(gameData);
+                    succeed++;
+                    log(`${label} ${gameData.title} — 导入成功`, true);
+                } catch (error) {
+                    failed++;
+                    failedList.push(appId);
+                    log(`${label} 导入失败: ${error.message}`, false);
+                    console.error(`${label}`, error);
+                }
+                completed++;
+                updateProgress();
+            }
+
+            progressText.innerHTML = `导入完成！成功 <span class="text-emerald-600 font-bold">${succeed}</span> / 失败 <span class="text-rose-500 font-bold">${failed}</span>${failedList.length ? `（失败 ID：${failedList.join(', ')}）` : ''}`;
+            progressBar.style.width = '100%';
+            const spinnerIcon = progress.querySelector('.fa-spinner');
+            if (spinnerIcon) { spinnerIcon.classList.remove('fa-spinner', 'fa-spin'); spinnerIcon.classList.add('fa-check-circle', 'text-emerald-600'); }
+
+            // 刷新列表
+            renderClientList();
+            renderAdminList(currentAdminSearch);
+            renderGameTagOverview();
+            showSaveStatus(`批量导入完成：成功 ${succeed}，失败 ${failed}`);
+        };
+        // ===== 批量导入 END =====
+
         window.handleWishlistAction = function() {
             showSaveStatus('Steam 愿望单接口尚未接入，当前为预留入口');
         };
-
-        let mobileBannerInterval;
-        let mobileBannerIndex = 0;
-
-        function startMobileBannerAutoSlide() {
-            const track = document.getElementById('mobile-banner-track');
-            const dotsEl = document.getElementById('mobile-banner-dots');
-            if (!track || !dotsEl) return;
-            const realCount = dotsEl.children.length;
-            if (realCount <= 1) return;
-            clearInterval(mobileBannerInterval);
-            mobileBannerInterval = setInterval(() => {
-                mobileBannerIndex++;
-                const realIndex = mobileBannerIndex > realCount ? 0 : mobileBannerIndex - 1;
-                track.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                track.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
-                Array.from(dotsEl.children).forEach((dot, i) => {
-                    dot.className = `rounded-full transition-all duration-300 ${i === realIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
-                });
-                if (mobileBannerIndex > realCount) {
-                    setTimeout(() => {
-                        mobileBannerIndex = 1;
-                        track.style.transition = 'none';
-                        track.style.transform = 'translateX(-100%)';
-                    }, 350);
-                }
-            }, 3000);
-        }
 
         function createUrlField(name, addAction, value = '') {
             const row = document.createElement('div');
@@ -1531,230 +1754,9 @@
             return row;
         }
 
-        function createBannerField(data = {}) {
-            const row = document.createElement('div');
-            row.className = 'flex gap-2 items-center banner-row';
-            row.innerHTML = `
-                <span class="banner-drag-handle text-slate-300 hover:text-slate-500 text-base cursor-grab active:cursor-grabbing shrink-0 select-none" draggable="true" title="拖拽排序"><i class="fas fa-grip-vertical"></i></span>
-                <input type="url" name="mobile-banner-url" placeholder="图片 URL" value="${data.url || ''}" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white">
-                <input type="url" name="mobile-banner-link" placeholder="跳转链接（可选）" value="${data.link || ''}" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white">
-                <button type="button" onclick="addMobileBannerField()" class="text-rose-500 text-3xl leading-none px-2 shrink-0" aria-label="添加 Banner">+</button>
-            `;
-
-            // Attach drag events
-            const handle = row.querySelector('.banner-drag-handle');
-            handle.addEventListener('dragstart', onBannerDragStart);
-            handle.addEventListener('dragend', onBannerDragEnd);
-            row.addEventListener('dragover', onBannerDragOver);
-            row.addEventListener('dragleave', onBannerDragLeave);
-            row.addEventListener('drop', onBannerDrop);
-
-            return row;
-        }
-
-        window.addMobileBannerField = function(value = '') {
-            const data = typeof value === 'object' ? value : { url: value || '', link: '' };
-            document.getElementById('mobile-banner-fields').appendChild(createBannerField(data));
-        };
-
-        // ===== Banner drag reorder =====
-        let bannerDragSource = null;
-
-        function onBannerDragStart(e) {
-            bannerDragSource = this.closest('.banner-row');
-            bannerDragSource.classList.add('opacity-40');
-            e.dataTransfer.effectAllowed = 'move';
-        }
-
-        function onBannerDragEnd(e) {
-            if (bannerDragSource) {
-                bannerDragSource.classList.remove('opacity-40');
-            }
-            document.querySelectorAll('.banner-row').forEach(el => el.classList.remove('ring-2', 'ring-indigo-300'));
-            bannerDragSource = null;
-        }
-
-        function onBannerDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            this.classList.add('ring-2', 'ring-indigo-300');
-        }
-
-        function onBannerDragLeave(e) {
-            this.classList.remove('ring-2', 'ring-indigo-300');
-        }
-
-        function onBannerDrop(e) {
-            e.preventDefault();
-            this.classList.remove('ring-2', 'ring-indigo-300');
-            if (!bannerDragSource || bannerDragSource === this) return;
-
-            const container = bannerDragSource.parentNode;
-            const after = this.nextSibling;
-            if (bannerDragSource === after) {
-                // dropping after itself: insert before this
-                container.insertBefore(bannerDragSource, this);
-            } else if (after) {
-                container.insertBefore(bannerDragSource, after);
-            } else {
-                container.appendChild(bannerDragSource);
-            }
-            bannerDragSource = null;
-        }
-
-        function initBannerDragHandlers() {
-            document.querySelectorAll('#mobile-banner-fields .banner-drag-handle').forEach(handle => {
-                handle.addEventListener('dragstart', onBannerDragStart);
-                handle.addEventListener('dragend', onBannerDragEnd);
-            });
-            document.querySelectorAll('#mobile-banner-fields .banner-row').forEach(row => {
-                row.addEventListener('dragover', onBannerDragOver);
-                row.addEventListener('dragleave', onBannerDragLeave);
-                row.addEventListener('drop', onBannerDrop);
-            });
-        }
-
         window.addScreenshotField = function(value = '') {
             document.getElementById('screenshot-fields').appendChild(createUrlField('screenshot', 'addScreenshotField', value));
         };
-
-        function getMobileBannerUrls() {
-            const urlInputs = document.querySelectorAll('[name="mobile-banner-url"]');
-            const linkInputs = document.querySelectorAll('[name="mobile-banner-link"]');
-            return Array.from(urlInputs).map((input, i) => ({
-                url: input.value.trim(),
-                link: (linkInputs[i]?.value || '').trim()
-            })).filter(item => item.url);
-        }
-
-        function renderMobileBanner(items) {
-            const defaultBanners = [
-                { url: 'https://placehold.co/800x400/1e293b/38bdf8?text=🔥+夏日游戏浪一夏', link: '' },
-                { url: 'https://placehold.co/800x400/312e81/a78bfa?text=🎮+新游速递·每日精选', link: '' },
-                { url: 'https://placehold.co/800x400/0f172a/f472b6?text=🏆+热门排行·玩家推荐', link: '' }
-            ];
-            const bannerItems = items.length ? items : defaultBanners;
-            const track = document.getElementById('mobile-banner-track');
-            const dots = document.getElementById('mobile-banner-dots');
-            clearInterval(mobileBannerInterval);
-            const slides = bannerItems.length > 1
-                ? [bannerItems[bannerItems.length - 1], ...bannerItems, bannerItems[0]]
-                : bannerItems;
-            mobileBannerIndex = bannerItems.length > 1 ? 1 : 0;
-            track.innerHTML = slides.map((item, index) => {
-                const img = `<img src="${item.url}" loading="lazy" decoding="async" referrerpolicy="no-referrer" class="w-full h-full object-cover" alt="Banner ${index + 1}">`;
-                return `<div class="carousel-slide">${item.link ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="block w-full h-full">${img}</a>` : img}</div>`;
-            }).join('');
-            dots.innerHTML = bannerItems.map((_, index) => `<div class="w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white w-6' : 'bg-white/40'}"></div>`).join('');
-            if (bannerItems.length > 1) {
-                startMobileBannerAutoSlide();
-            }
-            initMobileBannerSwipe();
-        }
-
-        let mobileBannerSwipeReady = false;
-        function initMobileBannerSwipe() {
-            if (mobileBannerSwipeReady) return;
-            const bannerContainer = document.getElementById('mobile-banner');
-            if (!bannerContainer) return;
-            mobileBannerSwipeReady = true;
-            let isSwiping = false, swipeStartX = 0, swipeStartY = 0, swipeCurrentX = 0;
-            let swipeDirection = null;
-            let didSwipe = false;
-
-            const getTrack = () => document.getElementById('mobile-banner-track');
-
-            bannerContainer.addEventListener('click', (e) => {
-                if (didSwipe) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    didSwipe = false;
-                }
-            }, true);
-
-            const onStart = (e) => {
-                isSwiping = true;
-                didSwipe = false;
-                swipeDirection = null;
-                swipeStartX = (e.touches ? e.touches[0].clientX : e.clientX);
-                swipeStartY = (e.touches ? e.touches[0].clientY : e.clientY);
-                swipeCurrentX = swipeStartX;
-                const t = getTrack();
-                if (t) t.style.transition = 'none';
-                clearInterval(mobileBannerInterval);
-            };
-            const onMove = (e) => {
-                if (!isSwiping) return;
-                const currentX = (e.touches ? e.touches[0].clientX : e.clientX);
-                const currentY = (e.touches ? e.touches[0].clientY : e.clientY);
-                const diffX = Math.abs(currentX - swipeStartX);
-                const diffY = Math.abs(currentY - swipeStartY);
-                if (swipeDirection === null && (diffX > 5 || diffY > 5)) {
-                    swipeDirection = diffX > diffY ? 'horizontal' : 'vertical';
-                }
-                if (swipeDirection === 'vertical') return;
-                if (swipeDirection === 'horizontal') {
-                    e.preventDefault();
-                }
-                swipeCurrentX = currentX;
-                const diff = swipeCurrentX - swipeStartX;
-                const containerWidth = bannerContainer.offsetWidth;
-                const baseTranslate = -mobileBannerIndex * containerWidth;
-                const t = getTrack();
-                if (t) t.style.transform = `translateX(${baseTranslate + diff}px)`;
-            };
-            const onEnd = () => {
-                if (!isSwiping) return;
-                isSwiping = false;
-                const diff = swipeCurrentX - swipeStartX;
-                const t = getTrack();
-                if (t) t.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                if (Math.abs(diff) > 50) {
-                    didSwipe = true;
-                    if (diff < 0) mobileBannerIndex++;
-                    else mobileBannerIndex--;
-                }
-                const realCount = document.querySelectorAll('#mobile-banner-dots > div').length || 1;
-                // 无缝循环：双向的重复 slide 处理
-                if (mobileBannerIndex > realCount) {
-                    // 向前滑过最后一张 → 显示末尾复制的第一张 → 无动画跳回
-                    t.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
-                    const displayIndex = 0;
-                    Array.from(document.getElementById('mobile-banner-dots').children).forEach((dot, i) => {
-                        dot.className = `rounded-full transition-all duration-300 ${i === displayIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
-                    });
-                    setTimeout(() => {
-                        mobileBannerIndex = 1;
-                        if (t) { t.style.transition = 'none'; t.style.transform = 'translateX(-100%)'; }
-                    }, 350);
-                } else if (mobileBannerIndex < 1) {
-                    // 向后滑过第一张 → 显示开头复制的最后一张 → 无动画跳回
-                    t.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
-                    const displayIndex = realCount - 1;
-                    Array.from(document.getElementById('mobile-banner-dots').children).forEach((dot, i) => {
-                        dot.className = `rounded-full transition-all duration-300 ${i === displayIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
-                    });
-                    setTimeout(() => {
-                        mobileBannerIndex = realCount;
-                        if (t) { t.style.transition = 'none'; t.style.transform = `translateX(-${realCount * 100}%)`; }
-                    }, 350);
-                } else {
-                    t.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
-                    const realIndex = mobileBannerIndex - 1;
-                    Array.from(document.getElementById('mobile-banner-dots').children).forEach((dot, i) => {
-                        dot.className = `rounded-full transition-all duration-300 ${i === realIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
-                    });
-                }
-                startMobileBannerAutoSlide();
-            };
-
-            bannerContainer.addEventListener('touchstart', onStart, {passive: true});
-            bannerContainer.addEventListener('touchmove', onMove, {passive: false});
-            bannerContainer.addEventListener('touchend', onEnd);
-            bannerContainer.addEventListener('mousedown', onStart);
-            window.addEventListener('mousemove', onMove);
-            window.addEventListener('mouseup', onEnd);
-        }
 
         let currentAdminTab = 'global';
         let savedFormSnapshot = null;
@@ -1820,23 +1822,48 @@
             document.getElementById('game-editor-title').textContent = isEditing ? (title || '未命名游戏') : '新增游戏';
         }
 
-        function renderMobileBannerFields(items) {
-            const mobileBannerFields = document.getElementById('mobile-banner-fields');
-            mobileBannerFields.innerHTML = '';
-            const entries = items.length ? items : [{ url: '', link: '' }];
-            entries.forEach(item => addMobileBannerField(item));
+        // ===== Banner 拖拽排序（手机端 & 活动共用） =====
+        let bannerDragSource = null;
+
+        function onBannerDragStart(e) {
+            bannerDragSource = this.closest('.banner-row');
+            bannerDragSource.classList.add('opacity-40');
+            e.dataTransfer.effectAllowed = 'move';
         }
 
-        async function saveMobileBanners(showMessage = false) {
-            const urls = getMobileBannerUrls();
-            try {
-                await persistMobileBannerSettings(urls);
-                renderMobileBanner(urls);
-                if (showMessage) showSaveStatus('Banner 已保存');
-            } catch (error) {
-                console.error('保存 Banner 到 Supabase 失败:', error);
-                showSaveStatus('Banner 保存失败，请检查 Supabase 连接');
+        function onBannerDragEnd(e) {
+            if (bannerDragSource) {
+                bannerDragSource.classList.remove('opacity-40');
             }
+            document.querySelectorAll('.banner-row').forEach(el => el.classList.remove('ring-2', 'ring-indigo-300'));
+            bannerDragSource = null;
+        }
+
+        function onBannerDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            this.classList.add('ring-2', 'ring-indigo-300');
+        }
+
+        function onBannerDragLeave(e) {
+            this.classList.remove('ring-2', 'ring-indigo-300');
+        }
+
+        function onBannerDrop(e) {
+            e.preventDefault();
+            this.classList.remove('ring-2', 'ring-indigo-300');
+            if (!bannerDragSource || bannerDragSource === this) return;
+
+            const container = bannerDragSource.parentNode;
+            const after = this.nextSibling;
+            if (bannerDragSource === after) {
+                container.insertBefore(bannerDragSource, this);
+            } else if (after) {
+                container.insertBefore(bannerDragSource, after);
+            } else {
+                container.appendChild(bannerDragSource);
+            }
+            bannerDragSource = null;
         }
 
         // ===== 活动 Banner 多图管理 =====
@@ -2347,9 +2374,13 @@
         }
 
         function renderFilterTags() {
-            // 只显示至少有一款游戏使用的标签
+            // 只显示当前范围内至少有一款游戏使用的标签
             const usedTags = new Set();
-            appState.games.forEach(g => {
+            const selectedActivity = appState.activities.find(activity => activity.id === appState.currentActivityId);
+            const sourceGames = selectedActivity && selectedActivity.id !== 'all-games'
+                ? appState.games.filter(game => (appState.activityGameMap[selectedActivity.id] || []).includes(game.id))
+                : appState.games;
+            sourceGames.forEach(g => {
                 if (g.tags) g.tags.forEach(t => usedTags.add(t));
             });
             const visibleTags = appState.gameTags.filter(t => usedTags.has(t));
@@ -3857,6 +3888,23 @@
             });
         }
 
+        // 从 URL 加载图片并提取主色调（批量导入用）
+        async function extractColorFromUrl(url) {
+            if (!url) return '#6B42E8';
+            try {
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    img.src = url;
+                });
+                return await extractDominantColor(img);
+            } catch {
+                return '#6B42E8';
+            }
+        }
+
         let isExtracting = false;
         function extractColorFromCover() {
             const coverUrl = document.getElementById('form-cover').value;
@@ -3965,34 +4013,26 @@
 
         async function initializeApp() {
             try {
-                const [games, bannerUrls] = await Promise.all([
+                const [games] = await Promise.all([
                     loadGames(),
-                    loadMobileBannerSettings(),
                     loadWishlistSetting(),
                     loadGameTags(),
                     loadActivities()
                 ]);
-                renderMobileBannerFields(bannerUrls);
                 renderActivityNav();
                 renderActivityAdminList();
                 resetActivityEditor();
-                renderMobileBanner(bannerUrls);
                 renderWishlistSetting();
                 renderTagManager();
-                document.getElementById('mobile-banner-fields').addEventListener('change', () => saveMobileBanners(false));
                 renderClientList();
                 renderAdminList(currentAdminSearch);
                 updateGameEditorLabels(false);
             } catch (error) {
                 console.error('初始化 Supabase 数据失败:', error);
                 appState.games = defaultData;
-                appState.mobileBannerUrls = [];
                 appState.gameTags = [...DEFAULT_GAME_TAGS];
-                renderMobileBannerFields([]);
-                renderMobileBanner([]);
                 renderWishlistSetting();
                 renderTagManager();
-                document.getElementById('mobile-banner-fields').addEventListener('change', () => saveMobileBanners(false));
                 renderClientList();
                 renderAdminList(currentAdminSearch);
                 updateGameEditorLabels(false);
