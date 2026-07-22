@@ -40,22 +40,25 @@
             </div>
 
             <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">AI判词 (≤15字)</label>
+              <div class="flex gap-2">
+                <input v-model="form.verdict" type="text" maxlength="15" placeholder="一句话介绍游戏，诙谐有网感" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50">
+                <button type="button" @click="generateVerdict" :disabled="aiLoading" class="shrink-0 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white px-4 py-2.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                  <i v-if="aiLoading" class="fas fa-spinner fa-pulse mr-1"></i>
+                  <i v-else class="fas fa-magic mr-1"></i>
+                  {{ aiLoading ? '生成中...' : 'AI填入' }}
+                </button>
+              </div>
+            </div>
+
+            <div>
               <label class="block text-sm font-semibold text-slate-700 mb-1">详情页跳转链接 (URL)</label>
               <input v-model="form.target_url" type="url" placeholder="https://store.steampowered.com/..." class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50">
             </div>
 
             <div>
               <label class="block text-sm font-semibold text-slate-700 mb-1">封面图片 URL</label>
-              <div class="flex gap-2">
-                <input v-model="form.cover" type="text" @input="handleCoverInput" required placeholder="https://..." class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-slate-50">
-                <button type="button" @click="extractColorFromCover" :disabled="!form.cover || isExtracting" class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow-md transition-colors whitespace-nowrap">
-                  <span v-if="isExtracting"><i class="fas fa-spinner fa-spin mr-1"></i>提取中</span>
-                  <span v-else><i class="fas fa-eye-dropper mr-1"></i>自动取色</span>
-                </button>
-              </div>
-              <div v-if="form.cover" class="mt-2">
-                <img :src="form.cover" alt="封面预览" class="max-h-32 rounded shadow" @load="handleCoverLoad" @error="handleCoverError">
-              </div>
+              <input v-model="form.cover" type="text" required placeholder="https://..." class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 bg-slate-50">
             </div>
 
             <div>
@@ -113,7 +116,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { gameService } from '../services/supabase'
 
 const props = defineProps({
@@ -125,12 +128,63 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle-mode', 'refresh'])
 
+const aiLoading = ref(false)
+
+const generateVerdict = async () => {
+  if (!form.value.title || !form.value.type) {
+    alert('请先填写游戏名称和类型')
+    return
+  }
+  
+  aiLoading.value = true
+  try {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+    if (!apiKey) {
+      alert('请配置 VITE_GEMINI_API_KEY 后再使用 AI 判词')
+      return
+    }
+    
+    const prompt = `你是一个游戏推荐达人，请用一句话介绍这款游戏。要求：诙谐幽默，有网感，精准说出玩点。长度不超过15个字。只输出判词本身，不要任何额外内容。游戏名：《${form.value.title}》，类型：${form.value.type}${form.value.description ? '，简介：' + form.value.description : ''}`
+    
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 50, temperature: 0.9 }
+        })
+      }
+    )
+    
+    const data = await response.json()
+    if (data.candidates && data.candidates[0]) {
+      let verdict = data.candidates[0].content.parts[0].text.trim()
+      // 去除可能的引号包裹
+      verdict = verdict.replace(/^["'「]|["'」]$/g, '')
+      if (verdict.length > 15) {
+        verdict = verdict.slice(0, 15)
+      }
+      form.value.verdict = verdict
+    } else {
+      alert('AI生成失败，请重试')
+    }
+  } catch (e) {
+    console.error('AI generation failed:', e)
+    alert('AI生成失败: ' + e.message)
+  } finally {
+    aiLoading.value = false
+  }
+}
+
 const defaultForm = () => ({
   id: '',
   title: '',
   team: '',
   type: '',
   price: '',
+  verdict: '',
   color: '#6366f1',
   cover: '',
   screenshots: [],
@@ -144,13 +198,10 @@ const defaultForm = () => ({
 
 const form = ref(defaultForm())
 const screenshotsInput = ref('')
-const isExtracting = ref(false)
-let extractTimeout = null
 
 const resetForm = () => {
   form.value = defaultForm()
   screenshotsInput.value = ''
-  if (extractTimeout) clearTimeout(extractTimeout)
 }
 
 const editGame = (game) => {
@@ -194,113 +245,5 @@ const handleSubmit = async () => {
 
 const onToggleMode = () => {
   emit('toggle-mode')
-}
-
-// 图片主色调提取功能
-const rgbToHex = (r, g, b) => {
-  const toHex = (n) => {
-    const hex = Math.round(n).toString(16)
-    return hex.length === 1 ? '0' + hex : hex
-  }
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
-}
-
-const extractDominantColor = (img) => {
-  return new Promise((resolve, reject) => {
-    try {
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-      
-      // 缩小图片以提高处理速度
-      const scale = Math.min(100 / img.width, 100 / img.height, 1)
-      canvas.width = img.width * scale
-      canvas.height = img.height * scale
-      
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-      
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-      const pixels = imageData.data
-      
-      let r = 0, g = 0, b = 0, count = 0
-      
-      // 计算平均颜色，跳过透明像素
-      for (let i = 0; i < pixels.length; i += 4) {
-        if (pixels[i + 3] > 128) { // 只统计不透明像素
-          r += pixels[i]
-          g += pixels[i + 1]
-          b += pixels[i + 2]
-          count++
-        }
-      }
-      
-      if (count === 0) {
-        resolve('#6366f1') // 默认颜色
-        return
-      }
-      
-      r /= count
-      g /= count
-      b /= count
-      
-      resolve(rgbToHex(r, g, b))
-    } catch (error) {
-      reject(error)
-    }
-  })
-}
-
-const extractColorFromCover = async () => {
-  if (!form.value.cover) return
-  
-  isExtracting.value = true
-  
-  try {
-    const img = new Image()
-    img.crossOrigin = 'Anonymous'
-    
-    img.onload = async () => {
-      try {
-        const color = await extractDominantColor(img)
-        form.value.color = color
-        isExtracting.value = false
-      } catch (error) {
-        console.error('提取颜色失败:', error)
-        isExtracting.value = false
-      }
-    }
-    
-    img.onerror = () => {
-      console.error('图片加载失败')
-      isExtracting.value = false
-    }
-    
-    img.src = form.value.cover
-  } catch (error) {
-    console.error('提取颜色出错:', error)
-    isExtracting.value = false
-  }
-}
-
-const handleCoverInput = () => {
-  // 输入时清除之前的超时
-  if (extractTimeout) clearTimeout(extractTimeout)
-  
-  // 延迟自动提取，避免频繁请求
-  extractTimeout = setTimeout(() => {
-    if (form.value.cover && !form.value.id) { // 只有新增时自动提取
-      extractColorFromCover()
-    }
-  }, 800)
-}
-
-const handleCoverLoad = () => {
-  // 图片加载完成后，仅在新增模式且未设置颜色时自动提取
-  if (!form.value.id && form.value.color === '#6366f1') {
-    extractColorFromCover()
-  }
-}
-
-const handleCoverError = () => {
-  console.error('封面图片加载失败')
 }
 </script>

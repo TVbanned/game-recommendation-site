@@ -11,8 +11,8 @@
       class="flex justify-between items-center px-4 py-2 text-white text-xs font-semibold tracking-wider"
       :style="{ backgroundColor: game.color }"
     >
-      <span>售价 {{ game.price }}</span>
-      <i class="fab fa-steam opacity-90 group-hover:scale-110 transition-transform"></i>
+      <span class="truncate flex-1 mr-2" :title="game.verdict || game.price">{{ game.verdict || '售价 ' + game.price }}</span>
+      <i class="fab fa-steam shrink-0 opacity-90 group-hover:scale-110 transition-transform"></i>
     </div>
     <div class="p-5">
       <h3 class="font-bold text-slate-800 text-lg leading-tight mb-2 truncate group-hover:text-indigo-600 transition-colors">
