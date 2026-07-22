@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -44,7 +44,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 24px;
+            margin-bottom: 0px;
         }
         .filter-tag {
             padding: 8px 20px;
@@ -361,6 +361,9 @@
         .carousel-slide img {
              pointer-events: none; 
         }
+        #activity-banner-desktop .carousel-slide img {
+            transform: none !important;
+        }
 
         @media (min-width: 768px) {
             .mobile-banner { display: none; }
@@ -369,7 +372,7 @@
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
                 gap: 24px;
-                padding: 32px 0;
+                padding: 28px 0 32px 0;
                 column-count: auto;
             }
             .game-card { margin-bottom: 0; }
@@ -387,6 +390,39 @@
         #admin-view { display: none; }
         .admin-active #client-view { display: none; }
         .admin-active #admin-view { display: block; }
+
+        .activity-stage { --theme-rgb: 15,40,92; --theme-bright: #4f8ef7; position: relative; overflow: hidden; border-radius: 14px; background: #0b1424; box-shadow: 0 20px 50px rgba(13,28,56,.28); isolation: isolate; transition: box-shadow .55s ease, background .55s ease; }
+        .activity-stage.has-banner { background: #172033; }
+        .activity-banner { position: relative; display: block; z-index: 0; height: 0; overflow: hidden; opacity: 0; border-radius: 0 0 14px 14px; transition: height .5s cubic-bezier(.2,.8,.2,1), opacity .45s ease; width: 100%; }
+        .activity-banner.visible { height: 220px; opacity: 1; }
+        .activity-banner .carousel-track { width: 100%; }
+        .activity-banner .carousel-slide { min-width: 100%; }
+        .activity-banner.collapsing { height: 0; opacity: 0; }
+        .activity-banner img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.02); transition: transform .7s cubic-bezier(.2,.8,.2,1), filter .55s ease; }
+        .activity-stage:hover .activity-banner img { transform: scale(1.05); }
+        .activity-stage-inner { position: relative; z-index: 2; display: flex; min-height: 62px; align-items: center; color: rgba(255,255,255,.82); background: linear-gradient(105deg, rgba(11,22,48,.88), rgba(var(--theme-rgb),.78) 55%, rgba(var(--theme-rgb),.58)); border-radius: 14px 14px 0 0; box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 -1px 0 rgba(255,255,255,.1); backdrop-filter: blur(22px) saturate(145%); -webkit-backdrop-filter: blur(22px) saturate(145%); transition: background .55s ease; }
+        .activity-stage-inner::before { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 10%, rgba(255,255,255,.16) 48%, transparent 78%); transform: translateX(-110%); animation: activityThemeSweep .8s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+        .activity-featured-slot { display: none; }
+        .activity-nav-divider { display: none; }
+        .activity-meta, .activity-meta-dot { display: none; }
+        .activity-nav { display: flex; flex: 1; align-items: center; max-width: 100%; gap: 28px; padding: 0 28px; overflow-x: auto; scrollbar-width: none; }
+        .activity-nav::-webkit-scrollbar { display: none; }
+        .activity-nav-item { position: relative; flex: 0 0 auto; padding: 15px 0 14px; color: rgba(255,255,255,.68); font-size: 16px; font-weight: 700; white-space: nowrap; transition: color .3s ease, text-shadow .3s ease, transform .3s ease, font-size .3s ease; }
+        .activity-nav-item:hover { color: #fff; transform: translateY(-1px); }
+        .activity-nav-item.active { color: #fff; font-size: 18px; text-shadow: 0 0 16px rgba(255,255,255,.35); }
+        .activity-nav-item .activity-flame { display: none; margin-right: 8px; font-size: 16px; background: linear-gradient(180deg, #f97316, #ef4444); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; text-shadow: none; filter: drop-shadow(0 0 10px rgba(239,68,68,.6)) drop-shadow(0 0 20px rgba(249,115,22,.4)); animation: activityFlamePulse 1.8s ease-in-out infinite; }
+        .activity-nav-item.active .activity-flame-featured { display: inline; }
+        .activity-nav-item .activity-dot { display: none; width: 11px; height: 11px; margin-right: 10px; border-radius: 999px; vertical-align: 1px; background: var(--theme-bright); box-shadow: 0 0 0 4px rgba(255,255,255,.14), 0 0 17px 5px var(--theme-bright), 0 0 30px 8px rgba(var(--theme-rgb),.64); animation: activityActivePulse 1.8s ease-in-out infinite; transition: background .55s ease, box-shadow .55s ease; }
+        .activity-nav-item.active .activity-dot { display: inline-block; }
+        .activity-featured-label { color: rgba(255,255,255,.48); font-size: 13px; font-weight: 500; vertical-align: middle; }
+        .activity-featured-label .fa-fire { margin-right: 4px; background: linear-gradient(180deg, #f97316, #ef4444); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 8px rgba(239,68,68,.5)) drop-shadow(0 0 16px rgba(249,115,22,.35)); animation: activityFlamePulse 1.8s ease-in-out infinite; font-size: 14px; vertical-align: middle; }
+        .activity-stage-link { display: none; flex: 0 0 auto; align-items: center; gap: 7px; margin-left: 14px; color: rgba(255,255,255,.84); font-size: 12px; font-weight: 700; transition: color .2s ease; }
+        .activity-stage-link.visible { display: inline-flex; }
+        .activity-stage-link:hover { color: #fff; }
+        @keyframes activityThemeSweep { from { transform: translateX(-110%); } to { transform: translateX(110%); } }
+        @keyframes activityActivePulse { 50% { box-shadow: 0 0 0 5px rgba(255,255,255,.07), 0 0 19px var(--theme-bright); } }
+        @keyframes activityFlamePulse { 50% { text-shadow: 0 0 18px var(--theme-bright), 0 0 36px var(--theme-bright); } }
+        @media (max-width: 1023px) { .activity-banner.visible { height: 185px; } .activity-stage-inner { padding: 0 14px; } .activity-meta { max-width: 180px; overflow: hidden; text-overflow: ellipsis; } }
     </style>
 </head>
 <body>
@@ -398,6 +434,20 @@
                 <div class="mb-10 hidden md:flex items-baseline flex-wrap gap-4 select-none cursor-pointer" id="secret-trigger-pc">
                     <h1 id="desktop-main-title" class="text-5xl font-black tracking-tight text-gray-900 title-gradient">暑期「游戏浪一夏」</h1>
                     <span id="desktop-subtitle" class="text-2xl text-gray-500 font-light tracking-wide border-l-2 border-gray-300 pl-4">东方侠影游戏安利时间</span>
+                </div>
+
+                <div id="activity-area-desktop" class="hidden md:block mb-7">
+                    <section id="activity-stage" class="activity-stage">
+                        <div class="activity-stage-inner">
+                            <div id="activity-featured-slot" class="activity-featured-slot"></div>
+                            <nav id="activity-nav-desktop" class="activity-nav"></nav>
+                            <a id="activity-stage-link" class="activity-stage-link" target="_blank" rel="noopener noreferrer">探索活动 <i class="fas fa-arrow-up-right-from-square text-[10px]"></i></a>
+                        </div>
+                        <div id="activity-banner-desktop" class="activity-banner carousel-container">
+                            <div id="activity-banner-track" class="carousel-track" style="height:100%"></div>
+                            <div id="activity-banner-dots" class="absolute bottom-3 w-full flex justify-center gap-2 z-10"></div>
+                        </div>
+                    </section>
                 </div>
 
                 <!-- Desktop Filter Bar -->
@@ -473,6 +523,7 @@
                     <button id="tab-global-btn" type="button" onclick="switchAdminTab('global')" class="admin-tab-btn active">Tab1 全局内容</button>
                     <button id="tab-game-btn" type="button" onclick="switchAdminTab('game')" class="admin-tab-btn">游戏内容子页面</button>
                     <button id="tab-tags-btn" type="button" onclick="switchAdminTab('tags')" class="admin-tab-btn">Tab3 玩法标签</button>
+                    <button id="tab-activity-btn" type="button" onclick="switchAdminTab('activity')" class="admin-tab-btn">Tab4 活动管理</button>
                     <button type="button" onclick="openNewGameEditor()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-colors">
                         <i class="fas fa-plus mr-1"></i>新增游戏
                     </button>
@@ -565,6 +616,35 @@
                         <p class="text-sm text-slate-500 mb-4">在下方为每款游戏快捷勾选/取消标签，修改即时生效。</p>
                         <div id="game-tag-overview" class="space-y-3"></div>
                     </section>
+                </div>
+
+                <div id="admin-activity-panel" class="admin-tab-panel hidden grid gap-8 lg:grid-cols-[1.1fr_.9fr]">
+                    <section id="activity-editor-section" class="hidden rounded-2xl border border-slate-200 bg-slate-50 p-6">
+                        <h3 id="activity-editor-title" class="text-lg font-bold text-slate-800 mb-4">创建活动</h3>
+                        <input id="activity-id" type="hidden">
+                        <div class="space-y-4">
+                            <input id="activity-title" type="text" placeholder="活动名称（同时作为导航栏名称）" class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white">
+                            <div class="grid grid-cols-2 gap-4"><label class="flex items-center gap-2 text-sm font-bold text-slate-600"><input id="activity-show-in-nav" type="checkbox">显示在导航栏</label><label class="flex items-center gap-2 text-sm font-bold text-slate-600"><input id="activity-featured" type="checkbox">精选（默认置顶）</label></div>
+                            <div class="rounded-xl border border-slate-200 bg-white p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-bold text-slate-700">活动 Banner 图片（支持多张轮播）</span>
+                                    <button type="button" onclick="saveActivityBanners(true)" class="text-xs text-indigo-600 hover:text-indigo-800 font-bold">保存 Banner</button>
+                                </div>
+                                <div id="activity-banner-fields" class="space-y-2">
+                                    <div class="flex gap-2 items-center banner-row">
+                                        <span class="banner-drag-handle text-slate-300 hover:text-slate-500 text-base cursor-grab active:cursor-grabbing shrink-0 select-none" draggable="true" title="拖拽排序"><i class="fas fa-grip-vertical"></i></span>
+                                        <input type="url" name="activity-banner-url" placeholder="图片 URL" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white text-sm">
+                                        <input type="url" name="activity-banner-link" placeholder="跳转链接（可选）" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white text-sm">
+                                        <button type="button" onclick="addActivityBannerField()" class="text-rose-500 text-2xl leading-none px-1 shrink-0" aria-label="添加 Banner">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div><div class="mb-2 flex items-center justify-between"><p class="text-sm font-bold text-slate-700">选择参与游戏</p><label class="flex cursor-pointer items-center gap-2 text-sm font-bold text-indigo-600"><input id="activity-game-select-all" type="checkbox" onchange="toggleAllActivityGames(this.checked)">全选当前结果</label></div><div class="relative mb-3"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i><input id="activity-game-search" type="text" oninput="renderActivityGameSelector()" placeholder="搜索游戏名 / 类型 / 标签..." class="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-9 pr-3 text-sm"></div><div id="activity-game-selector" class="max-h-64 overflow-y-auto space-y-2 rounded-lg border border-slate-200 bg-white p-3"></div></div>
+                            <div class="flex gap-3"><button type="button" onclick="saveActivity()" class="flex-1 rounded-lg bg-indigo-600 py-2.5 font-bold text-white">保存活动</button><button type="button" onclick="closeActivityEditor()" class="rounded-lg border border-slate-300 px-4 font-bold text-slate-600">取消</button></div>
+                        </div>
+                    </section>
+                    <section class="rounded-2xl border border-slate-200 bg-white p-6"><div class="mb-4 flex items-center justify-between"><h3 class="text-lg font-bold text-slate-800">活动管理</h3><button type="button" onclick="openNewActivityEditor()" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-indigo-700"><i class="fas fa-plus mr-1"></i>新增活动</button></div><p class="mb-4 text-sm text-slate-500">活动是否进入首页导航由“导航栏管理”单独控制。</p><div id="activity-admin-list" class="space-y-3"></div></section>
+                    <section class="lg:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-6"><div class="mb-4 flex items-center justify-between"><div><h3 class="text-lg font-bold text-slate-800">导航栏管理</h3><p class="mt-1 text-sm text-slate-500">仅显示勾选进入导航栏的活动；精选活动始终优先。</p></div></div><div id="activity-nav-admin-list" class="space-y-2"></div></section>
                 </div>
 
                 <div id="admin-game-panel" class="admin-tab-panel hidden">
@@ -890,6 +970,9 @@
             wishlistEnabled: false,
             currentFilter: '全部',
             gameTags: [],
+            activities: [],
+            activityGameMap: {},
+            currentActivityId: '',
             sortMode: 'default' // 'default' | 'release'，默认按原始顺序展示
         };
 
@@ -1032,6 +1115,45 @@
                 .delete()
                 .eq('id', id);
 
+            if (error) throw error;
+        }
+
+        async function loadActivities() {
+            const { data, error } = await supabaseClient.from('activities').select('*').order('is_featured', { ascending: false }).order('nav_sort_order', { ascending: true }).order('sort_order', { ascending: true });
+            if (error) throw error;
+            appState.activities = data || [];
+            appState.activityGameMap = {};
+            if (appState.activities.length) {
+                const { data: relations, error: relationError } = await supabaseClient.from('activity_games').select('activity_id, game_id, sort_order').order('sort_order', { ascending: true });
+                if (relationError) throw relationError;
+                (relations || []).forEach(item => {
+                    if (!appState.activityGameMap[item.activity_id]) appState.activityGameMap[item.activity_id] = [];
+                    appState.activityGameMap[item.activity_id].push(item.game_id);
+                });
+                const navActivities = appState.activities.filter(activity => activity.show_in_nav).sort((a, b) => Number(b.is_featured) - Number(a.is_featured) || (a.nav_sort_order ?? 0) - (b.nav_sort_order ?? 0));
+                if (!navActivities.some(activity => activity.id === appState.currentActivityId)) appState.currentActivityId = navActivities[0]?.id || '';
+            }
+            return appState.activities;
+        }
+
+        async function saveActivityRecord(activity, gameIds) {
+            if (activity.is_featured) {
+                const featured = appState.activities.filter(item => item.is_featured && item.id !== activity.id);
+                await Promise.all(featured.map(item => supabaseClient.from('activities').update({ is_featured: false }).eq('id', item.id)));
+            }
+            const { data, error } = await supabaseClient.from('activities').upsert([activity], { onConflict: 'id' }).select().single();
+            if (error) throw error;
+            const { error: deleteError } = await supabaseClient.from('activity_games').delete().eq('activity_id', activity.id);
+            if (deleteError) throw deleteError;
+            if (gameIds.length) {
+                const { error: insertError } = await supabaseClient.from('activity_games').insert(gameIds.map((gameId, index) => ({ activity_id: activity.id, game_id: gameId, sort_order: index })));
+                if (insertError) throw insertError;
+            }
+            return data;
+        }
+
+        async function deleteActivityRecord(id) {
+            const { error } = await supabaseClient.from('activities').delete().eq('id', id);
             if (error) throw error;
         }
 
@@ -1383,17 +1505,17 @@
             clearInterval(mobileBannerInterval);
             mobileBannerInterval = setInterval(() => {
                 mobileBannerIndex++;
-                const realIndex = mobileBannerIndex % realCount;
+                const realIndex = mobileBannerIndex > realCount ? 0 : mobileBannerIndex - 1;
                 track.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                 track.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
                 Array.from(dotsEl.children).forEach((dot, i) => {
                     dot.className = `rounded-full transition-all duration-300 ${i === realIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
                 });
-                if (mobileBannerIndex >= realCount) {
+                if (mobileBannerIndex > realCount) {
                     setTimeout(() => {
-                        mobileBannerIndex = 0;
+                        mobileBannerIndex = 1;
                         track.style.transition = 'none';
-                        track.style.transform = 'translateX(0)';
+                        track.style.transform = 'translateX(-100%)';
                     }, 350);
                 }
             }, 3000);
@@ -1467,7 +1589,7 @@
             this.classList.remove('ring-2', 'ring-indigo-300');
             if (!bannerDragSource || bannerDragSource === this) return;
 
-            const container = document.getElementById('mobile-banner-fields');
+            const container = bannerDragSource.parentNode;
             const after = this.nextSibling;
             if (bannerDragSource === after) {
                 // dropping after itself: insert before this
@@ -1506,12 +1628,19 @@
         }
 
         function renderMobileBanner(items) {
-            const bannerItems = items.length ? items : [{ url: 'https://placehold.co/800x400/e2e8f0/64748b?text=Summer+Game+Banner', link: '' }];
+            const defaultBanners = [
+                { url: 'https://placehold.co/800x400/1e293b/38bdf8?text=🔥+夏日游戏浪一夏', link: '' },
+                { url: 'https://placehold.co/800x400/312e81/a78bfa?text=🎮+新游速递·每日精选', link: '' },
+                { url: 'https://placehold.co/800x400/0f172a/f472b6?text=🏆+热门排行·玩家推荐', link: '' }
+            ];
+            const bannerItems = items.length ? items : defaultBanners;
             const track = document.getElementById('mobile-banner-track');
             const dots = document.getElementById('mobile-banner-dots');
             clearInterval(mobileBannerInterval);
-            mobileBannerIndex = 0;
-            const slides = bannerItems.concat(bannerItems.length > 1 ? bannerItems[0] : []);
+            const slides = bannerItems.length > 1
+                ? [bannerItems[bannerItems.length - 1], ...bannerItems, bannerItems[0]]
+                : bannerItems;
+            mobileBannerIndex = bannerItems.length > 1 ? 1 : 0;
             track.innerHTML = slides.map((item, index) => {
                 const img = `<img src="${item.url}" loading="lazy" decoding="async" referrerpolicy="no-referrer" class="w-full h-full object-cover" alt="Banner ${index + 1}">`;
                 return `<div class="carousel-slide">${item.link ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="block w-full h-full">${img}</a>` : img}</div>`;
@@ -1585,13 +1714,37 @@
                     if (diff < 0) mobileBannerIndex++;
                     else mobileBannerIndex--;
                 }
-                const bannerCount = document.querySelectorAll('#mobile-banner-dots > div').length || 1;
-                if (mobileBannerIndex < 0) mobileBannerIndex = bannerCount - 1;
-                if (mobileBannerIndex >= bannerCount) mobileBannerIndex = 0;
-                if (t) t.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
-                Array.from(document.getElementById('mobile-banner-dots').children).forEach((dot, i) => {
-                    dot.className = `rounded-full transition-all duration-300 ${i === mobileBannerIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
-                });
+                const realCount = document.querySelectorAll('#mobile-banner-dots > div').length || 1;
+                // 无缝循环：双向的重复 slide 处理
+                if (mobileBannerIndex > realCount) {
+                    // 向前滑过最后一张 → 显示末尾复制的第一张 → 无动画跳回
+                    t.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
+                    const displayIndex = 0;
+                    Array.from(document.getElementById('mobile-banner-dots').children).forEach((dot, i) => {
+                        dot.className = `rounded-full transition-all duration-300 ${i === displayIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
+                    });
+                    setTimeout(() => {
+                        mobileBannerIndex = 1;
+                        if (t) { t.style.transition = 'none'; t.style.transform = 'translateX(-100%)'; }
+                    }, 350);
+                } else if (mobileBannerIndex < 1) {
+                    // 向后滑过第一张 → 显示开头复制的最后一张 → 无动画跳回
+                    t.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
+                    const displayIndex = realCount - 1;
+                    Array.from(document.getElementById('mobile-banner-dots').children).forEach((dot, i) => {
+                        dot.className = `rounded-full transition-all duration-300 ${i === displayIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
+                    });
+                    setTimeout(() => {
+                        mobileBannerIndex = realCount;
+                        if (t) { t.style.transition = 'none'; t.style.transform = `translateX(-${realCount * 100}%)`; }
+                    }, 350);
+                } else {
+                    t.style.transform = `translateX(-${mobileBannerIndex * 100}%)`;
+                    const realIndex = mobileBannerIndex - 1;
+                    Array.from(document.getElementById('mobile-banner-dots').children).forEach((dot, i) => {
+                        dot.className = `rounded-full transition-all duration-300 ${i === realIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
+                    });
+                }
                 startMobileBannerAutoSlide();
             };
 
@@ -1612,10 +1765,13 @@
             document.getElementById('admin-global-panel').classList.toggle('hidden', tab !== 'global');
             document.getElementById('admin-game-panel').classList.toggle('hidden', tab !== 'game');
             document.getElementById('admin-tags-panel').classList.toggle('hidden', tab !== 'tags');
+            document.getElementById('admin-activity-panel').classList.toggle('hidden', tab !== 'activity');
             document.getElementById('tab-global-btn').classList.toggle('active', tab === 'global');
             document.getElementById('tab-game-btn').classList.toggle('active', tab === 'game');
             document.getElementById('tab-tags-btn').classList.toggle('active', tab === 'tags');
+            document.getElementById('tab-activity-btn').classList.toggle('active', tab === 'activity');
             if (tab === 'tags') renderGameTagOverview();
+            if (tab === 'activity') { renderActivityAdminList(); resetActivityEditor(); }
         }
 
         window.switchCmsContentEditor = function(tab) {
@@ -1683,6 +1839,427 @@
             }
         }
 
+        // ===== 活动 Banner 多图管理 =====
+        function createActivityBannerField(data = {}) {
+            const row = document.createElement('div');
+            row.className = 'flex gap-2 items-center banner-row';
+            row.innerHTML = `
+                <span class="banner-drag-handle text-slate-300 hover:text-slate-500 text-base cursor-grab active:cursor-grabbing shrink-0 select-none" draggable="true" title="拖拽排序"><i class="fas fa-grip-vertical"></i></span>
+                <input type="url" name="activity-banner-url" placeholder="图片 URL" value="${data.url || ''}" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white text-sm">
+                <input type="url" name="activity-banner-link" placeholder="跳转链接（可选）" value="${data.link || ''}" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white text-sm">
+                <button type="button" onclick="addActivityBannerField()" class="text-rose-500 text-2xl leading-none px-1 shrink-0" aria-label="添加 Banner">+</button>
+            `;
+            const handle = row.querySelector('.banner-drag-handle');
+            handle.addEventListener('dragstart', onBannerDragStart);
+            handle.addEventListener('dragend', onBannerDragEnd);
+            row.addEventListener('dragover', onBannerDragOver);
+            row.addEventListener('dragleave', onBannerDragLeave);
+            row.addEventListener('drop', onBannerDrop);
+            return row;
+        }
+
+        window.addActivityBannerField = function(value = '') {
+            const data = typeof value === 'object' ? value : { url: value || '', link: '' };
+            const container = document.getElementById('activity-banner-fields');
+            if (container) container.appendChild(createActivityBannerField(data));
+        };
+
+        function renderActivityBannerFields(items) {
+            const container = document.getElementById('activity-banner-fields');
+            if (!container) return;
+            container.innerHTML = '';
+            const entries = items.length ? items : [{ url: '', link: '' }];
+            entries.forEach(item => addActivityBannerField(item));
+        }
+
+        function getActivityBannerUrls() {
+            const urlInputs = document.querySelectorAll('#activity-banner-fields [name="activity-banner-url"]');
+            const linkInputs = document.querySelectorAll('#activity-banner-fields [name="activity-banner-link"]');
+            return Array.from(urlInputs).map((input, i) => ({
+                url: input.value.trim(),
+                link: (linkInputs[i]?.value || '').trim()
+            })).filter(item => item.url);
+        }
+
+        async function saveActivityBanners(showMessage = false) {
+            const id = document.getElementById('activity-id').value;
+            if (!id) {
+                if (showMessage) showSaveStatus('请先保存活动后再保存 Banner');
+                return;
+            }
+            const urls = getActivityBannerUrls();
+            const activity = appState.activities.find(item => item.id === id);
+            if (!activity) {
+                if (showMessage) showSaveStatus('活动不存在，请先保存活动');
+                return;
+            }
+            try {
+                const updated = { ...activity, banner_urls: urls };
+                const gameIds = appState.activityGameMap[id] || [];
+                await saveActivityRecord(updated, gameIds);
+                await loadActivities();
+                renderActivityNav();
+                if (showMessage) showSaveStatus('活动 Banner 已保存');
+            } catch (error) {
+                console.error('保存活动 Banner 失败:', error);
+                showSaveStatus('Banner 保存失败');
+            }
+        }
+        window.saveActivityBanners = saveActivityBanners;
+
+        let activityBannerInterval;
+        let activityBannerIndex = 0;
+
+        function renderActivityBannerCarousel(bannerUrls) {
+            const track = document.getElementById('activity-banner-track');
+            const dots = document.getElementById('activity-banner-dots');
+            clearInterval(activityBannerInterval);
+            if (!track || !dots) return;
+            const slides = bannerUrls.length > 1
+                ? [bannerUrls[bannerUrls.length - 1], ...bannerUrls, bannerUrls[0]]
+                : bannerUrls;
+            activityBannerIndex = bannerUrls.length > 1 ? 1 : 0;
+            track.innerHTML = slides.map((item, index) => {
+                const img = `<img src="${item.url}" loading="lazy" decoding="async" referrerpolicy="no-referrer" class="w-full h-full object-cover" alt="Activity Banner ${index + 1}">`;
+                return `<div class="carousel-slide">${item.link ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="block w-full h-full">${img}</a>` : img}</div>`;
+            }).join('');
+            dots.innerHTML = bannerUrls.map((_, index) => `<div class="w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white w-6' : 'bg-white/40'}"></div>`).join('');
+            if (bannerUrls.length > 1) {
+                startActivityBannerAutoSlide();
+            }
+            initActivityBannerSwipe();
+        }
+
+        function startActivityBannerAutoSlide() {
+            const track = document.getElementById('activity-banner-track');
+            const dotsEl = document.getElementById('activity-banner-dots');
+            if (!track || !dotsEl) return;
+            const realCount = dotsEl.children.length;
+            if (realCount <= 1) return;
+            clearInterval(activityBannerInterval);
+            activityBannerInterval = setInterval(() => {
+                activityBannerIndex++;
+                const realIndex = activityBannerIndex > realCount ? 0 : activityBannerIndex - 1;
+                track.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                track.style.transform = `translateX(-${activityBannerIndex * 100}%)`;
+                Array.from(dotsEl.children).forEach((dot, i) => {
+                    dot.className = `rounded-full transition-all duration-300 ${i === realIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
+                });
+                if (activityBannerIndex > realCount) {
+                    setTimeout(() => {
+                        activityBannerIndex = 1;
+                        track.style.transition = 'none';
+                        track.style.transform = 'translateX(-100%)';
+                    }, 350);
+                }
+            }, 3000);
+        }
+
+        let activityBannerSwipeReady = false;
+        function initActivityBannerSwipe() {
+            if (activityBannerSwipeReady) return;
+            const bannerContainer = document.getElementById('activity-banner-desktop');
+            if (!bannerContainer) return;
+            activityBannerSwipeReady = true;
+            let isSwiping = false, swipeStartX = 0, swipeStartY = 0, swipeCurrentX = 0;
+            let didSwipe = false;
+            const getTrack = () => document.getElementById('activity-banner-track');
+            bannerContainer.addEventListener('click', (e) => {
+                if (didSwipe) { e.preventDefault(); e.stopPropagation(); didSwipe = false; }
+            }, true);
+            const onStart = (e) => {
+                isSwiping = true; didSwipe = false;
+                swipeStartX = (e.touches ? e.touches[0].clientX : e.clientX);
+                swipeStartY = (e.touches ? e.touches[0].clientY : e.clientY);
+                swipeCurrentX = swipeStartX;
+                const t = getTrack(); if (t) t.style.transition = 'none';
+                clearInterval(activityBannerInterval);
+            };
+            const onMove = (e) => {
+                if (!isSwiping) return;
+                const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+                const currentY = e.touches ? e.touches[0].clientY : e.clientY;
+                const diffX = Math.abs(currentX - swipeStartX);
+                const diffY = Math.abs(currentY - swipeStartY);
+                if (diffX > diffY + 10) { e.preventDefault(); }
+                swipeCurrentX = currentX;
+                const diff = swipeCurrentX - swipeStartX;
+                const containerWidth = bannerContainer.offsetWidth;
+                const baseTranslate = -activityBannerIndex * containerWidth;
+                const t = getTrack(); if (t) t.style.transform = `translateX(${baseTranslate + diff}px)`;
+            };
+            const onEnd = () => {
+                if (!isSwiping) return; isSwiping = false;
+                const diff = swipeCurrentX - swipeStartX;
+                const t = getTrack(); if (t) t.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                if (Math.abs(diff) > 50) {
+                    didSwipe = true;
+                    if (diff < 0) activityBannerIndex++; else activityBannerIndex--;
+                }
+                const realCount = document.querySelectorAll('#activity-banner-dots > div').length || 1;
+                // 无缝循环：双向的重复 slide 处理
+                if (activityBannerIndex > realCount) {
+                    t.style.transform = `translateX(-${activityBannerIndex * 100}%)`;
+                    const displayIndex = 0;
+                    Array.from(document.getElementById('activity-banner-dots').children).forEach((dot, i) => {
+                        dot.className = `rounded-full transition-all duration-300 ${i === displayIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
+                    });
+                    setTimeout(() => {
+                        activityBannerIndex = 1;
+                        if (t) { t.style.transition = 'none'; t.style.transform = 'translateX(-100%)'; }
+                    }, 350);
+                } else if (activityBannerIndex < 1) {
+                    t.style.transform = `translateX(-${activityBannerIndex * 100}%)`;
+                    const displayIndex = realCount - 1;
+                    Array.from(document.getElementById('activity-banner-dots').children).forEach((dot, i) => {
+                        dot.className = `rounded-full transition-all duration-300 ${i === displayIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
+                    });
+                    setTimeout(() => {
+                        activityBannerIndex = realCount;
+                        if (t) { t.style.transition = 'none'; t.style.transform = `translateX(-${realCount * 100}%)`; }
+                    }, 350);
+                } else {
+                    t.style.transform = `translateX(-${activityBannerIndex * 100}%)`;
+                    const realIndex = activityBannerIndex - 1;
+                    Array.from(document.getElementById('activity-banner-dots').children).forEach((dot, i) => {
+                        dot.className = `rounded-full transition-all duration-300 ${i === realIndex ? 'bg-white w-6 h-2.5' : 'bg-white/40 w-2.5 h-2.5'}`;
+                    });
+                }
+                startActivityBannerAutoSlide();
+            };
+            bannerContainer.addEventListener('touchstart', onStart, { passive: true });
+            bannerContainer.addEventListener('touchmove', onMove, { passive: false });
+            bannerContainer.addEventListener('touchend', onEnd);
+            bannerContainer.addEventListener('mousedown', onStart);
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', onEnd);
+        }
+        // ===== 活动 Banner 多图管理 END =====
+
+        function getNavActivities() {
+            return appState.activities.filter(activity => activity.show_in_nav || activity.id === 'all-games').sort((a, b) => {
+                if (a.is_featured !== b.is_featured) return Number(b.is_featured) - Number(a.is_featured);
+                if (a.id === 'all-games') return -1;
+                if (b.id === 'all-games') return 1;
+                return (a.nav_sort_order ?? 0) - (b.nav_sort_order ?? 0);
+            });
+        }
+
+        function getThemeColor(url) {
+            return new Promise(resolve => {
+                if (!url) return resolve({ rgb: '15,40,92', bright: '#4f8ef7' });
+                const image = new Image();
+                image.crossOrigin = 'anonymous';
+                image.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const size = 36;
+                        canvas.width = size; canvas.height = size;
+                        const context = canvas.getContext('2d', { willReadFrequently: true });
+                        context.drawImage(image, 0, 0, size, size);
+                        const pixels = context.getImageData(0, 0, size, size).data;
+                        let totalR = 0, totalG = 0, totalB = 0, count = 0;
+                        let brightR = 0, brightG = 0, brightB = 0, maxBright = 0;
+                        for (let i = 0; i < pixels.length; i += 4) {
+                            if (pixels[i + 3] > 180) {
+                                const r = pixels[i], g = pixels[i + 1], b = pixels[i + 2];
+                                if (Math.max(r, g, b) - Math.min(r, g, b) > 18) { totalR += r; totalG += g; totalB += b; count++; }
+                                const lum = r + g + b;
+                                if (lum > maxBright) { maxBright = lum; brightR = r; brightG = g; brightB = b; }
+                            }
+                        }
+                        const bright = maxBright > 0 ? `rgb(${brightR},${brightG},${brightB})` : '#4f8ef7';
+                        if (!count) return resolve({ rgb: '15,40,92', bright });
+                        let r = Math.round(totalR / count), g = Math.round(totalG / count), b = Math.round(totalB / count);
+                        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                        const lightness = (max + min) / 510;
+                        if (lightness < .25) {
+                            r = Math.round(r * 1.3); g = Math.round(g * 1.3); b = Math.round(b * 1.3);
+                        } else if (lightness > .65) {
+                            r = Math.round(r * .45); g = Math.round(g * .45); b = Math.round(b * .45);
+                        } else if (lightness > .45) {
+                            r = Math.round(r * .55); g = Math.round(g * .55); b = Math.round(b * .55);
+                        }
+                        resolve({ rgb: `${r},${g},${b}`, bright });
+                    } catch { resolve({ rgb: '15,40,92', bright: '#4f8ef7' }); }
+                };
+                image.onerror = () => resolve({ rgb: '15,40,92', bright: '#4f8ef7' });
+                image.src = url;
+            });
+        }
+
+        async function applyActivityTheme(stage, bannerUrl) {
+            const theme = await getThemeColor(bannerUrl);
+            if (stage.dataset.bannerUrl !== (bannerUrl || '')) return;
+            stage.style.setProperty('--theme-rgb', theme.rgb);
+            stage.style.setProperty('--theme-bright', theme.bright);
+        }
+
+        function renderActivityNav() {
+            const area = document.getElementById('activity-area-desktop');
+            const stage = document.getElementById('activity-stage');
+            const featuredSlot = document.getElementById('activity-featured-slot');
+            const nav = document.getElementById('activity-nav-desktop');
+            const banner = document.getElementById('activity-banner-desktop');
+            const track = document.getElementById('activity-banner-track');
+            const dots = document.getElementById('activity-banner-dots');
+            const stageLink = document.getElementById('activity-stage-link');
+            const navActivities = getNavActivities();
+            const featured = navActivities.find(activity => activity.is_featured);
+            const regularActivities = navActivities.filter(activity => !activity.is_featured);
+            const active = navActivities.find(activity => activity.id === appState.currentActivityId) || featured || regularActivities[0];
+            if (!active) { area.classList.add('hidden'); return; }
+            area.classList.remove('hidden');
+            if (appState.currentActivityId !== active.id) appState.currentActivityId = active.id;
+            const allItems = featured ? [featured, ...regularActivities] : regularActivities;
+            nav.innerHTML = allItems.map(activity => {
+                const isActive = activity.id === appState.currentActivityId;
+                if (activity.is_featured) {
+                    const flameCls = isActive ? 'activity-flame-featured' : '';
+                    return `<button type="button" onclick="setActivity('${activity.id}')" class="activity-nav-item ${isActive ? 'active' : ''} ${flameCls}"><span class="activity-featured-label"><i class="fas fa-fire"></i>热推活动</span> ${escapeHtml(activity.title)}</button>`;
+                }
+                return `<button type="button" onclick="setActivity('${activity.id}')" class="activity-nav-item ${isActive ? 'active' : ''}"><span class="activity-dot" style="display:${isActive ? 'inline-block' : 'none'}"></span>${escapeHtml(activity.title)}</button>`;
+            }).join('');
+            featuredSlot.classList.add('hidden');
+            // 解析 banner 数据（兼容新旧格式）
+            const bannerUrls = Array.isArray(active.banner_urls) && active.banner_urls.length
+                ? active.banner_urls.filter(item => item.url)
+                : (active.banner_url ? [{ url: active.banner_url, link: active.banner_link || '' }] : []);
+            const hasBanner = bannerUrls.length > 0;
+            const previousBannerUrl = banner.dataset.bannerUrl || '';
+            const firstBannerUrl = bannerUrls[0]?.url || '';
+            const replaceBanner = hasBanner && previousBannerUrl && previousBannerUrl !== firstBannerUrl && banner.classList.contains('visible');
+            stage.classList.toggle('has-banner', hasBanner);
+            stage.dataset.bannerUrl = firstBannerUrl;
+            const showBanner = () => {
+                if (stage.dataset.bannerUrl !== (bannerUrls[0]?.url || '')) return;
+                banner.dataset.bannerUrl = firstBannerUrl;
+                banner.classList.remove('collapsing');
+                banner.classList.toggle('visible', hasBanner);
+                if (hasBanner) {
+                    renderActivityBannerCarousel(bannerUrls);
+                }
+            };
+            if (replaceBanner) {
+                banner.classList.add('collapsing');
+                window.setTimeout(showBanner, 500);
+            } else {
+                showBanner();
+            }
+            applyActivityTheme(stage, firstBannerUrl);
+            const firstLink = bannerUrls[0]?.link || '';
+            stageLink.href = firstLink || '#';
+            stageLink.classList.toggle('visible', !!firstLink);
+        }
+
+        window.setActivity = function(id) {
+            appState.currentActivityId = id;
+            appState.currentFilter = '全部';
+            renderActivityNav();
+            renderClientList();
+        };
+
+        let activitySelectedGameIds = [];
+
+        function getActivitySelectorGames() {
+            const query = document.getElementById('activity-game-search').value.trim().toLowerCase();
+            return query ? filterGames(appState.games, query) : appState.games;
+        }
+
+        function syncActivityGameSelectAll(selected, games) {
+            const checkbox = document.getElementById('activity-game-select-all');
+            if (!checkbox) return;
+            checkbox.checked = games.length > 0 && games.every(game => selected.includes(game.id));
+            checkbox.indeterminate = !checkbox.checked && games.some(game => selected.includes(game.id));
+        }
+
+        function renderActivityGameSelector(selectedIds = null) {
+            if (selectedIds) activitySelectedGameIds = [...selectedIds];
+            const container = document.getElementById('activity-game-selector');
+            const games = getActivitySelectorGames();
+            container.innerHTML = games.map(game => `<label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" onchange="toggleActivityGame('${game.id}', this.checked)" name="activity-game-id" value="${game.id}" ${activitySelectedGameIds.includes(game.id) ? 'checked' : ''}>${escapeHtml(game.title)}<span class="ml-auto text-xs text-slate-400">${escapeHtml(game.type || '')}</span></label>`).join('') || '<p class="text-sm text-slate-400">没有找到匹配游戏</p>';
+            syncActivityGameSelectAll(activitySelectedGameIds, games);
+        }
+
+        window.toggleActivityGame = function(id, checked) {
+            const selected = new Set(activitySelectedGameIds);
+            checked ? selected.add(id) : selected.delete(id);
+            activitySelectedGameIds = [...selected];
+            syncActivityGameSelectAll(activitySelectedGameIds, getActivitySelectorGames());
+        };
+        window.toggleAllActivityGames = function(checked) {
+            const selected = new Set(activitySelectedGameIds);
+            getActivitySelectorGames().forEach(game => checked ? selected.add(game.id) : selected.delete(game.id));
+            activitySelectedGameIds = [...selected];
+            renderActivityGameSelector();
+        };
+
+        function renderActivityAdminList() {
+            const container = document.getElementById('activity-admin-list');
+            container.innerHTML = appState.activities.map(activity => `<div class="rounded-xl border border-slate-200 p-4"><div class="flex items-start justify-between gap-3"><div><p class="font-bold text-slate-800">${activity.is_featured ? '<i class="fas fa-sparkles text-violet-500 mr-1"></i>' : ''}${escapeHtml(activity.title)}</p><p class="mt-1 text-xs text-slate-500">${(appState.activityGameMap[activity.id] || []).length} 款游戏 · ${activity.id === 'all-games' ? '默认活动' : activity.show_in_nav ? '已加入导航栏' : '未加入导航栏'}</p></div><div class="flex gap-2 text-sm"><button type="button" onclick="editActivity('${activity.id}')" class="text-indigo-600">编辑</button>${activity.id === 'all-games' ? '' : `<button type="button" onclick="removeActivity('${activity.id}')" class="text-rose-600">删除</button>`}</div></div></div>`).join('') || '<p class="text-sm text-slate-400">暂无活动，请创建第一个活动。</p>';
+            renderActivityNavAdminList();
+        }
+
+        function renderActivityNavAdminList() {
+            const container = document.getElementById('activity-nav-admin-list');
+            const navActivities = getNavActivities();
+            const navIndex = new Map(navActivities.map((activity, index) => [activity.id, index]));
+            container.innerHTML = appState.activities.map(activity => {
+                const isAllGames = activity.id === 'all-games';
+                const isFeatured = activity.is_featured;
+                const inNav = !!activity.show_in_nav || isAllGames;
+                const index = navIndex.get(activity.id);
+                const locked = isAllGames || isFeatured;
+                return `<div class="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3"><div class="flex items-center gap-3"><span class="w-6 text-center text-sm font-bold text-slate-400">${inNav ? index + 1 : '—'}</span><span class="font-bold text-slate-700">${isFeatured ? '<i class="fas fa-sparkles text-violet-500 mr-1"></i>' : ''}${escapeHtml(activity.title)}</span><span class="rounded-full px-2 py-0.5 text-xs ${inNav ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}">${isAllGames ? '固定展示' : isFeatured ? '置顶' : inNav ? '展示中' : '未展示'}</span></div><div class="flex gap-2">${inNav && !locked ? `<button type="button" onclick="moveActivityNav('${activity.id}', -1)" class="rounded bg-slate-100 px-2 py-1 text-slate-600" title="上移"><i class="fas fa-chevron-up"></i></button><button type="button" onclick="moveActivityNav('${activity.id}', 1)" class="rounded bg-slate-100 px-2 py-1 text-slate-600" title="下移"><i class="fas fa-chevron-down"></i></button>` : ''}${!isAllGames ? `<button type="button" onclick="toggleActivityNav('${activity.id}')" class="rounded ${inNav ? 'bg-rose-50 text-rose-600' : 'bg-indigo-50 text-indigo-600'} px-2 py-1">${inNav ? '移出导航' : '加入导航'}</button>` : ''}</div></div>`;
+            }).join('') || '<p class="text-sm text-slate-400">暂无活动。</p>';
+        }
+
+        window.resetActivityEditor = function() {
+            document.getElementById('activity-id').value = '';
+            document.getElementById('activity-title').value = '';
+            document.getElementById('activity-show-in-nav').checked = false;
+            document.getElementById('activity-featured').checked = false;
+            document.getElementById('activity-game-search').value = '';
+            document.getElementById('activity-editor-title').textContent = '创建活动';
+            renderActivityBannerFields([]);
+            renderActivityGameSelector([]);
+        };
+        window.openNewActivityEditor = function() { document.getElementById('activity-editor-section').classList.remove('hidden'); resetActivityEditor(); document.getElementById('activity-editor-section').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+        window.closeActivityEditor = function() { document.getElementById('activity-editor-section').classList.add('hidden'); };
+
+        window.editActivity = function(id) {
+            const activity = appState.activities.find(item => item.id === id);
+            if (!activity) return;
+            document.getElementById('activity-editor-section').classList.remove('hidden');
+            document.getElementById('activity-id').value = activity.id;
+            document.getElementById('activity-title').value = activity.title || '';
+            document.getElementById('activity-show-in-nav').checked = !!activity.show_in_nav;
+            document.getElementById('activity-featured').checked = !!activity.is_featured;
+            const bannerUrls = Array.isArray(activity.banner_urls) && activity.banner_urls.length
+                ? activity.banner_urls
+                : (activity.banner_url ? [{ url: activity.banner_url, link: activity.banner_link || '' }] : []);
+            renderActivityBannerFields(bannerUrls);
+            document.getElementById('activity-game-search').value = '';
+            document.getElementById('activity-editor-title').textContent = '编辑活动';
+            renderActivityGameSelector(appState.activityGameMap[id] || []);
+        };
+
+        window.saveActivity = async function() {
+            const id = document.getElementById('activity-id').value || `activity-${Date.now()}`;
+            const title = document.getElementById('activity-title').value.trim();
+            if (!title) return showSaveStatus('请填写活动名称');
+            const previous = appState.activities.find(item => item.id === id);
+            const activity = { ...previous, id, title, nav_title: title, sort_order: previous?.sort_order ?? appState.activities.length, nav_sort_order: previous?.nav_sort_order ?? getNavActivities().length, show_in_nav: document.getElementById('activity-show-in-nav').checked, is_featured: document.getElementById('activity-featured').checked, banner_urls: getActivityBannerUrls() };
+            const gameIds = [...activitySelectedGameIds];
+            try {
+                await saveActivityRecord(activity, gameIds);
+                await loadActivities(); renderActivityNav(); renderActivityAdminList(); closeActivityEditor(); renderClientList(); showSaveStatus('活动已保存');
+            } catch (error) { console.error('保存活动失败:', error); showSaveStatus('活动保存失败，请检查活动迁移是否已执行'); }
+        };
+        window.toggleActivityNav = async function(id) { const activity = appState.activities.find(item => item.id === id); if (!activity || id === 'all-games') return; await saveActivityRecord({ ...activity, show_in_nav: !activity.show_in_nav, nav_title: activity.title }, appState.activityGameMap[id] || []); await loadActivities(); renderActivityNav(); renderActivityAdminList(); renderClientList(); };
+        window.moveActivityNav = async function(id, direction) { const activities = getNavActivities(); const index = activities.findIndex(item => item.id === id); const target = index + direction; if (index < 0 || target < 0 || target >= activities.length) return; const current = activities[index], other = activities[target]; if (current.id === 'all-games' || other.id === 'all-games') return; if (current.is_featured || other.is_featured) return; await Promise.all([saveActivityRecord({ ...current, nav_sort_order: other.nav_sort_order, nav_title: current.title }, appState.activityGameMap[current.id] || []), saveActivityRecord({ ...other, nav_sort_order: current.nav_sort_order, nav_title: other.title }, appState.activityGameMap[other.id] || [])]); await loadActivities(); renderActivityNav(); renderActivityAdminList(); };
+        window.removeActivity = async function(id) { if (id === 'all-games') return showSaveStatus('“全部游戏”是默认活动，不能删除'); if (!confirm('确定删除这个活动吗？')) return; try { await deleteActivityRecord(id); await loadActivities(); renderActivityNav(); renderActivityAdminList(); closeActivityEditor(); renderClientList(); showSaveStatus('活动已删除'); } catch (error) { console.error('删除活动失败:', error); showSaveStatus('活动删除失败'); } };
+
         // 将各类日期字符串解析为可比较的数值，支持：
         // "2026 年 7 月 9 日"、"2026 年 8 月"、"2026-7-16"、"2026.8" 等
         function parseDateForSort(dateStr) {
@@ -1698,9 +2275,14 @@
         function renderClientList(filterType) {
             const games = getGames();
             const type = filterType !== undefined ? filterType : appState.currentFilter;
-            let filtered = type && type !== '全部'
-                ? games.filter(g => Array.isArray(g.tags) && g.tags.includes(type))
+            const selectedActivity = appState.activities.find(activity => activity.id === appState.currentActivityId);
+            const activityGameIds = selectedActivity ? (appState.activityGameMap[selectedActivity.id] || []) : [];
+            let filtered = selectedActivity && selectedActivity.id !== 'all-games'
+                ? games.filter(game => activityGameIds.includes(game.id))
                 : [...games];
+            filtered = type && type !== '全部'
+                ? filtered.filter(game => Array.isArray(game.tags) && game.tags.includes(type))
+                : filtered;
 
             // 排序（使用副本，不修改原始数据）
             if (appState.sortMode === 'release') {
@@ -2196,9 +2778,9 @@
                                 <div class="hidden md:flex rounded-lg w-9 h-9 items-center justify-center mr-1 shrink-0" style="background:#0767FB; color:#fff;">
                                     <i class="fab fa-zhihu text-lg"></i>
                                 </div>
-                                ${hasDeveloperContent ? `<button id="experience-tab-developer" type="button" onclick="switchExperienceTab('developer')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors ${defaultExperienceTab === 'developer' ? 'bg-[#6B42E8] text-white' : 'bg-white text-slate-500 hover:bg-slate-100'}">游戏开发者说</button>` : ''}
-                                <button id="experience-tab-player" type="button" onclick="switchExperienceTab('player')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors ${defaultExperienceTab === 'player' ? 'bg-[#6B42E8] text-white' : 'bg-white text-slate-500 hover:bg-slate-100'}">答主游戏评价</button>
-                                <button id="experience-tab-discussion" type="button" onclick="switchExperienceTab('discussion')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors bg-white text-slate-500 hover:bg-slate-100">游戏综合讨论</button>
+                                ${hasDeveloperContent ? `<button id="experience-tab-developer" type="button" onclick="switchExperienceTab('developer')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors ${defaultExperienceTab === 'developer' ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-red-50 hover:text-red-600'}">游戏开发者说</button>` : ''}
+                                <button id="experience-tab-player" type="button" onclick="switchExperienceTab('player')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors ${defaultExperienceTab === 'player' ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-blue-50 hover:text-blue-600'}">答主游戏评价</button>
+                                <button id="experience-tab-discussion" type="button" onclick="switchExperienceTab('discussion')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors bg-white text-slate-500 hover:bg-green-50 hover:text-green-600">游戏综合讨论</button>
                             </div>
                             ${developerPanel}
                             ${playerPanel}
@@ -2229,11 +2811,10 @@
             if (developerPanel) developerPanel.classList.toggle('hidden', !isDeveloper);
             if (playerPanel) playerPanel.classList.toggle('hidden', !isPlayer);
             if (discussionPanel) discussionPanel.classList.toggle('hidden', tab !== 'discussion');
-            const activeClass = 'rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors bg-[#6B42E8] text-white';
-            const inactiveClass = 'rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors bg-white text-slate-500 hover:bg-slate-100';
-            if (developerTab) developerTab.className = isDeveloper ? activeClass : inactiveClass;
-            if (playerTab) playerTab.className = isPlayer ? activeClass : inactiveClass;
-            if (discussionTab) discussionTab.className = tab === 'discussion' ? activeClass : inactiveClass;
+            const baseClass = 'rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors';
+            if (developerTab) developerTab.className = `${baseClass} ${isDeveloper ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-red-50 hover:text-red-600'}`;
+            if (playerTab) playerTab.className = `${baseClass} ${isPlayer ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-blue-50 hover:text-blue-600'}`;
+            if (discussionTab) discussionTab.className = `${baseClass} ${tab === 'discussion' ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-green-50 hover:text-green-600'}`;
         };
 
         function initCarousel() {
@@ -3388,9 +3969,13 @@
                     loadGames(),
                     loadMobileBannerSettings(),
                     loadWishlistSetting(),
-                    loadGameTags()
+                    loadGameTags(),
+                    loadActivities()
                 ]);
                 renderMobileBannerFields(bannerUrls);
+                renderActivityNav();
+                renderActivityAdminList();
+                resetActivityEditor();
                 renderMobileBanner(bannerUrls);
                 renderWishlistSetting();
                 renderTagManager();
