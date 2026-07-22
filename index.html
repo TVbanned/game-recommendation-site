@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -164,6 +164,13 @@
         .game-card:hover { 
             transform: translateY(-6px) scale(1.01); 
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); 
+        }
+
+        @media (max-width: 767px) {
+            .game-verdict {
+                font-size: 0.6875rem;
+                font-weight: 500;
+            }
         }
         
         .detail-panel {
@@ -542,7 +549,7 @@
                                 <i class="fas fa-magic mr-1"></i>AI 一键分析打标签
                             </button>
                         </div>
-                        <p class="text-xs text-slate-400 mt-2">AI 打标签由 Trae IDE 内置的 Gemini 模型驱动，无需额外配置 API Key。</p>
+                        <p class="text-xs text-slate-400 mt-2">AI 会通过 Supabase 中配置的 DeepSeek 服务，按现有玩法标签为全部游戏自动分类。</p>
                         <div class="flex gap-2 mb-4">
                             <input type="text" id="new-tag-input" placeholder="输入新标签名称" class="flex-1 rounded-lg border-slate-300 shadow-sm border p-2.5 bg-white text-sm">
                             <button type="button" onclick="addGlobalTag()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors whitespace-nowrap">
@@ -584,8 +591,8 @@
                         <div class="rounded-xl border border-indigo-100 bg-indigo-50/60 p-4">
                             <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
                                 <div class="flex-1">
-                                    <label class="block text-sm font-semibold text-indigo-800 mb-1">Steam App ID</label>
-                                    <input type="text" inputmode="numeric" id="form-steam-app-id" placeholder="如：570" class="w-full rounded-lg border-indigo-200 shadow-sm border p-2.5 bg-white">
+                                    <label class="block text-sm font-semibold text-indigo-800 mb-1">Steam App ID 或游戏链接</label>
+                                    <input type="text" id="form-steam-app-id" placeholder="如：570 或 https://store.steampowered.com/app/1145350/" class="w-full rounded-lg border-indigo-200 shadow-sm border p-2.5 bg-white">
                                 </div>
                                 <button type="button" onclick="fillGameFromSteam()" id="steam-fill-btn" class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-400 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow-sm transition-colors whitespace-nowrap">
                                     <i class="fab fa-steam mr-1"></i>从 Steam 填充
@@ -636,7 +643,12 @@
 
                         <!-- 玩法标签多选 -->
                         <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">玩法标签（可多选）</label>
+                            <div class="flex items-center justify-between gap-3 mb-2">
+                                <label class="block text-sm font-semibold text-slate-700">玩法标签（可多选）</label>
+                                <button type="button" onclick="generateGameTags()" id="generate-tags-btn" class="shrink-0 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 disabled:bg-slate-400 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow-sm transition-colors whitespace-nowrap">
+                                    <i class="fas fa-wand-magic-sparkles mr-1"></i>AI填入
+                                </button>
+                            </div>
                             <div id="form-tags-selector" class="flex flex-wrap gap-2"></div>
                         </div>
 
@@ -948,6 +960,7 @@
                 playerBio: row.player_bio || '',
                 playerExperienceZhihuUrl: row.player_experience_zhihu_url || '',
                 playerExtraAnswers: row.player_extra_answers || [],
+                sortOrder: row.sort_order ?? 0,
                 tags: Array.isArray(row.tags) ? row.tags : [],
             };
         }
@@ -1140,12 +1153,15 @@
             container.innerHTML = appState.gameTags.map(tag => {
                 const isSelected = sel.includes(tag);
                 const color = getTagColor(tag);
-                return `<span class="form-tag-item${isSelected ? ' active' : ''}" data-tag="${tag}" style="${isSelected ? `background:${color};border-color:${color}` : `--tag-color:${color}`}" onclick="toggleFormTag(this, '${tag.replace(/'/g, "\\'")}')">${tag}</span>`;
+                return `<span class="form-tag-item${isSelected ? ' active' : ''}" data-tag="${tag}" style="--tag-color:${color};${isSelected ? `background:${color};border-color:${color}` : ''}" onclick="toggleFormTag(this, '${tag.replace(/'/g, "\\'")}')">${tag}</span>`;
             }).join('');
         }
 
         window.toggleFormTag = function(el, tag) {
-            el.classList.toggle('active');
+            const isActive = el.classList.toggle('active');
+            const color = getTagColor(tag);
+            el.style.background = isActive ? color : '';
+            el.style.borderColor = isActive ? color : '';
         };
 
         function getFormSelectedTags() {
@@ -1298,9 +1314,56 @@
             }
         };
 
-        // ===== AI 打标签（由 Trae IDE 驱动） =====
-        window.aiAutoTagAll = function() {
-            showSaveStatus('请在 Trae AI 对话中发送「帮我给所有游戏打标签」，我来帮你分析');
+        // ===== AI 打标签 =====
+        window.aiAutoTagAll = async function() {
+            if (!appState.games.length) {
+                showSaveStatus('暂无可分析的游戏');
+                return;
+            }
+            if (!appState.gameTags.length) {
+                showSaveStatus('请先添加至少一个玩法标签');
+                return;
+            }
+
+            const button = document.getElementById('ai-tag-btn');
+            const originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>分析中';
+            try {
+                let completed = 0;
+                for (const game of appState.games) {
+                    const response = await fetch(`${SUPABASE_URL}/functions/v1/generate-game-tags`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'apikey': SUPABASE_ANON_KEY
+                        },
+                        body: JSON.stringify({
+                            title: game.title,
+                            type: game.type,
+                            description: game.desc,
+                            tags: appState.gameTags
+                        })
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success || !Array.isArray(result.tags)) {
+                        throw new Error(result.error || `《${game.title}》标签生成失败`);
+                    }
+                    game.tags = result.tags;
+                    await upsertGame(game);
+                    completed++;
+                }
+                renderGameTagOverview();
+                renderClientList();
+                showSaveStatus(`已为 ${completed} 款游戏完成 AI 打标签`);
+            } catch (error) {
+                console.error('AI 批量打标签失败:', error);
+                showSaveStatus(error.message || 'AI 打标签失败，请稍后重试');
+            } finally {
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            }
         };
         // ===== 玩法标签管理 END =====
 
@@ -1682,7 +1745,7 @@
                         <img src="${game.cover}" ${isAboveFold ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" referrerpolicy="no-referrer" width="460" height="215" alt="${game.title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 block" onerror="this.onerror=null;this.src='${placeholder}';">
                     </div>
                     <div class="flex justify-between items-center px-3 md:px-4 py-2 text-white text-xs font-semibold tracking-wider" style="background-color: ${game.color};">
-                        <span class="min-w-0 flex-1 truncate mr-2" title="${escapeHtml(game.verdict || formatPriceDisplay(game.price, game.released))}">${escapeHtml(game.verdict || formatPriceDisplay(game.price, game.released))}</span>
+                        <span class="game-verdict min-w-0 flex-1 truncate mr-2" title="${escapeHtml(game.verdict || formatPriceDisplay(game.price, game.released))}">${escapeHtml(game.verdict || formatPriceDisplay(game.price, game.released))}</span>
                         <i class="fab fa-steam shrink-0 opacity-90 group-hover:scale-110 transition-transform"></i>
                     </div>
                     <div class="p-3 md:p-5">
@@ -2545,10 +2608,17 @@
             }
         }
 
+        function getSteamAppId(value) {
+            const input = value.trim();
+            if (/^\d+$/.test(input)) return input;
+            const match = input.match(/^https?:\/\/(?:store\.)?steampowered\.com\/app\/(\d+)(?:\/|$)/i);
+            return match ? match[1] : '';
+        }
+
         function collectGameFormData() {
             return {
                 id: document.getElementById('form-id').value || Date.now().toString(),
-                steamAppId: document.getElementById('form-steam-app-id').value.trim(),
+                steamAppId: getSteamAppId(document.getElementById('form-steam-app-id').value),
                 title: document.getElementById('form-title').value,
                 team: document.getElementById('form-team').value,
                 type: document.getElementById('form-type').value,
@@ -2633,11 +2703,13 @@
         }
 
         window.fillGameFromSteam = async function() {
-            const appId = document.getElementById('form-steam-app-id').value.trim();
-            if (!/^\d+$/.test(appId)) {
-                showSaveStatus('请输入有效的 Steam App ID');
+            const appIdInput = document.getElementById('form-steam-app-id');
+            const appId = getSteamAppId(appIdInput.value);
+            if (!appId) {
+                showSaveStatus('请输入有效的 Steam App ID 或游戏链接');
                 return;
             }
+            appIdInput.value = appId;
 
             const button = document.getElementById('steam-fill-btn');
             button.disabled = true;
@@ -2670,7 +2742,12 @@
                 const screenshotContainer = document.getElementById('screenshot-fields');
                 screenshotContainer.innerHTML = '';
                 (game.screenshots && game.screenshots.length ? game.screenshots : ['']).forEach(url => addScreenshotField(url));
-                showSaveStatus('已从 Steam 填充，可继续手动修改');
+                showSaveStatus('已从 Steam 填充，正在生成 AI 判词和玩法标签');
+                const verdictGenerated = await window.generateVerdict();
+                const tagsGenerated = await window.generateGameTags();
+                showSaveStatus(verdictGenerated && tagsGenerated
+                    ? '已从 Steam 填充并生成 AI 判词和玩法标签，可继续手动修改'
+                    : '已从 Steam 填充；部分 AI 内容生成失败，可继续手动填写');
             } catch (error) {
                 console.error('读取 Steam 数据失败:', error);
                 showSaveStatus('Steam 数据读取失败，请检查 App ID、函数部署或网络访问');
@@ -2680,13 +2757,53 @@
             }
         };
 
+        window.generateGameTags = async function() {
+            const title = document.getElementById('form-title').value.trim();
+            const type = document.getElementById('form-type').value.trim();
+            const description = document.getElementById('form-desc').value.trim();
+            if (!title || !type) {
+                showSaveStatus('请先填写游戏名称和类型');
+                return false;
+            }
+
+            const button = document.getElementById('generate-tags-btn');
+            const originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>生成中';
+            try {
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/generate-game-tags`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({ title, type, description, tags: appState.gameTags })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success || !Array.isArray(result.tags)) {
+                    throw new Error(result.error || 'AI生成失败');
+                }
+                renderFormTagSelector(result.tags);
+                showSaveStatus('AI玩法标签已填入，点击保存后发布');
+                return true;
+            } catch (error) {
+                console.error('AI玩法标签生成失败:', error);
+                showSaveStatus(error.message || 'AI生成失败，请稍后重试');
+                return false;
+            } finally {
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            }
+        };
+
         window.generateVerdict = async function() {
             const title = document.getElementById('form-title').value.trim();
             const type = document.getElementById('form-type').value.trim();
             const description = document.getElementById('form-desc').value.trim();
             if (!title || !type) {
                 showSaveStatus('请先填写游戏名称和类型');
-                return;
+                return false;
             }
 
             const button = document.getElementById('generate-verdict-btn');
@@ -2709,9 +2826,11 @@
                 }
                 document.getElementById('form-verdict').value = result.verdict;
                 showSaveStatus('AI判词已填入，点击保存后发布');
+                return true;
             } catch (error) {
                 console.error('AI判词生成失败:', error);
                 showSaveStatus(error.message || 'AI生成失败，请稍后重试');
+                return false;
             } finally {
                 button.disabled = false;
                 button.innerHTML = originalHtml;
