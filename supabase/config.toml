@@ -1,0 +1,10 @@
+project_id = "ihbegkpvqrtycsfmklag"
+
+[functions.steam-appdetails]
+verify_jwt = false
+
+[functions.generate-verdict]
+verify_jwt = false
+
+[functions.generate-game-tags]
+verify_jwt = false
