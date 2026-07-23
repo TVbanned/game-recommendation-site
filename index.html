@@ -1,9 +1,9 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>暑期「游戏浪一夏」- 全栈原型演示</title>
+    <title>知乎游戏推荐专区 - 全栈原型演示</title>
     <link rel="preconnect" href="https://ihbegkpvqrtycsfmklag.supabase.co" crossorigin>
     <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossorigin>
     <link rel="preconnect" href="https://shared.akamai.steamstatic.com" crossorigin>
@@ -188,9 +188,14 @@
 
         @media (max-width: 767px) {
             .game-verdict {
-                font-size: 0.6875rem;
+                font-size: 0.625rem;
                 font-weight: 500;
             }
+            .prose-zhihu { font-size: 0.75rem; line-height: 1.7; }
+            .prose-zhihu > p,
+            .prose-zhihu > div { font-size: 0.75rem !important; line-height: 1.7 !important; margin: 0 0 16px; }
+            .prose-zhihu img { margin: 12px 0; }
+            .prose-zhihu h2,.prose-zhihu h3 { margin: 16px 0 8px; font-size: 0.9rem; }
         }
         
         .detail-panel {
@@ -425,7 +430,7 @@
                 top: 28px;
                 z-index: 40;
                 padding-top: 2px;
-                padding-bottom: 8px;
+                padding-bottom: 16px;
                 background: #f8fafc;
                 margin-left: -2rem;
                 margin-right: -2rem;
@@ -445,6 +450,9 @@
 
             body.panel-open .activity-stage {
                 box-shadow: none;
+            }
+            body.panel-open #activity-area-desktop {
+                margin-bottom: 16px;
             }
 
             body.panel-open .activity-banner.visible {
@@ -467,7 +475,7 @@
         .activity-stage { --theme-rgb: 15,40,92; --theme-bright: #4f8ef7; position: relative; overflow: hidden; border-radius: 14px; background: #0b1424; box-shadow: 0 8px 24px rgba(13,28,56,.15); isolation: isolate; transition: box-shadow .55s ease, background .55s ease; }
         .activity-stage.has-banner { background: #172033; }
         .activity-banner { position: relative; display: block; z-index: 0; height: 0; overflow: hidden; opacity: 0; border-radius: 0 0 14px 14px; transition: height .5s cubic-bezier(.2,.8,.2,1), opacity .45s ease; width: 100%; }
-        .activity-banner.visible { height: 220px; opacity: 1; }
+        .activity-banner.visible { height: auto; aspect-ratio: 4.5 / 1; opacity: 1; }
         .activity-banner .carousel-track { width: 100%; }
         .activity-banner .carousel-slide { min-width: 100%; }
         .activity-banner.collapsing { height: 0; opacity: 0; }
@@ -497,10 +505,10 @@
             display: flex;
             align-items: center;
             justify-content: space-around;
-            gap: 8px;
+            gap: 4px;
             overflow-x: auto;
             scrollbar-width: none;
-            padding: 10px 8px;
+            padding: 4px 6px;
             background: #0b1424;
             border-radius: 12px;
             box-shadow: 0 4px 16px rgba(13,28,56,.12);
@@ -509,8 +517,8 @@
         .activity-nav-mobile .activity-nav-item {
             flex: 1;
             text-align: center;
-            padding: 9px 4px 8px;
-            font-size: 14px;
+            padding: 5px 2px 4px;
+            font-size: clamp(0.65rem, 3.2vw, 0.875rem);
             font-weight: 700;
             color: rgba(255,255,255,.68);
             white-space: nowrap;
@@ -582,6 +590,7 @@
             position: relative;
             display: block;
             z-index: 0;
+            touch-action: pan-y;
             height: 0;
             overflow: hidden;
             opacity: 0;
@@ -590,7 +599,8 @@
             width: 100%;
         }
         .activity-banner-mobile.visible {
-            height: 185px;
+            height: auto;
+            aspect-ratio: 4.5 / 1;
             opacity: 1;
         }
         .activity-banner-mobile .carousel-track-mobile {
@@ -618,7 +628,7 @@
             left: 0;
             right: 0;
             z-index: 40;
-            padding-top: 4px;
+            padding-top: 12px;
             padding-bottom: 12px;
             background: #f8fafc;
             padding-left: 1rem;
@@ -640,7 +650,7 @@
         @keyframes activityThemeSweep { from { transform: translateX(-110%); } to { transform: translateX(110%); } }
         @keyframes activityActivePulse { 50% { box-shadow: 0 0 0 5px rgba(255,255,255,.07), 0 0 19px var(--theme-bright); } }
         @keyframes activityFlamePulse { 50% { text-shadow: 0 0 18px var(--theme-bright), 0 0 36px var(--theme-bright); } }
-        @media (max-width: 1023px) { .activity-banner.visible { height: 185px; } .activity-stage-inner { padding: 0 14px; } .activity-meta { max-width: 180px; overflow: hidden; text-overflow: ellipsis; } }
+        @media (max-width: 1023px) { .activity-banner.visible { height: auto; } .activity-stage-inner { padding: 0 14px; } .activity-meta { max-width: 180px; overflow: hidden; text-overflow: ellipsis; } }
     </style>
 </head>
 <body>
@@ -648,10 +658,10 @@
     <div id="client-view" class="min-h-screen relative w-full">
         
         <div id="main-wrapper">
-            <div class="main-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="main-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-10">
                 <div class="mb-10 hidden md:flex items-baseline flex-wrap gap-4 select-none cursor-pointer" id="secret-trigger-pc">
-                    <h1 id="desktop-main-title" class="text-5xl font-black tracking-tight text-gray-900 title-gradient">暑期「游戏浪一夏」</h1>
-                    <span id="desktop-subtitle" class="text-2xl text-gray-500 font-light tracking-wide border-l-2 border-gray-300 pl-4">东方侠影游戏安利时间</span>
+                    <h1 id="desktop-main-title" class="text-5xl font-black tracking-tight text-gray-900 title-gradient">知乎游戏推荐专区</h1>
+                    <span id="desktop-subtitle" class="text-2xl text-gray-500 font-light tracking-wide border-l-2 border-gray-300 pl-4">发掘更多好游戏！</span>
                 </div>
 
                 <!-- Desktop Sticky Header: 导航栏 + 筛选排序 -->
@@ -677,9 +687,8 @@
                 <div class="md:hidden">
                     <!-- 标题区域，滚动时收起 -->
                     <div id="mobile-title-area" class="transition-all duration-300 overflow-hidden" style="max-height:200px">
-                        <div id="secret-trigger-mobile" class="select-none cursor-pointer mb-4">
-                             <h1 class="text-3xl font-black tracking-tight text-gray-900 title-gradient mb-1">暑期「游戏浪一夏」</h1>
-                             <p class="text-md text-gray-500 font-light tracking-wide">东方侠影游戏安利时间</p>
+                        <div id="secret-trigger-mobile" class="select-none cursor-pointer mb-4 flex items-baseline flex-nowrap gap-2">
+                             <h1 class="text-3xl font-black tracking-tight text-gray-900 title-gradient truncate min-w-0" style="font-size:clamp(1.25rem, 7vw, 1.875rem)">知乎游戏推荐专区</h1><span class="text-md text-gray-500 font-light tracking-wide shrink-0">发掘更多好游戏！</span>
                         </div>
                     </div>
 
@@ -2521,9 +2530,9 @@
                     let itemsHtml = '';
                     // 精选活动按钮：显示活动名称
                     if (featured) {
-                        itemsHtml += `<button type="button" onclick="setActivity('${featured.id}')" class="activity-nav-item ${isFeaturedActive ? 'active' : ''}"><span class="activity-featured-label"><i class="fas fa-fire"></i></span>${escapeHtml(featured.title)}</button>`;
+                        itemsHtml += `<button type="button" onclick="setActivity('${featured.id}')" class="activity-nav-item ${isFeaturedActive ? 'active' : ''}"><span class="activity-featured-label"><i class="fas fa-fire"></i></span>${truncateMobileTitle(featured.title)}</button>`;
                     } else if (active.id !== 'all-games') {
-                        itemsHtml += `<button type="button" onclick="setActivity('${active.id}')" class="activity-nav-item active"><span class="activity-dot" style="display:inline-block"></span>${escapeHtml(active.title)}</button>`;
+                        itemsHtml += `<button type="button" onclick="setActivity('${active.id}')" class="activity-nav-item active"><span class="activity-dot" style="display:inline-block"></span>${truncateMobileTitle(active.title)}</button>`;
                     }
                     // 全部游戏
                     itemsHtml += `<button type="button" onclick="setActivity('all-games')" class="activity-nav-item ${isAllGamesActive ? 'active' : ''}"><span class="activity-dot" style="display:${isAllGamesActive ? 'inline-block' : 'none'}"></span>全部游戏</button>`;
@@ -2546,9 +2555,14 @@
                     if (mobileBanner && mobileBannerTrack && mobileBannerDots && mobileStage) {
                         mobileStage.classList.toggle('has-banner', hasMobileBanner);
                         if (hasMobileBanner) {
+                            mobileBannerSlide = 0;
+                            mobileBannerCount = bannerUrls.length;
+                            mobileBannerTrack.style.transition = 'none';
+                            mobileBannerTrack.style.transform = 'translateX(0)';
                             mobileBannerTrack.innerHTML = bannerUrls.map((item, i) => `<div class="carousel-slide-mobile bg-slate-200"><img src="${proxyImageUrl(item.url, 800)}" loading="lazy" referrerpolicy="no-referrer" class="w-full h-full object-cover" alt="banner${i+1}" onerror="this.onerror=null;this.parentElement.style.background='linear-gradient(135deg,#1e293b,#334155)';"></div>`).join('');
                             mobileBannerDots.innerHTML = bannerUrls.map((_, i) => `<div class="w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === 0 ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}" onclick="goToMobileBannerSlide(${i})"></div>`).join('');
                             mobileBanner.classList.add('visible');
+                            initMobileBannerSwipe();
                         } else {
                             mobileBanner.classList.remove('visible');
                             mobileBannerTrack.innerHTML = '';
@@ -2562,17 +2576,62 @@
         // 手机端 Banner 轮播
         let mobileBannerSlide = 0;
         let mobileBannerCount = 0;
+        let mobileBannerSwipeReady = false;
         window.goToMobileBannerSlide = function(index) {
             const track = document.getElementById('activity-banner-mobile-track');
             const dots = document.getElementById('activity-banner-mobile-dots');
             if (!track || !dots) return;
-            mobileBannerSlide = index;
-            track.style.transform = `translateX(-${index * 100}%)`;
+            mobileBannerSlide = Math.max(0, Math.min(index, mobileBannerCount - 1));
+            track.style.transition = 'transform 0.3s ease-out';
+            track.style.transform = `translateX(-${mobileBannerSlide * 100}%)`;
             const dotEls = dots.querySelectorAll('div');
             dotEls.forEach((d, i) => {
-                d.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === index ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}`;
+                d.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === mobileBannerSlide ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}`;
             });
         };
+
+        function initMobileBannerSwipe() {
+            if (mobileBannerSwipeReady) return;
+            const banner = document.getElementById('activity-banner-mobile');
+            const track = document.getElementById('activity-banner-mobile-track');
+            if (!banner || !track) return;
+            mobileBannerSwipeReady = true;
+            let dragging = false;
+            let startX = 0;
+            let startY = 0;
+            let currentX = 0;
+
+            banner.addEventListener('touchstart', event => {
+                if (mobileBannerCount <= 1) return;
+                dragging = true;
+                startX = currentX = event.touches[0].clientX;
+                startY = event.touches[0].clientY;
+                track.style.transition = 'none';
+            }, { passive: true });
+
+            banner.addEventListener('touchmove', event => {
+                if (!dragging) return;
+                currentX = event.touches[0].clientX;
+                const diffX = currentX - startX;
+                const diffY = event.touches[0].clientY - startY;
+                if (Math.abs(diffX) <= Math.abs(diffY)) return;
+                event.preventDefault();
+                const offset = -mobileBannerSlide * banner.offsetWidth + diffX;
+                track.style.transform = `translateX(${offset}px)`;
+            }, { passive: false });
+
+            banner.addEventListener('touchend', () => {
+                if (!dragging) return;
+                dragging = false;
+                const diff = currentX - startX;
+                const threshold = Math.min(60, banner.offsetWidth * 0.18);
+                if (Math.abs(diff) >= threshold) {
+                    goToMobileBannerSlide(mobileBannerSlide + (diff < 0 ? 1 : -1));
+                } else {
+                    goToMobileBannerSlide(mobileBannerSlide);
+                }
+            });
+        }
 
         window.setActivity = function(id) {
             appState.currentActivityId = id;
@@ -3135,16 +3194,10 @@
             const cards = Array.from(document.querySelectorAll('.game-card'));
             const title = document.getElementById('desktop-main-title');
             const subtitle = document.getElementById('desktop-subtitle');
-            const filterBar = document.getElementById('filter-bar-desktop');
-            const sortBtn = document.getElementById('desktop-sort-btn');
-            const filterTags = filterBar ? Array.from(filterBar.querySelectorAll('.filter-tag')) : [];
 
             const firstRects = new Map(cards.map(card => [card, card.getBoundingClientRect()]));
             const firstTitleRect = title?.getBoundingClientRect();
             const firstSubtitleRect = subtitle?.getBoundingClientRect();
-            const firstFilterBarRect = filterBar?.getBoundingClientRect();
-            const firstSortBtnRect = sortBtn?.getBoundingClientRect();
-            const firstTagRects = filterTags.map(tag => [tag, tag.getBoundingClientRect()]);
 
             changeLayout();
             void document.getElementById('game-list-container').offsetWidth;
@@ -3191,56 +3244,7 @@
                 }
             });
 
-            // Animate filter bar container
-            if (filterBar && firstFilterBarRect) {
-                const lastRect = filterBar.getBoundingClientRect();
-                const translateX = firstFilterBarRect.left - lastRect.left;
-                const translateY = firstFilterBarRect.top - lastRect.top;
-                if (translateX || translateY) {
-                    filterBar.animate([
-                        { transform: `translate(${translateX}px, ${translateY}px)` },
-                        { transform: 'translate(0, 0)' }
-                    ], {
-                        duration: 500,
-                        easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
-                    });
-                }
-            }
-
-            // Animate sort button
-            if (sortBtn && firstSortBtnRect) {
-                const lastRect = sortBtn.getBoundingClientRect();
-                const translateX = firstSortBtnRect.left - lastRect.left;
-                const translateY = firstSortBtnRect.top - lastRect.top;
-                if (translateX || translateY) {
-                    sortBtn.animate([
-                        { transform: `translate(${translateX}px, ${translateY}px)` },
-                        { transform: 'translate(0, 0)' }
-                    ], {
-                        duration: 500,
-                        easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
-                    });
-                }
-            }
-
-            // Animate individual filter tags
-            const currentTags = filterBar ? Array.from(filterBar.querySelectorAll('.filter-tag')) : [];
-            firstTagRects.forEach(([tag, firstRect], i) => {
-                if (!tag || i >= currentTags.length) return;
-                const currentTag = currentTags[i];
-                const lastRect = currentTag.getBoundingClientRect();
-                const translateX = firstRect.left - lastRect.left;
-                const translateY = firstRect.top - lastRect.top;
-                if (translateX || translateY) {
-                    currentTag.animate([
-                        { transform: `translate(${translateX}px, ${translateY}px)` },
-                        { transform: 'translate(0, 0)' }
-                    ], {
-                        duration: 500,
-                        easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
-                    });
-                }
-            });
+            // 吸顶区域直接跟随布局切换，不参与 FLIP，避免标签栏从旧位置飞入。
 
             // FLIP 动画结束后（550ms），清除虚拟滚动高度缓存并重新测量
             if (vsState) {
@@ -4456,6 +4460,11 @@
                 .replaceAll('>', '&gt;')
                 .replaceAll('"', '&quot;')
                 .replaceAll("'", '&#39;');
+        }
+
+        function truncateMobileTitle(title) {
+            if (title.length <= 6) return escapeHtml(title);
+            return escapeHtml(title.slice(0, 6)) + '…';
         }
 
         function insertRichLink() {
