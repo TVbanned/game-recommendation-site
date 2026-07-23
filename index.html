@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -832,6 +832,20 @@
                     <section class="rounded-2xl border border-slate-200 bg-white p-6">
                         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <div>
+                                <h3 class="text-lg font-bold text-slate-800">游戏圈子</h3>
+                                <p class="text-sm text-slate-500 mt-1">控制详情页「游戏圈子」入口按钮的显示；关闭时前端不会展示该按钮。</p>
+                            </div>
+                            <label class="inline-flex items-center gap-3 cursor-pointer select-none">
+                                <input id="game-circle-enabled-toggle" type="checkbox" class="sr-only peer" onchange="saveGameCircleSetting()">
+                                <span class="relative w-12 h-7 rounded-full bg-slate-300 transition-colors peer-checked:bg-amber-500 after:content-[''] after:absolute after:top-1 after:left-1 after:w-5 after:h-5 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-5"></span>
+                                <span id="game-circle-enabled-label" class="text-sm font-bold text-slate-600">已关闭</span>
+                            </label>
+                        </div>
+                    </section>
+
+                    <section class="rounded-2xl border border-slate-200 bg-white p-6">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
                                 <h3 class="text-lg font-bold text-slate-800">Steam 愿望单能力</h3>
                                 <p class="text-sm text-slate-500 mt-1">预留知乎账号绑定 Steam 后的一键加愿望单入口；关闭时前端不会展示该按钮。</p>
                             </div>
@@ -1244,6 +1258,7 @@
         const appState = {
             games: [],
             wishlistEnabled: false,
+            gameCircleEnabled: false,
             currentFilter: '全部',
             gameTags: [],
             activities: [],
@@ -1565,6 +1580,45 @@
                 console.error('保存愿望单开关失败:', error);
                 renderWishlistSetting();
                 showSaveStatus('愿望单开关保存失败，请检查 Supabase 连接');
+            }
+        };
+
+        // ===== 游戏圈子开关 =====
+        async function loadGameCircleSetting() {
+            const { data, error } = await supabaseClient
+                .from('site_settings')
+                .select('value')
+                .eq('key', 'game_circle_enabled')
+                .maybeSingle();
+
+            if (error) throw error;
+            appState.gameCircleEnabled = data?.value === true;
+            return appState.gameCircleEnabled;
+        }
+
+        function renderGameCircleSetting() {
+            const toggle = document.getElementById('game-circle-enabled-toggle');
+            const label = document.getElementById('game-circle-enabled-label');
+            if (!toggle || !label) return;
+            toggle.checked = appState.gameCircleEnabled;
+            label.textContent = appState.gameCircleEnabled ? '已开启' : '已关闭';
+            label.className = `text-sm font-bold ${appState.gameCircleEnabled ? 'text-amber-600' : 'text-slate-600'}`;
+        }
+
+        window.saveGameCircleSetting = async function() {
+            const enabled = document.getElementById('game-circle-enabled-toggle').checked;
+            try {
+                const { error } = await supabaseClient
+                    .from('site_settings')
+                    .upsert([{ key: 'game_circle_enabled', value: enabled }], { onConflict: 'key' });
+                if (error) throw error;
+                appState.gameCircleEnabled = enabled;
+                renderGameCircleSetting();
+                showSaveStatus(`游戏圈子入口已${enabled ? '开启' : '关闭'}`);
+            } catch (error) {
+                console.error('保存游戏圈子开关失败:', error);
+                renderGameCircleSetting();
+                showSaveStatus('游戏圈子开关保存失败，请检查 Supabase 连接');
             }
         };
 
@@ -3526,6 +3580,10 @@
                 <div id="experience-panel-discussion" class="hidden">
                     <p class="text-slate-400 text-center py-12">游戏综合讨论内容即将上线，敬请期待。</p>
                 </div>`;
+            const circlePanel = `
+                <div id="experience-panel-circle" class="hidden">
+                    <p class="text-slate-400 text-center py-12">游戏圈子内容即将上线，敬请期待。</p>
+                </div>`;
 
             contentContainer.innerHTML = `
                 <div class="relative w-full h-64 md:h-72 bg-slate-900 carousel-container" id="carousel-container">
@@ -3578,10 +3636,12 @@
                                 ${hasDeveloperContent ? `<button id="experience-tab-developer" type="button" onclick="switchExperienceTab('developer')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors ${defaultExperienceTab === 'developer' ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-red-50 hover:text-red-600'}">游戏开发者说</button>` : ''}
                                 <button id="experience-tab-player" type="button" onclick="switchExperienceTab('player')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors ${defaultExperienceTab === 'player' ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-blue-50 hover:text-blue-600'}">答主游戏评价</button>
                                 <button id="experience-tab-discussion" type="button" onclick="switchExperienceTab('discussion')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors bg-white text-slate-500 hover:bg-green-50 hover:text-green-600">游戏综合讨论</button>
+                                ${appState.gameCircleEnabled ? `<button id="experience-tab-circle" type="button" onclick="switchExperienceTab('circle')" class="rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors bg-white text-slate-500 hover:bg-amber-50 hover:text-amber-600">游戏圈子</button>` : ''}
                             </div>
                             ${developerPanel}
                             ${playerPanel}
                             ${discussionPanel}
+                            ${circlePanel}
                         </div>
                     </div>
                 </div>
@@ -3604,18 +3664,22 @@
             const developerPanel = document.getElementById('experience-panel-developer');
             const playerPanel = document.getElementById('experience-panel-player');
             const discussionPanel = document.getElementById('experience-panel-discussion');
+            const circlePanel = document.getElementById('experience-panel-circle');
             const developerTab = document.getElementById('experience-tab-developer');
             const playerTab = document.getElementById('experience-tab-player');
             const discussionTab = document.getElementById('experience-tab-discussion');
+            const circleTab = document.getElementById('experience-tab-circle');
             const isDeveloper = tab === 'developer';
             const isPlayer = tab === 'player';
             if (developerPanel) developerPanel.classList.toggle('hidden', !isDeveloper);
             if (playerPanel) playerPanel.classList.toggle('hidden', !isPlayer);
             if (discussionPanel) discussionPanel.classList.toggle('hidden', tab !== 'discussion');
+            if (circlePanel) circlePanel.classList.toggle('hidden', tab !== 'circle');
             const baseClass = 'rounded-lg px-2 h-7 md:px-3 md:h-9 flex items-center text-xs md:text-base font-bold transition-colors';
             if (developerTab) developerTab.className = `${baseClass} ${isDeveloper ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-red-50 hover:text-red-600'}`;
             if (playerTab) playerTab.className = `${baseClass} ${isPlayer ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-blue-50 hover:text-blue-600'}`;
             if (discussionTab) discussionTab.className = `${baseClass} ${tab === 'discussion' ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-green-50 hover:text-green-600'}`;
+            if (circleTab) circleTab.className = `${baseClass} ${tab === 'circle' ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-amber-50 hover:text-amber-600'}`;
         };
 
         function initCarousel() {
@@ -4807,6 +4871,7 @@
                 const [games] = await Promise.all([
                     loadGames(),
                     loadWishlistSetting(),
+                    loadGameCircleSetting(),
                     loadGameTags(),
                     loadActivities()
                 ]);
@@ -4814,6 +4879,7 @@
                 renderActivityAdminList();
                 resetActivityEditor();
                 renderWishlistSetting();
+                renderGameCircleSetting();
                 renderTagManager();
                 renderClientList();
                 renderAdminList(currentAdminSearch);
