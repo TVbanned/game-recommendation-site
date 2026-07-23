@@ -2,8 +2,8 @@
   <div ref="container" class="carousel-container relative w-full detail-carousel bg-slate-900" @mousedown="startDrag" @touchstart="startDrag">
     <div class="carousel-track" :style="{ transform: `translateX(${translate}px)`, transition: dragging ? 'none' : 'transform .3s cubic-bezier(.25,.46,.45,.94)' }">
       <div v-for="(image, index) in images" :key="`${image}-${index}`" class="carousel-slide bg-slate-200">
-        <a v-if="links[index]" :href="links[index]" target="_blank" rel="noopener noreferrer" class="block h-full"><img :src="imageUrl(image)" :alt="`${altPrefix} ${index + 1}`" loading="lazy" decoding="async" referrerpolicy="no-referrer" class="w-full h-full object-cover" @error="onImageError"></a>
-        <img v-else :src="imageUrl(image)" :alt="`${altPrefix} ${index + 1}`" loading="lazy" decoding="async" referrerpolicy="no-referrer" class="w-full h-full object-cover" @error="onImageError">
+        <a v-if="links[index]" :href="links[index]" target="_blank" rel="noopener noreferrer" class="block h-full"><img :src="imageUrl(image)" :alt="`${altPrefix} ${index + 1}`" :loading="index === 0 ? 'eager' : 'lazy'" decoding="async" :fetchpriority="index === 0 ? 'high' : 'auto'" referrerpolicy="no-referrer" class="w-full h-full object-cover" @error="onImageError"></a>
+        <img v-else :src="imageUrl(image)" :alt="`${altPrefix} ${index + 1}`" :loading="index === 0 ? 'eager' : 'lazy'" decoding="async" :fetchpriority="index === 0 ? 'high' : 'auto'" referrerpolicy="no-referrer" class="w-full h-full object-cover" @error="onImageError">
       </div>
     </div>
     <div v-if="images.length > 1" class="absolute bottom-4 w-full flex justify-center gap-2 z-10"><button v-for="(_, index) in images" :key="index" class="w-2.5 h-2.5 rounded-full transition-all duration-300 shadow-sm" :class="index === currentSlide ? 'bg-white w-6' : 'bg-white/40 hover:bg-white/70'" @click="goToSlide(index)"></button></div>

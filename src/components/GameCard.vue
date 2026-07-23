@@ -1,13 +1,18 @@
 <template>
   <div class="game-card flex flex-col group cursor-pointer" @click="onClick">
-    <div class="relative pt-[56.25%] w-full bg-slate-100 overflow-hidden">
-      <img 
-        :src="game.cover" 
-        :alt="game.title" 
+    <div class="relative w-full aspect-video bg-slate-100 overflow-hidden">
+      <img
+        :src="coverUrl"
+        :alt="game.title"
+        :loading="priority === 'high' ? 'eager' : 'lazy'"
+        decoding="async"
+        :fetchpriority="priority"
+        referrerpolicy="no-referrer"
         class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        @error="onImageError"
       >
     </div>
-    <div 
+    <div
       class="flex justify-between items-center px-4 py-2 text-white text-xs font-semibold tracking-wider"
       :style="{ backgroundColor: game.color }"
     >
@@ -24,15 +29,23 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { imageFallback, proxyImageUrl } from '../utils/frontend'
+
+const props = defineProps({
   game: {
     type: Object,
     required: true
+  },
+  priority: {
+    type: String,
+    default: 'auto'
   }
 })
 
 const emit = defineEmits(['click'])
-
+const coverUrl = computed(() => proxyImageUrl(props.game.cover, 480))
+const onImageError = event => { event.target.onerror = null; event.target.src = imageFallback(props.game.title) }
 const onClick = () => {
   emit('click')
 }
