@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -25,8 +25,13 @@
         body { 
             font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; 
             background-color: #f8fafc;
-            overflow-x: hidden; 
             color: #334155; 
+        }
+
+        #client-view {
+            min-height: 100vh;
+            position: relative;
+            width: 100%;
         }
         
         .title-gradient {
@@ -148,7 +153,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
-            padding: 16px 0;
+            padding: 16px 0 16px 0;
         }
         
         .game-card {
@@ -160,10 +165,25 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            content-visibility: auto;
+            contain-intrinsic-size: auto 340px;
         }
         .game-card:hover { 
             transform: translateY(-6px) scale(1.01); 
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); 
+        }
+
+        /* Virtual scroll sentinel */
+        #vs-sentinel {
+            grid-column: 1 / -1;
+            height: 1px;
+            pointer-events: none;
+        }
+
+        /* Back to top */
+        #back-to-top.visible {
+            opacity: 1 !important;
+            pointer-events: auto !important;
         }
 
         @media (max-width: 767px) {
@@ -382,6 +402,11 @@
                 width: 50%;
             }
 
+            /* 详情页展开时：去掉 main-content 顶部 padding */
+            body.panel-open .main-content {
+                padding-top: 0;
+            }
+
             /* 详情页展开时：标题收起 + 导航吸顶 + Banner 收起 */
             #secret-trigger-pc {
                 transition: opacity 0.35s ease, max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), margin-bottom 0.45s cubic-bezier(0.16, 1, 0.3, 1);
@@ -396,10 +421,30 @@
 
             body.panel-open #sticky-header-desktop {
                 position: sticky;
-                top: 0;
+                /* 吸顶时保留页面顶部的初始留白，避免导航贴到浏览器边缘 */
+                top: 28px;
                 z-index: 40;
-                padding-top: 8px;
+                padding-top: 2px;
+                padding-bottom: 8px;
                 background: #f8fafc;
+                margin-left: -2rem;
+                margin-right: -2rem;
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+            /* 覆盖吸顶时上方 28px 留白区域，避免透出背后内容 */
+            body.panel-open #sticky-header-desktop::before {
+                content: '';
+                position: absolute;
+                top: -28px;
+                left: 0;
+                right: 0;
+                height: 28px;
+                background: #f8fafc;
+            }
+
+            body.panel-open .activity-stage {
+                box-shadow: none;
             }
 
             body.panel-open .activity-banner.visible {
@@ -409,13 +454,17 @@
             body.panel-open .activity-stage-inner {
                 border-radius: 14px;
             }
+            /* 吸顶模式下卡片滚动边距，防止被导航栏+标签栏遮挡 */
+            body.panel-open .game-card {
+                scroll-margin-top: 150px;
+            }
         }
 
         #admin-view { display: none; }
         .admin-active #client-view { display: none; }
         .admin-active #admin-view { display: block; }
 
-        .activity-stage { --theme-rgb: 15,40,92; --theme-bright: #4f8ef7; position: relative; overflow: hidden; border-radius: 14px; background: #0b1424; box-shadow: 0 20px 50px rgba(13,28,56,.28); isolation: isolate; transition: box-shadow .55s ease, background .55s ease; }
+        .activity-stage { --theme-rgb: 15,40,92; --theme-bright: #4f8ef7; position: relative; overflow: hidden; border-radius: 14px; background: #0b1424; box-shadow: 0 8px 24px rgba(13,28,56,.15); isolation: isolate; transition: box-shadow .55s ease, background .55s ease; }
         .activity-stage.has-banner { background: #172033; }
         .activity-banner { position: relative; display: block; z-index: 0; height: 0; overflow: hidden; opacity: 0; border-radius: 0 0 14px 14px; transition: height .5s cubic-bezier(.2,.8,.2,1), opacity .45s ease; width: 100%; }
         .activity-banner.visible { height: 220px; opacity: 1; }
@@ -443,6 +492,151 @@
         .activity-stage-link { display: none; flex: 0 0 auto; align-items: center; gap: 7px; margin-left: 14px; color: rgba(255,255,255,.84); font-size: 12px; font-weight: 700; transition: color .2s ease; }
         .activity-stage-link.visible { display: inline-flex; }
         .activity-stage-link:hover { color: #fff; }
+        /* Mobile 导航栏 */
+        .activity-nav-mobile {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 10px 8px;
+            background: #0b1424;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(13,28,56,.12);
+        }
+        .activity-nav-mobile::-webkit-scrollbar { display: none; }
+        .activity-nav-mobile .activity-nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 9px 4px 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: rgba(255,255,255,.68);
+            white-space: nowrap;
+            transition: color .3s ease;
+            cursor: pointer;
+            background: none;
+            border: none;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .activity-nav-mobile .activity-nav-item.active {
+            color: #fff;
+            text-shadow: 0 0 14px rgba(255,255,255,.3);
+        }
+        .activity-nav-mobile .activity-nav-item .activity-dot {
+            display: none;
+            width: 9px;
+            height: 9px;
+            margin-right: 6px;
+            border-radius: 999px;
+            vertical-align: 1px;
+            background: var(--theme-bright, #4f8ef7);
+            box-shadow: 0 0 0 3px rgba(255,255,255,.12), 0 0 12px 3px var(--theme-bright, #4f8ef7);
+            animation: activityActivePulse 1.8s ease-in-out infinite;
+        }
+        .activity-nav-mobile .activity-nav-item.active .activity-dot { display: inline-block; }
+        .activity-nav-mobile .activity-nav-item .activity-featured-label { color: rgba(255,255,255,.48); font-size: 11px; font-weight: 500; vertical-align: middle; }
+        .activity-nav-mobile .activity-nav-item .activity-featured-label .fa-fire {
+            margin-right: 3px;
+            background: linear-gradient(180deg, #f97316, #ef4444);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 6px rgba(239,68,68,.5)) drop-shadow(0 0 12px rgba(249,115,22,.3));
+            animation: activityFlamePulse 1.8s ease-in-out infinite;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+        /* Mobile 导航栏 - 更多主题按钮样式 */
+        .activity-nav-mobile .activity-nav-more {
+            color: rgba(255,255,255,.55);
+        }
+        .activity-nav-mobile .activity-nav-more i {
+            margin-left: 4px;
+            font-size: 10px;
+        }
+        /* Mobile 导航栏暗色容器（与 PC 端 activity-stage 一致） */
+        .activity-stage-mobile {
+            position: relative;
+            overflow: hidden;
+            border-radius: 14px;
+            background: #0b1424;
+            box-shadow: 0 8px 24px rgba(13,28,56,.15);
+            isolation: isolate;
+        }
+        .activity-stage-mobile.has-banner { background: #172033; }
+        .activity-stage-mobile-inner {
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(105deg, rgba(11,22,48,.88), rgba(15,40,92,.78) 55%, rgba(15,40,92,.58));
+            border-radius: 14px 14px 0 0;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 -1px 0 rgba(255,255,255,.1);
+            backdrop-filter: blur(22px) saturate(145%);
+            -webkit-backdrop-filter: blur(22px) saturate(145%);
+        }
+        /* Mobile Banner 轮播 */
+        .activity-banner-mobile {
+            position: relative;
+            display: block;
+            z-index: 0;
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            border-radius: 0 0 14px 14px;
+            transition: height .5s cubic-bezier(.2,.8,.2,1), opacity .45s ease;
+            width: 100%;
+        }
+        .activity-banner-mobile.visible {
+            height: 185px;
+            opacity: 1;
+        }
+        .activity-banner-mobile .carousel-track-mobile {
+            width: 100%;
+            height: 100%;
+        }
+        .carousel-track-mobile {
+            display: flex;
+            height: 100%;
+            transition: transform 0.3s ease-out;
+        }
+        .activity-banner-mobile .carousel-slide-mobile {
+            min-width: 100%;
+            height: 100%;
+        }
+        .carousel-slide-mobile {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+        }
+        /* Mobile 吸顶 */
+        .mobile-sticky #mobile-sticky-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 40;
+            padding-top: 4px;
+            padding-bottom: 12px;
+            background: #f8fafc;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        }
+        .mobile-sticky #mobile-title-area {
+            max-height: 0 !important;
+            margin-bottom: 0 !important;
+        }
+        .mobile-sticky .activity-banner-mobile.visible {
+            height: 0 !important;
+            opacity: 0;
+        }
+        /* Mobile 主题弹层 */
+        #mobile-theme-sheet.open {
+            transform: translateY(0);
+        }
         @keyframes activityThemeSweep { from { transform: translateX(-110%); } to { transform: translateX(110%); } }
         @keyframes activityActivePulse { 50% { box-shadow: 0 0 0 5px rgba(255,255,255,.07), 0 0 19px var(--theme-bright); } }
         @keyframes activityFlamePulse { 50% { text-shadow: 0 0 18px var(--theme-bright), 0 0 36px var(--theme-bright); } }
@@ -481,24 +675,55 @@
                 </div>
 
                 <div class="md:hidden">
-                    <div id="secret-trigger-mobile" class="select-none cursor-pointer mb-4">
-                         <h1 class="text-3xl font-black tracking-tight text-gray-900 title-gradient mb-1">暑期「游戏浪一夏」</h1>
-                         <p class="text-md text-gray-500 font-light tracking-wide">东方侠影游戏安利时间</p>
+                    <!-- 标题区域，滚动时收起 -->
+                    <div id="mobile-title-area" class="transition-all duration-300 overflow-hidden" style="max-height:200px">
+                        <div id="secret-trigger-mobile" class="select-none cursor-pointer mb-4">
+                             <h1 class="text-3xl font-black tracking-tight text-gray-900 title-gradient mb-1">暑期「游戏浪一夏」</h1>
+                             <p class="text-md text-gray-500 font-light tracking-wide">东方侠影游戏安利时间</p>
+                        </div>
                     </div>
 
-                </div>
+                    <!-- 吸顶容器：导航栏 + Banner + 筛选栏 -->
+                    <div id="mobile-sticky-header" class="z-30">
+                        <!-- 导航栏 + Banner 一体暗色容器（与 PC 端 activity-stage 一致） -->
+                        <div id="activity-area-mobile" class="hidden">
+                            <section id="activity-stage-mobile" class="activity-stage-mobile">
+                                <div class="activity-stage-mobile-inner">
+                                    <nav id="activity-nav-mobile" class="activity-nav-mobile"></nav>
+                                </div>
+                                <div id="activity-banner-mobile" class="activity-banner-mobile">
+                                    <div id="activity-banner-mobile-track" class="carousel-track-mobile"></div>
+                                    <div id="activity-banner-mobile-dots" class="absolute bottom-3 w-full flex justify-center gap-2 z-10"></div>
+                                </div>
+                            </section>
+                        </div>
 
-                <!-- Mobile Filter Button -->
-                <div id="filter-bar-mobile" class="flex md:hidden gap-2">
-                    <button id="mobile-filter-btn" class="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-500 shadow-sm hover:border-slate-300 hover:text-slate-700 active:scale-[0.97] transition-all" onclick="openMobileFilter()">
-                        <i id="mobile-filter-icon" class="fas fa-tags text-xs text-slate-400" style="width:16px; text-align:center;"></i>
-                        <span id="mobile-filter-label">游戏类型</span>
-                        <i id="mobile-filter-chevron" class="fas fa-chevron-down text-[10px] text-slate-300 ml-0.5"></i>
-                    </button>
-                    <button id="mobile-sort-btn" class="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-500 shadow-sm hover:border-slate-300 hover:text-slate-700 active:scale-[0.97] transition-all" onclick="toggleSortMode()">
-                        <i id="mobile-sort-icon" class="fas fa-repeat text-xs text-slate-400" style="width:16px; text-align:center;"></i>
-                        <span id="mobile-sort-label">当前为默认排序</span>
-                    </button>
+                        <!-- 筛选排序 -->
+                        <div id="filter-bar-mobile" class="flex gap-2 mt-3">
+                            <button id="mobile-filter-btn" class="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-500 shadow-sm hover:border-slate-300 hover:text-slate-700 active:scale-[0.97] transition-all" onclick="openMobileFilter()">
+                                <i id="mobile-filter-icon" class="fas fa-tags text-xs text-slate-400" style="width:16px; text-align:center;"></i>
+                                <span id="mobile-filter-label">游戏类型</span>
+                                <i id="mobile-filter-chevron" class="fas fa-chevron-down text-[10px] text-slate-300 ml-0.5"></i>
+                            </button>
+                            <button id="mobile-sort-btn" class="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-500 shadow-sm hover:border-slate-300 hover:text-slate-700 active:scale-[0.97] transition-all" onclick="toggleSortMode()">
+                                <i id="mobile-sort-icon" class="fas fa-repeat text-xs text-slate-400" style="width:16px; text-align:center;"></i>
+                                <span id="mobile-sort-label">当前为默认排序</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 更多主题弹层 -->
+                    <div id="mobile-theme-backdrop" class="fixed inset-0 bg-black/30 z-40 hidden transition-opacity duration-300" onclick="closeMobileThemeSheet()"></div>
+                    <div id="mobile-theme-sheet" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-50 flex flex-col max-h-[55vh] translate-y-full transition-transform duration-300">
+                        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+                            <span class="text-sm font-bold text-slate-700">更多主题</span>
+                            <button onclick="closeMobileThemeSheet()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors">
+                                <i class="fas fa-times text-sm"></i>
+                            </button>
+                        </div>
+                        <div id="mobile-theme-list" class="overflow-y-auto p-4 space-y-2"></div>
+                    </div>
+
                 </div>
 
                 <!-- Mobile Filter Half Sheet -->
@@ -516,6 +741,11 @@
 
                 <div id="game-list-container" class="game-waterfall">
                 </div>
+
+                <!-- 回到顶部按钮 -->
+                <button id="back-to-top" class="fixed bottom-6 left-6 z-30 w-11 h-11 bg-white/85 backdrop-blur-md border border-slate-200 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-white hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-300 opacity-0 pointer-events-none" onclick="scrollToTop()" title="回到顶部">
+                    <i class="fas fa-arrow-up text-slate-500 text-sm"></i>
+                </button>
             </div>
         </div>
 
@@ -1006,7 +1236,8 @@
             activities: [],
             activityGameMap: {},
             currentActivityId: '',
-            sortMode: 'default' // 'default' | 'release'，默认按原始顺序展示
+            sortMode: 'default', // 'default' | 'release'，默认按原始顺序展示
+            currentDetailGameId: null
         };
 
         // 默认玩法标签
@@ -1115,19 +1346,115 @@
             };
         }
 
+        const GAMES_PAGE_SIZE = 80; // 首页加载数量
+        let totalGameCount = 0;     // 数据库中的游戏总数
+        let gamesFullyLoaded = false;
+
         async function loadGames() {
+            // 先获取总数
+            const { count, error: countErr } = await supabaseClient
+                .from('games')
+                .select('*', { count: 'exact', head: true });
+
+            if (countErr) throw countErr;
+            totalGameCount = count || 0;
+
+            if (totalGameCount === 0) {
+                appState.games = defaultData;
+                totalGameCount = defaultData.length;
+                gamesFullyLoaded = true;
+                return appState.games;
+            }
+
+            // 加载首页数据
             const { data, error } = await supabaseClient
                 .from('games')
                 .select('*')
                 .order('sort_order', { ascending: true })
-                .order('created_at', { ascending: false });
+                .order('created_at', { ascending: false })
+                .range(0, GAMES_PAGE_SIZE - 1);
 
             if (error) throw error;
             appState.games = (data || []).map(mapDbGameToView);
-            if (appState.games.length === 0) {
-                appState.games = defaultData;
-            }
+            gamesFullyLoaded = totalGameCount <= GAMES_PAGE_SIZE;
             return appState.games;
+        }
+
+        async function loadRemainingGames() {
+            if (gamesFullyLoaded || totalGameCount <= GAMES_PAGE_SIZE) return;
+
+            const BATCH = 200;
+            let from = GAMES_PAGE_SIZE;
+
+            while (from < totalGameCount) {
+                const to = Math.min(from + BATCH - 1, totalGameCount - 1);
+                const { data, error } = await supabaseClient
+                    .from('games')
+                    .select('*')
+                    .order('sort_order', { ascending: true })
+                    .order('created_at', { ascending: false })
+                    .range(from, to);
+
+                if (error) { console.error('后台加载游戏失败:', error); return; }
+
+                const newGames = (data || []).map(mapDbGameToView);
+                appState.games.push(...newGames);
+
+                // 静默更新虚拟滚动数据和筛选标签
+                if (vsState) vsRefreshData();
+                renderFilterTags();
+
+                from = to + 1;
+            }
+
+            gamesFullyLoaded = true;
+            totalGameCount = appState.games.length;
+            // 移除加载指示器
+            const indicator = document.getElementById('vs-loading-indicator');
+            if (indicator) indicator.style.display = 'none';
+        }
+
+        // 虚拟滚动数据刷新：背景加载完成后静默更新 filtered 数组
+        function vsRefreshData() {
+            if (!vsState) return;
+            const type = appState.currentFilter;
+            const selectedActivity = appState.activities.find(a => a.id === appState.currentActivityId);
+            const activityGameIds = selectedActivity ? (appState.activityGameMap[selectedActivity.id] || []) : [];
+
+            let filtered = selectedActivity && selectedActivity.id !== 'all-games'
+                ? appState.games.filter(g => activityGameIds.includes(g.id))
+                : [...appState.games];
+            filtered = type && type !== '全部'
+                ? filtered.filter(g => Array.isArray(g.tags) && g.tags.includes(type))
+                : filtered;
+
+            if (appState.sortMode === 'release') {
+                filtered = [...filtered].sort((a, b) => {
+                    const aR = a.released !== false, bR = b.released !== false;
+                    if (aR && !bR) return -1;
+                    if (!aR && bR) return 1;
+                    const aTs = parseDateForSort(a.releaseDate || a.date || '');
+                    const bTs = parseDateForSort(b.releaseDate || b.date || '');
+                    if (aR) return bTs - aTs;
+                    return aTs - bTs;
+                });
+            }
+
+            const oldLen = vsState.filtered.length;
+            vsState.filtered = filtered;
+            // 扩展 height 数组
+            if (filtered.length > vsState.cardHeights.length) {
+                const newHeights = new Array(filtered.length).fill(0);
+                for (let i = 0; i < vsState.cardHeights.length; i++) newHeights[i] = vsState.cardHeights[i];
+                vsState.cardHeights = newHeights;
+            }
+            vsState._cachedPaddingTop = null;
+
+            // 仅当新数据影响了当前窗口的底部时才重新渲染
+            if (oldLen < filtered.length && vsState.endIdx >= oldLen - VS.BUFFER * VS.COLS) {
+                vsState.endIdx = Math.min(filtered.length, vsState.startIdx + VS.MAX_CARDS);
+                vsRender();
+            }
         }
 
         async function upsertGame(game) {
@@ -2177,7 +2504,75 @@
             const firstLink = bannerUrls[0]?.link || '';
             stageLink.href = firstLink || '#';
             stageLink.classList.toggle('visible', !!firstLink);
+
+            // 同时渲染手机端导航栏（仅显示：热推活动名、全部游戏、更多主题）
+            const mobileArea = document.getElementById('activity-area-mobile');
+            const mobileNav = document.getElementById('activity-nav-mobile');
+            const mobileBanner = document.getElementById('activity-banner-mobile');
+            const mobileBannerTrack = document.getElementById('activity-banner-mobile-track');
+            const mobileBannerDots = document.getElementById('activity-banner-mobile-dots');
+            const mobileStage = document.getElementById('activity-stage-mobile');
+            if (mobileArea && mobileNav) {
+                if (!active) { mobileArea.classList.add('hidden'); } else {
+                    mobileArea.classList.remove('hidden');
+                    const isFeaturedActive = featured && active.id === featured.id;
+                    const isAllGamesActive = active.id === 'all-games';
+
+                    let itemsHtml = '';
+                    // 精选活动按钮：显示活动名称
+                    if (featured) {
+                        itemsHtml += `<button type="button" onclick="setActivity('${featured.id}')" class="activity-nav-item ${isFeaturedActive ? 'active' : ''}"><span class="activity-featured-label"><i class="fas fa-fire"></i></span>${escapeHtml(featured.title)}</button>`;
+                    } else if (active.id !== 'all-games') {
+                        itemsHtml += `<button type="button" onclick="setActivity('${active.id}')" class="activity-nav-item active"><span class="activity-dot" style="display:inline-block"></span>${escapeHtml(active.title)}</button>`;
+                    }
+                    // 全部游戏
+                    itemsHtml += `<button type="button" onclick="setActivity('all-games')" class="activity-nav-item ${isAllGamesActive ? 'active' : ''}"><span class="activity-dot" style="display:${isAllGamesActive ? 'inline-block' : 'none'}"></span>全部游戏</button>`;
+                    // 更多主题 / 当前其他主题名称
+                    const others = allItems.filter(a => a.id !== 'all-games' && (!featured || a.id !== featured.id));
+                    if (others.length > 0) {
+                        const isOtherActive = others.some(a => a.id === active.id);
+                        const label = isOtherActive ? escapeHtml(active.title) : '更多主题';
+                        const dot = isOtherActive ? '<span class="activity-dot" style="display:inline-block"></span>' : '';
+                        const moreCls = isOtherActive ? '' : ' activity-nav-more';
+                        itemsHtml += `<button type="button" onclick="openMobileThemeSheet()" class="activity-nav-item${isOtherActive ? ' active' : ''}${moreCls}">${dot}${label} <i class="fas fa-chevron-up"></i></button>`;
+                    }
+                    mobileNav.innerHTML = itemsHtml;
+
+                    // Banner：与 PC 端一致的暗色一体轮播样式
+                    const bannerUrls = Array.isArray(active.banner_urls) && active.banner_urls.length
+                        ? active.banner_urls.filter(item => item.url)
+                        : (active.banner_url ? [{ url: active.banner_url, link: active.banner_link || '' }] : []);
+                    const hasMobileBanner = bannerUrls.length > 0;
+                    if (mobileBanner && mobileBannerTrack && mobileBannerDots && mobileStage) {
+                        mobileStage.classList.toggle('has-banner', hasMobileBanner);
+                        if (hasMobileBanner) {
+                            mobileBannerTrack.innerHTML = bannerUrls.map((item, i) => `<div class="carousel-slide-mobile bg-slate-200"><img src="${proxyImageUrl(item.url, 800)}" loading="lazy" referrerpolicy="no-referrer" class="w-full h-full object-cover" alt="banner${i+1}" onerror="this.onerror=null;this.parentElement.style.background='linear-gradient(135deg,#1e293b,#334155)';"></div>`).join('');
+                            mobileBannerDots.innerHTML = bannerUrls.map((_, i) => `<div class="w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === 0 ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}" onclick="goToMobileBannerSlide(${i})"></div>`).join('');
+                            mobileBanner.classList.add('visible');
+                        } else {
+                            mobileBanner.classList.remove('visible');
+                            mobileBannerTrack.innerHTML = '';
+                            mobileBannerDots.innerHTML = '';
+                        }
+                    }
+                }
+            }
         }
+
+        // 手机端 Banner 轮播
+        let mobileBannerSlide = 0;
+        let mobileBannerCount = 0;
+        window.goToMobileBannerSlide = function(index) {
+            const track = document.getElementById('activity-banner-mobile-track');
+            const dots = document.getElementById('activity-banner-mobile-dots');
+            if (!track || !dots) return;
+            mobileBannerSlide = index;
+            track.style.transform = `translateX(-${index * 100}%)`;
+            const dotEls = dots.querySelectorAll('div');
+            dotEls.forEach((d, i) => {
+                d.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === index ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}`;
+            });
+        };
 
         window.setActivity = function(id) {
             appState.currentActivityId = id;
@@ -2299,6 +2694,257 @@
             return y * 10000 + m * 100 + d;
         }
 
+        // ============ 虚拟滚动瀑布流系统 ============
+        const VS = {
+            COLS: 2,
+            GAP: 16,
+            EST_ROW_H: 380,
+            BUFFER: 6,        // 视口上下保留行数
+            INITIAL: 20,      // 初始渲染行数（40 张卡片）
+            MAX_CARDS: 120,   // DOM 中最多保留卡片数
+            RECYCLE: 40,      // 每次回收卡片数
+        };
+
+        let vsState = null;
+        let vsScrollTicking = false;
+
+        function vsCoveragePlaceholder(title) {
+            return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="460" height="215" viewBox="0 0 460 215"><rect fill="#1e293b" width="460" height="215"/><text fill="#64748b" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle" x="230" y="112">${title}</text></svg>`)}`;
+        }
+
+        function vsBuildCardHTML(game, idx) {
+            const isAboveFold = idx < 6;
+            const placeholder = vsCoveragePlaceholder(game.title);
+            return `
+                <div class="relative pt-[50%] w-full overflow-hidden bg-slate-200">
+                    <img src="${game.cover}" ${isAboveFold ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" referrerpolicy="no-referrer" width="460" height="215" alt="${game.title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 block" onerror="this.onerror=null;this.src='${placeholder}';">
+                </div>
+                <div class="flex justify-between items-center px-3 md:px-4 py-2 text-white text-xs font-semibold tracking-wider" style="background-color: ${game.color};">
+                    <span class="game-verdict min-w-0 flex-1 truncate mr-2" title="${escapeHtml(game.verdict || formatPriceDisplay(game.price, game.released))}">${escapeHtml(game.verdict || formatPriceDisplay(game.price, game.released))}</span>
+                    <i class="fab fa-steam shrink-0 opacity-90 group-hover:scale-110 transition-transform"></i>
+                </div>
+                <div class="p-3 md:p-5">
+                    <h3 class="font-bold text-slate-800 text-sm md:text-lg leading-tight mb-1 md:mb-2 truncate group-hover:text-indigo-600 transition-colors">${game.title}</h3>
+                    <p class="text-xs md:text-sm text-slate-500 truncate">${game.team}</p>
+                </div>`;
+        }
+
+        function vsMeasureCardHeights() {
+            if (!vsState) return;
+            const cards = document.querySelectorAll('#game-list-container .game-card');
+            cards.forEach(card => {
+                const idx = parseInt(card.getAttribute('data-vs-idx'));
+                if (idx >= 0 && idx < vsState.filtered.length) {
+                    vsState.cardHeights[idx] = Math.round(card.getBoundingClientRect().height);
+                }
+            });
+        }
+
+        function vsGetPaddingTop() {
+            // 计算从第 0 行到 vsState.startIdx 之前所有卡片占用的高度
+            if (!vsState || vsState.startIdx === 0) return 16;
+            if (vsState._cachedPaddingTop && vsState._cachedPaddingFor === vsState.startIdx) {
+                return vsState._cachedPaddingTop;
+            }
+            // 按 2 列网格，逐行累加
+            let h = 0;
+            const end = vsState.startIdx;
+            for (let r = 0; r < Math.ceil(end / VS.COLS); r++) {
+                const c1 = vsState.cardHeights[r * VS.COLS] || VS.EST_ROW_H;
+                const c2 = vsState.cardHeights[r * VS.COLS + 1] || VS.EST_ROW_H;
+                h += Math.max(c1, c2);
+                if (r < Math.ceil(end / VS.COLS) - 1) h += VS.GAP;
+            }
+            h += 16; // 原始 top padding
+            vsState._cachedPaddingTop = h;
+            vsState._cachedPaddingFor = vsState.startIdx;
+            return h;
+        }
+
+        function vsRender() {
+            if (!vsState) return;
+            const { filtered, startIdx, endIdx } = vsState;
+            const container = document.getElementById('game-list-container');
+            if (!container) return;
+
+            // 锁定高度防止抖动
+            const prevH = container.offsetHeight;
+            if (prevH > 0) container.style.minHeight = prevH + 'px';
+
+            container.innerHTML = '';
+            const frag = document.createDocumentFragment();
+
+            for (let i = startIdx; i < endIdx && i < filtered.length; i++) {
+                const game = filtered[i];
+                const card = document.createElement('div');
+                card.className = 'game-card flex flex-col group';
+                card.setAttribute('data-game-id', game.id);
+                card.setAttribute('data-vs-idx', i);
+                card.onclick = () => openDetail(game.id);
+                card.innerHTML = vsBuildCardHTML(game, i);
+                frag.appendChild(card);
+            }
+
+            // 添加底部哨兵，用于触发加载更多
+            const sentinel = document.createElement('div');
+            sentinel.id = 'vs-sentinel';
+            frag.appendChild(sentinel);
+
+            // 数据未全部加载时，显示加载指示器
+            if (!gamesFullyLoaded && totalGameCount > GAMES_PAGE_SIZE) {
+                const loader = document.createElement('div');
+                loader.id = 'vs-loading-indicator';
+                loader.style.cssText = 'grid-column:1/-1;text-align:center;padding:20px 0;color:#94a3b8;font-size:13px;';
+                loader.innerHTML = `<i class="fas fa-spinner fa-pulse mr-2"></i>已加载 ${appState.games.length}/${totalGameCount} 款游戏...`;
+                frag.appendChild(loader);
+            }
+
+            container.appendChild(frag);
+            container.style.paddingTop = vsGetPaddingTop() + 'px';
+            vsState._cachedPaddingTop = null;
+
+            // 释放高度锁定，然后测量卡片高度
+            requestAnimationFrame(() => {
+                container.style.minHeight = '';
+                requestAnimationFrame(() => {
+                    vsMeasureCardHeights();
+                });
+            });
+        }
+
+        function vsHandleScroll() {
+            if (!vsState || vsScrollTicking) return;
+            vsScrollTicking = true;
+            requestAnimationFrame(() => {
+                vsScrollTicking = false;
+                vsRecalculate();
+            });
+        }
+
+        function vsRecalculate() {
+            if (!vsState) return;
+            const scrollY = window.scrollY;
+            const viewH = window.innerHeight;
+            const container = document.getElementById('game-list-container');
+            if (!container) return;
+            const containerTop = container.getBoundingClientRect().top + scrollY;
+            const padTop = vsGetPaddingTop();
+            const firstCardY = containerTop + padTop;
+
+            // 计算当前渲染窗口的大致高度
+            let renderedH = 0;
+            for (let r = Math.floor(vsState.startIdx / VS.COLS); r < Math.ceil(vsState.endIdx / VS.COLS); r++) {
+                const c1 = vsState.cardHeights[r * VS.COLS] || VS.EST_ROW_H;
+                const c2 = vsState.cardHeights[r * VS.COLS + 1] || VS.EST_ROW_H;
+                renderedH += Math.max(c1, c2) + VS.GAP;
+            }
+            const lastCardY = firstCardY + renderedH;
+            const bufPx = VS.BUFFER * VS.EST_ROW_H;
+
+            let newStart = vsState.startIdx;
+            let newEnd = vsState.endIdx;
+
+            if (scrollY + viewH < firstCardY - bufPx) {
+                // 用户滚到了窗口上方 → 向上移动窗口
+                newStart = Math.max(0, vsState.startIdx - VS.BUFFER * VS.COLS * 2);
+                newStart = Math.floor(newStart / VS.COLS) * VS.COLS;
+                newEnd = Math.min(vsState.filtered.length, newStart + VS.MAX_CARDS);
+            } else if (scrollY > lastCardY + bufPx) {
+                // 用户滚到了窗口下方 → 向下移动窗口
+                newStart = vsState.endIdx - VS.BUFFER * VS.COLS;
+                newStart = Math.max(0, Math.floor(newStart / VS.COLS) * VS.COLS);
+                newEnd = Math.min(vsState.filtered.length, newStart + VS.MAX_CARDS);
+            } else {
+                // 在窗口内或附近 → 检查是否需要扩展
+                if (scrollY < firstCardY + bufPx && vsState.startIdx > 0) {
+                    newStart = Math.max(0, vsState.startIdx - VS.BUFFER * VS.COLS);
+                    newStart = Math.floor(newStart / VS.COLS) * VS.COLS;
+                }
+                if (scrollY + viewH > lastCardY - bufPx && vsState.endIdx < vsState.filtered.length) {
+                    newEnd = Math.min(vsState.filtered.length, vsState.endIdx + VS.BUFFER * VS.COLS);
+                    newEnd = Math.ceil(newEnd / VS.COLS) * VS.COLS;
+                }
+                // Cap at MAX_CARDS
+                if (newEnd - newStart > VS.MAX_CARDS) {
+                    if (scrollY > (vsState._lastScrollY || scrollY)) {
+                        newStart = newEnd - VS.MAX_CARDS;
+                        newStart = Math.max(0, Math.floor(newStart / VS.COLS) * VS.COLS);
+                    } else {
+                        newEnd = newStart + VS.MAX_CARDS;
+                    }
+                }
+            }
+
+            vsState._lastScrollY = scrollY;
+
+            if (newStart !== vsState.startIdx || newEnd !== vsState.endIdx) {
+                vsState.startIdx = newStart;
+                vsState.endIdx = newEnd;
+                vsState._cachedPaddingTop = null;
+                vsRender();
+            }
+        }
+
+        function vsReset(filteredGames) {
+            if (vsState) {
+                vsState.filtered = filteredGames;
+                vsState.startIdx = 0;
+                vsState.endIdx = Math.min(VS.INITIAL * VS.COLS, filteredGames.length);
+                vsState.cardHeights = new Array(filteredGames.length).fill(0);
+                vsState._cachedPaddingTop = null;
+                vsState._lastScrollY = window.scrollY;
+            } else {
+                vsState = {
+                    filtered: filteredGames,
+                    startIdx: 0,
+                    endIdx: Math.min(VS.INITIAL * VS.COLS, filteredGames.length),
+                    cardHeights: new Array(filteredGames.length).fill(0),
+                    _cachedPaddingTop: null,
+                    _cachedPaddingFor: -1,
+                    _lastScrollY: window.scrollY,
+                };
+            }
+            vsRender();
+        }
+
+        // 初始化滚动监听
+        let _vsScrollBound = false;
+        function vsEnsureScrollListener() {
+            if (_vsScrollBound) return;
+            _vsScrollBound = true;
+            window.addEventListener('scroll', vsHandleScroll, { passive: true });
+            // 窗口大小变化时清除高度缓存
+            let _vsResizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(_vsResizeTimer);
+                _vsResizeTimer = setTimeout(() => {
+                    if (vsState) {
+                        vsState.cardHeights = new Array(vsState.filtered.length).fill(0);
+                        vsState._cachedPaddingTop = null;
+                        // 重新渲染以更新 padding
+                        vsRender();
+                    }
+                }, 300);
+            }, { passive: true });
+
+            // 回到顶部按钮的显示/隐藏
+            window.addEventListener('scroll', () => {
+                const btn = document.getElementById('back-to-top');
+                if (!btn) return;
+                if (window.scrollY > 500) {
+                    btn.classList.add('visible');
+                } else {
+                    btn.classList.remove('visible');
+                }
+            }, { passive: true });
+        }
+
+        // 回到顶部
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============ renderClientList（接入虚拟滚动）============
         function renderClientList(filterType) {
             const games = getGames();
             const type = filterType !== undefined ? filterType : appState.currentFilter;
@@ -2311,66 +2957,26 @@
                 ? filtered.filter(game => Array.isArray(game.tags) && game.tags.includes(type))
                 : filtered;
 
-            // 排序（使用副本，不修改原始数据）
+            // 排序
             if (appState.sortMode === 'release') {
                 filtered = [...filtered].sort((a, b) => {
                     const aReleased = a.released !== false;
                     const bReleased = b.released !== false;
-                    // 已发售的在前，未发售的在后
                     if (aReleased && !bReleased) return -1;
                     if (!aReleased && bReleased) return 1;
                     const aTs = parseDateForSort(a.releaseDate || a.date || '');
                     const bTs = parseDateForSort(b.releaseDate || b.date || '');
-                    if (aReleased) {
-                        // 已发售：最新上线排前面（降序）
-                        return bTs - aTs;
-                    } else {
-                        // 未发售：越靠近当前日期排前面（升序）
-                        return aTs - bTs;
-                    }
+                    if (aReleased) return bTs - aTs;
+                    else return aTs - bTs;
                 });
             }
 
-            const container = document.getElementById('game-list-container');
-
-            // 锁定容器高度，防止切换筛选时页面位移
-            const prevHeight = container.offsetHeight;
-            if (prevHeight > 0) {
-                container.style.minHeight = prevHeight + 'px';
-            }
-
-            container.innerHTML = ''; 
-
-            const coveragePlaceholder = (title) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="460" height="215" viewBox="0 0 460 215"><rect fill="#1e293b" width="460" height="215"/><text fill="#64748b" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle" x="230" y="112">${title}</text></svg>`)}`;
-            filtered.forEach((game, index) => {
-                const card = document.createElement('div');
-                card.className = 'game-card flex flex-col group';
-                card.onclick = () => openDetail(game.id);
-                const isAboveFold = index < 6;
-                const placeholder = coveragePlaceholder(game.title);
-
-                card.innerHTML = `
-                    <div class="relative pt-[50%] w-full overflow-hidden bg-slate-200">
-                        <img src="${game.cover}" ${isAboveFold ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" referrerpolicy="no-referrer" width="460" height="215" alt="${game.title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 block" onerror="this.onerror=null;this.src='${placeholder}';">
-                    </div>
-                    <div class="flex justify-between items-center px-3 md:px-4 py-2 text-white text-xs font-semibold tracking-wider" style="background-color: ${game.color};">
-                        <span class="game-verdict min-w-0 flex-1 truncate mr-2" title="${escapeHtml(game.verdict || formatPriceDisplay(game.price, game.released))}">${escapeHtml(game.verdict || formatPriceDisplay(game.price, game.released))}</span>
-                        <i class="fab fa-steam shrink-0 opacity-90 group-hover:scale-110 transition-transform"></i>
-                    </div>
-                    <div class="p-3 md:p-5">
-                        <h3 class="font-bold text-slate-800 text-sm md:text-lg leading-tight mb-1 md:mb-2 truncate group-hover:text-indigo-600 transition-colors">${game.title}</h3>
-                        <p class="text-xs md:text-sm text-slate-500 truncate">${game.team}</p>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-
-            // 渲染完成后释放 minHeight，让容器自适应新内容高度
-            requestAnimationFrame(() => {
-                container.style.minHeight = '';
-            });
-
+            vsEnsureScrollListener();
+            vsReset(filtered);
             renderFilterTags();
+
+            // 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'instant' });
         }
 
         function renderFilterTags() {
@@ -2518,6 +3124,11 @@
         function animateGameGrid(changeLayout) {
             if (window.innerWidth < 768) {
                 changeLayout();
+                // 布局变更后清除虚拟滚动高度缓存
+                if (vsState) {
+                    vsState.cardHeights = new Array(vsState.filtered.length).fill(0);
+                    vsState._cachedPaddingTop = null;
+                }
                 return;
             }
 
@@ -2630,6 +3241,20 @@
                     });
                 }
             });
+
+            // FLIP 动画结束后（550ms），清除虚拟滚动高度缓存并重新测量
+            if (vsState) {
+                setTimeout(() => {
+                    vsState.cardHeights = new Array(vsState.filtered.length).fill(0);
+                    vsState._cachedPaddingTop = null;
+                    vsMeasureCardHeights();
+                    // 如果 padding 变了，重新渲染
+                    const container = document.getElementById('game-list-container');
+                    if (container && vsState.startIdx > 0) {
+                        container.style.paddingTop = vsGetPaddingTop() + 'px';
+                    }
+                }, 550);
+            }
         }
 
         function formatPriceDisplay(price, released) {
@@ -2676,10 +3301,58 @@
             return source.innerHTML;
         }
 
+        // 快速缓动滚动到卡片居中位置（约 250ms，介于 instant 和 smooth 之间）
+        function quickScrollToCard(card) {
+            const targetRect = card.getBoundingClientRect();
+            const cardCenter = targetRect.top + targetRect.height / 2;
+            const viewCenter = window.innerHeight / 2;
+            const scrollDelta = cardCenter - viewCenter;
+            const startY = window.scrollY;
+            const targetY = startY + scrollDelta;
+            const duration = 250;
+            const startTime = performance.now();
+
+            function step(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // ease-out quad
+                const eased = 1 - (1 - progress) * (1 - progress);
+                window.scrollTo(0, startY + scrollDelta * eased);
+                if (progress < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
+        // 虚拟滚动：确保指定游戏卡片在 DOM 中并滚动到其位置
+        function vsScrollToGame(id) {
+            if (!vsState) return;
+            const idx = vsState.filtered.findIndex(g => g.id === id);
+            if (idx < 0) return;
+            // 如果卡片不在当前窗口中，重新定位窗口
+            if (idx < vsState.startIdx || idx >= vsState.endIdx) {
+                const bufCards = VS.BUFFER * VS.COLS;
+                vsState.startIdx = Math.max(0, Math.floor((idx - bufCards) / VS.COLS) * VS.COLS);
+                vsState.endIdx = Math.min(vsState.filtered.length, vsState.startIdx + VS.MAX_CARDS);
+                vsState._cachedPaddingTop = null;
+                vsRender();
+            }
+            // 等待渲染完成后滚动
+            requestAnimationFrame(() => {
+                const card = document.querySelector(`.game-card[data-game-id="${id}"]`);
+                if (card) quickScrollToCard(card);
+            });
+        }
+
         function openDetail(id) {
             const games = getGames();
             const game = games.find(g => g.id === id);
             if(!game) return;
+
+            // 判断是首次打开详情面板，还是切换游戏
+            const wasPanelOpen = detailPanel.classList.contains('active');
+
+            // 记录当前打开的详情游戏 ID
+            appState.currentDetailGameId = id;
 
             const contentContainer = document.getElementById('detail-content');
             
@@ -2828,6 +3501,10 @@
             overlay.classList.remove('hidden');
             // 初始化 bar 高光位置
             requestAnimationFrame(updateZhihuHighlight);
+            // 首次打开时居中卡片（仅桌面端）；切换游戏时不滚动
+            if (!wasPanelOpen && window.innerWidth >= 768) {
+                setTimeout(() => vsScrollToGame(id), 500);
+            }
         }
 
         window.switchExperienceTab = function(tab) {
@@ -2970,7 +3647,23 @@
             animateGameGrid(() => body.classList.remove('panel-open'));
             detailPanel.classList.remove('active');
             overlay.classList.add('hidden');
-            stopAutoSlide(); 
+            stopAutoSlide();
+            // FLIP 动画结束后（500ms），检测卡片是否在可视区内，不在则滚动
+            const targetId = appState.currentDetailGameId;
+            if (targetId && window.innerWidth >= 768) {
+                setTimeout(() => {
+                    const card = document.querySelector(`.game-card[data-game-id="${targetId}"]`);
+                    if (!card) {
+                        vsScrollToGame(targetId);
+                        return;
+                    }
+                    const rect = card.getBoundingClientRect();
+                    const isFullyVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+                    if (!isFullyVisible) {
+                        vsScrollToGame(targetId);
+                    }
+                }, 600);
+            }
         }
 
         document.getElementById('close-btn').addEventListener('click', closeDetail);
@@ -4027,10 +4720,16 @@
                 renderClientList();
                 renderAdminList(currentAdminSearch);
                 updateGameEditorLabels(false);
+                // 首页渲染完成后，后台静默加载剩余游戏
+                if (!gamesFullyLoaded) {
+                    loadRemainingGames();
+                }
             } catch (error) {
                 console.error('初始化 Supabase 数据失败:', error);
                 appState.games = defaultData;
                 appState.gameTags = [...DEFAULT_GAME_TAGS];
+                totalGameCount = defaultData.length;
+                gamesFullyLoaded = true;
                 renderWishlistSetting();
                 renderTagManager();
                 renderClientList();
@@ -4060,6 +4759,105 @@
             editor.addEventListener('keyup', saveRichSelection);
             editor.addEventListener('mouseup', saveRichSelection);
         });
+
+        // ====== 手机端导航栏：更多主题弹层 ======
+        function openMobileThemeSheet() {
+            const backdrop = document.getElementById('mobile-theme-backdrop');
+            const sheet = document.getElementById('mobile-theme-sheet');
+            const list = document.getElementById('mobile-theme-list');
+            if (!backdrop || !sheet || !list) return;
+
+            const navActivities = getNavActivities();
+            const featured = navActivities.find(a => a.is_featured);
+            const currentId = appState.currentActivityId;
+            // 排除：热推活动、全部游戏（这两个已在导航栏上固定显示）
+            const others = navActivities.filter(a => a.id !== 'all-games' && (!featured || a.id !== featured.id));
+
+            list.innerHTML = others.map(activity => {
+                const isActive = activity.id === currentId;
+                return `<button type="button" onclick="setActivity('${activity.id}');closeMobileThemeSheet();" class="w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${isActive ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'}">${escapeHtml(activity.title)}</button>`;
+            }).join('');
+
+            backdrop.classList.remove('hidden');
+            sheet.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileThemeSheet() {
+            const backdrop = document.getElementById('mobile-theme-backdrop');
+            const sheet = document.getElementById('mobile-theme-sheet');
+            if (!backdrop || !sheet) return;
+            backdrop.classList.add('hidden');
+            sheet.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // ====== 手机端滚动吸顶 ======
+        (function initMobileSticky() {
+            const titleArea = document.getElementById('mobile-title-area');
+            const stickyHeader = document.getElementById('mobile-sticky-header');
+            if (!titleArea || !stickyHeader) return;
+            let ticking = false;
+            let isSticky = false;
+            let placeholder = document.createElement('div');
+            placeholder.style.display = 'none';
+            let syncRaf = null;
+
+            function syncPlaceholder() {
+                // 每帧同步占位高度 = 吸顶模块当前实际高度 + 间距
+                placeholder.style.height = (stickyHeader.offsetHeight + 20) + 'px';
+                // 等高度稳定后停止（变化 < 1px 或持续 0.6s 后停）
+                syncRaf = requestAnimationFrame(syncPlaceholder);
+            }
+
+            function update() {
+                const rect = titleArea.getBoundingClientRect();
+                const shouldStick = rect.bottom <= 0;
+                if (shouldStick === isSticky) { ticking = false; return; }
+                isSticky = shouldStick;
+
+                if (isSticky) {
+                    cancelAnimationFrame(syncRaf);
+                    // 先插全高占位防跳动
+                    placeholder.style.height = stickyHeader.offsetHeight + 'px';
+                    placeholder.style.display = 'block';
+                    stickyHeader.parentNode.insertBefore(placeholder, stickyHeader);
+                    document.body.classList.add('mobile-sticky');
+                    // 每帧跟随 banner 的 CSS 过渡同步缩小占位
+                    // 约 0.6s 后 banner 过渡结束，自动停
+                    let frameCount = 0;
+                    const MAX_FRAMES = 40; // ~0.67s @ 60fps
+                    let lastH = parseFloat(placeholder.style.height);
+                    function syncLoop() {
+                        frameCount++;
+                        const targetH = stickyHeader.offsetHeight + 20;
+                        placeholder.style.height = targetH + 'px';
+                        if (frameCount >= MAX_FRAMES || Math.abs(targetH - lastH) < 0.5) {
+                            // 高度已稳定，最后一次精确设置
+                            placeholder.style.height = (stickyHeader.offsetHeight + 20) + 'px';
+                            syncRaf = null;
+                            return;
+                        }
+                        lastH = targetH;
+                        syncRaf = requestAnimationFrame(syncLoop);
+                    }
+                    syncRaf = requestAnimationFrame(syncLoop);
+                } else {
+                    cancelAnimationFrame(syncRaf);
+                    syncRaf = null;
+                    placeholder.remove();
+                    document.body.classList.remove('mobile-sticky');
+                }
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    requestAnimationFrame(update);
+                    ticking = true;
+                }
+            }, { passive: true });
+        })();
     </script>
 </body>
 </html>
