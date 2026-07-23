@@ -80,6 +80,44 @@ const setLocalGames = (games) => {
   }
 }
 
+const defaultActivities = [
+  {
+    id: 'default-activity',
+    title: '全部游戏',
+    nav_title: '全部游戏',
+    banner_url: '',
+    banner_link: '',
+    is_featured: false,
+    sort_order: 999
+  }
+]
+
+const getLocalActivities = () => {
+  try {
+    const data = localStorage.getItem('activitiesData')
+    return data ? JSON.parse(data) : defaultActivities
+  } catch {
+    return defaultActivities
+  }
+}
+
+const setLocalActivities = (activities) => {
+  localStorage.setItem('activitiesData', JSON.stringify(activities))
+}
+
+const getLocalActivityGames = () => {
+  try {
+    const data = localStorage.getItem('activityGamesData')
+    return data ? JSON.parse(data) : []
+  } catch {
+    return []
+  }
+}
+
+const setLocalActivityGames = (relations) => {
+  localStorage.setItem('activityGamesData', JSON.stringify(relations))
+}
+
 // 检查 Supabase 配置是否有效
 const isSupabaseConfigured = () => {
   return supabaseUrl && supabaseUrl !== '' && 
@@ -90,6 +128,80 @@ const isSupabaseConfigured = () => {
 export const supabase = isSupabaseConfigured() 
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null
+
+export const activityService = {
+  async getAllActivities() {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabase.from('activities').select('*').order('is_featured', { ascending: false }).order('sort_order')
+      if (!error) return data
+    }
+    return getLocalActivities()
+  },
+
+  async createActivity(activityData, gameIds = []) {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabase.from('activities').insert([activityData]).select()
+      if (!error) {
+        await this.setActivityGames(activityData.id, gameIds)
+        return data[0]
+      }
+    }
+    const activities = getLocalActivities()
+    activities.push(activityData)
+    setLocalActivities(activities)
+    await this.setActivityGames(activityData.id, gameIds)
+    return activityData
+  },
+
+  async updateActivity(id, activityData, gameIds = []) {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabase.from('activities').update(activityData).eq('id', id).select()
+      if (!error) {
+        await this.setActivityGames(id, gameIds)
+        return data[0]
+      }
+    }
+    const activities = getLocalActivities()
+    const index = activities.findIndex(activity => activity.id === id)
+    if (index === -1) return null
+    activities[index] = { ...activities[index], ...activityData }
+    setLocalActivities(activities)
+    await this.setActivityGames(id, gameIds)
+    return activities[index]
+  },
+
+  async deleteActivity(id) {
+    if (isSupabaseConfigured()) {
+      const { error } = await supabase.from('activities').delete().eq('id', id)
+      if (!error) return true
+    }
+    setLocalActivities(getLocalActivities().filter(activity => activity.id !== id))
+    setLocalActivityGames(getLocalActivityGames().filter(relation => relation.activity_id !== id))
+    return true
+  },
+
+  async getActivityGameIds(activityId) {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabase.from('activity_games').select('game_id').eq('activity_id', activityId).order('sort_order')
+      if (!error) return data.map(relation => relation.game_id)
+    }
+    return getLocalActivityGames().filter(relation => relation.activity_id === activityId).sort((a, b) => a.sort_order - b.sort_order).map(relation => relation.game_id)
+  },
+
+  async setActivityGames(activityId, gameIds) {
+    if (isSupabaseConfigured()) {
+      const { error } = await supabase.from('activity_games').delete().eq('activity_id', activityId)
+      if (!error && gameIds.length) {
+        await supabase.from('activity_games').insert(gameIds.map((gameId, index) => ({ activity_id: activityId, game_id: gameId, sort_order: index })))
+      }
+      if (!error) return true
+    }
+    const relations = getLocalActivityGames().filter(relation => relation.activity_id !== activityId)
+    relations.push(...gameIds.map((gameId, index) => ({ activity_id: activityId, game_id: gameId, sort_order: index })))
+    setLocalActivityGames(relations)
+    return true
+  }
+}
 
 export const gameService = {
   async getAllGames() {
@@ -132,6 +244,13 @@ export const gameService = {
   },
 
   async createGame(gameData) {
+    // 检查 ID 是否已存在，防止重复创建
+    const existing = await this.getGameById(gameData.id)
+    if (existing) {
+      console.warn('Game with id ' + gameData.id + ' already exists, skipping creation')
+      return existing
+    }
+
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase
@@ -147,6 +266,10 @@ export const gameService = {
       }
     }
     const games = getLocalGames()
+    // 再次确认本地没有重复 ID
+    if (games.find(g => g.id === gameData.id)) {
+      return gameData
+    }
     const newGame = { ...gameData, created_at: new Date().toISOString() }
     games.unshift(newGame)
     setLocalGames(games)

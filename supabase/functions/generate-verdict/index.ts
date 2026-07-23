@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
       return json({ success: false, error: "请先填写游戏名称和类型" }, 400, origin);
     }
 
-    const prompt = `请为这款游戏写一句判词：精准突出核心玩点，诙谐、有网感，严格不超过15个汉字或等价字符。只输出判词本身，不带引号、解释或前缀。游戏名：《${String(title).trim()}》；类型：${String(type).trim()}；简介：${String(description || "").trim()}`;
+    const prompt = `请为这款游戏写一句判词：精准突出核心玩点，诙谐、有网感，严格不超过15个汉字或等价字符。只输出判词本身，不带引号、解释、前缀或句末标点。游戏名：《${String(title).trim()}》；类型：${String(type).trim()}；简介：${String(description || "").trim()}`;
     const response = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
       headers: {
@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
 
     const result = await response.json();
     let verdict = result?.choices?.[0]?.message?.content?.trim() || "";
-    verdict = verdict.replace(/^["'“‘「]|["'”’」]$/g, "").trim().slice(0, 15);
+    verdict = verdict.replace(/^["'“‘「]|["'”’」]$/g, "").replace(/[。！？!?…]+$/g, "").trim().slice(0, 15);
     if (!verdict) {
       return json({ success: false, error: "Gemini 未返回有效判词" }, 502, origin);
     }
