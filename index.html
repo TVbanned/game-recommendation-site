@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -294,7 +294,7 @@
         .prose-zhihu > div:last-child { margin-bottom: 0; }
         .prose-zhihu > p *,
         .prose-zhihu > div * { font-size: inherit !important; line-height: inherit !important; }
-        .prose-zhihu img { display: block; width: 100%; aspect-ratio: 2 / 1; object-fit: cover; border-radius: 12px; margin: 18px 0; }
+        .prose-zhihu img { display: block; max-width: 100%; border-radius: 12px; margin: 18px 0; }
         .prose-zhihu h2,.prose-zhihu h3 { font-weight: 700; margin: 24px 0 10px; color: #1e293b; }
         .prose-zhihu blockquote { border-left: 3px solid #cbd5e1; padding: 4px 0 4px 16px; margin: 16px 0; color: #64748b; }
         .prose-zhihu > br { display: block; content: ''; margin-bottom: 10px; }
@@ -477,11 +477,11 @@
         .activity-stage { --theme-rgb: 15,40,92; --theme-bright: #4f8ef7; position: relative; overflow: hidden; border-radius: 14px; background: #0b1424; box-shadow: 0 8px 24px rgba(13,28,56,.15); isolation: isolate; transition: box-shadow .55s ease, background .55s ease; }
         .activity-stage.has-banner { background: #172033; }
         .activity-banner { position: relative; display: block; z-index: 0; height: 0; overflow: hidden; opacity: 0; border-radius: 0 0 14px 14px; transition: height .5s cubic-bezier(.2,.8,.2,1), opacity .45s ease; width: 100%; }
-        .activity-banner.visible { height: auto; aspect-ratio: 3 / 1; opacity: 1; }
+        .activity-banner.visible { height: auto; aspect-ratio: 4.5 / 1; opacity: 1; }
         .activity-banner .carousel-track { width: 100%; }
         .activity-banner .carousel-slide { min-width: 100%; }
         .activity-banner.collapsing { height: 0; opacity: 0; }
-        .activity-banner img, .activity-banner-mobile img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.02); transition: transform .7s cubic-bezier(.2,.8,.2,1), filter .55s ease; }
+        .activity-banner img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.02); transition: transform .7s cubic-bezier(.2,.8,.2,1), filter .55s ease; }
         .activity-stage:hover .activity-banner img { transform: scale(1.05); }
         .activity-stage-inner { position: relative; z-index: 2; display: flex; min-height: 62px; align-items: center; color: rgba(255,255,255,.82); background: linear-gradient(105deg, rgba(11,22,48,.88), rgba(var(--theme-rgb),.78) 55%, rgba(var(--theme-rgb),.58)); border-radius: 14px 14px 0 0; box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 -1px 0 rgba(255,255,255,.1); backdrop-filter: blur(22px) saturate(145%); -webkit-backdrop-filter: blur(22px) saturate(145%); transition: background .55s ease; }
         .activity-stage-inner::before { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 10%, rgba(255,255,255,.16) 48%, transparent 78%); transform: translateX(-110%); animation: activityThemeSweep .8s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
@@ -600,7 +600,7 @@
         }
         .activity-banner-mobile.visible {
             height: auto;
-            aspect-ratio: 3 / 1;
+            aspect-ratio: 4.5 / 1;
             opacity: 1;
         }
         .activity-banner-mobile .carousel-track-mobile {
@@ -628,13 +628,12 @@
             left: 0;
             right: 0;
             z-index: 40;
-            padding-top: max(12px, env(safe-area-inset-top));
+            padding-top: 12px;
             padding-bottom: 12px;
             background: #f8fafc;
             padding-left: 1rem;
             padding-right: 1rem;
             box-shadow: 0 2px 12px rgba(0,0,0,.06);
-            isolation: isolate;
         }
         .mobile-sticky #mobile-title-area {
             max-height: 0 !important;
@@ -644,6 +643,8 @@
             opacity: 0;
         }
         .mobile-sticky .activity-stage-mobile-inner {
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
             background: linear-gradient(105deg, #0b1630, #0f285c 55%, #0d2044);
         }
         /* Mobile 主题弹层 */
@@ -2340,7 +2341,7 @@
                 : bannerUrls;
             activityBannerIndex = bannerUrls.length > 1 ? 1 : 0;
             track.innerHTML = slides.map((item, index) => {
-                const img = `<img src="${item.url}" ${index === 0 ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"'} decoding="async" referrerpolicy="no-referrer" class="w-full h-full object-cover" alt="Activity Banner ${index + 1}">`;
+                const img = `<img src="${item.url}" loading="lazy" decoding="async" referrerpolicy="no-referrer" class="w-full h-full object-cover" alt="Activity Banner ${index + 1}">`;
                 return `<div class="carousel-slide">${item.link ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="block w-full h-full">${img}</a>` : img}</div>`;
             }).join('');
             dots.innerHTML = bannerUrls.map((_, index) => `<div class="w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white w-6' : 'bg-white/40'}"></div>`).join('');
@@ -2620,7 +2621,7 @@
                             mobileBannerSlide = mobileBannerCount > 1 ? 1 : 0;
                             mobileBannerTrack.style.transition = 'none';
                             mobileBannerTrack.style.transform = `translateX(-${mobileBannerSlide * 100}%)`;
-                            mobileBannerTrack.innerHTML = mobileSlides.map((item, i) => `<div class="carousel-slide-mobile bg-slate-200"><img src="${proxyImageUrl(item.url, 800)}" ${i === mobileBannerSlide ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"'} decoding="async" referrerpolicy="no-referrer" class="w-full h-full object-cover" alt="banner${i+1}" onerror="this.onerror=null;this.parentElement.style.background='linear-gradient(135deg,#1e293b,#334155)';"></div>`).join('');
+                            mobileBannerTrack.innerHTML = mobileSlides.map((item, i) => `<div class="carousel-slide-mobile bg-slate-200"><img src="${proxyImageUrl(item.url, 800)}" loading="lazy" referrerpolicy="no-referrer" class="w-full h-full object-cover" alt="banner${i+1}" onerror="this.onerror=null;this.parentElement.style.background='linear-gradient(135deg,#1e293b,#334155)';"></div>`).join('');
                             mobileBannerDots.innerHTML = bannerUrls.map((_, i) => `<div class="w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === 0 ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}" onclick="goToMobileBannerSlide(${i})"></div>`).join('');
                             mobileBanner.classList.add('visible');
                             mobileBannerSwipeReady = false;
@@ -2898,9 +2899,9 @@
             COLS: 2,
             GAP: 16,
             EST_ROW_H: 380,
-            BUFFER: 8,        // 视口上下保留的预加载行数
+            BUFFER: 12,       // 视口上下预加载行数（约 4560px，手机端约 5 屏）
             INITIAL: 12,      // 初始渲染行数（24 张卡片）
-            MAX_CARDS: 96,    // 控制移动端重排与图片解码成本
+            MAX_CARDS: 160,   // DOM 中最多保留卡片数
             RECYCLE: 40,      // 每次回收卡片数
         };
 
@@ -2911,13 +2912,12 @@
             return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="460" height="215" viewBox="0 0 460 215"><rect fill="#1e293b" width="460" height="215"/><text fill="#64748b" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle" x="230" y="112">${title}</text></svg>`)}`;
         }
 
-        function vsBuildCardHTML(game, idx, preloadUntil) {
+        function vsBuildCardHTML(game, idx) {
             const isAboveFold = idx < 6;
-            const shouldPreload = idx < preloadUntil;
             const placeholder = vsCoveragePlaceholder(game.title);
             return `
                 <div class="relative pt-[50%] w-full overflow-hidden bg-slate-200">
-                    <img src="${game.cover}" ${isAboveFold ? 'fetchpriority="high" loading="eager"' : (shouldPreload ? 'loading="eager"' : 'loading="lazy"')} decoding="async" referrerpolicy="no-referrer" width="460" height="215" alt="${game.title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 block" onerror="this.onerror=null;this.src='${placeholder}';">
+                    <img src="${game.cover}" ${isAboveFold ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" referrerpolicy="no-referrer" width="460" height="215" alt="${game.title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 block" onerror="this.onerror=null;this.src='${placeholder}';">
                 </div>
                 <div class="flex justify-between items-center px-3 md:px-4 py-2 text-white text-xs font-semibold tracking-wider" style="background-color: ${game.color};">
                     <span class="game-verdict min-w-0 flex-1 truncate mr-2" title="${escapeHtml(game.verdict || formatPriceDisplay(game.price, game.released))}">${escapeHtml(game.verdict || formatPriceDisplay(game.price, game.released))}</span>
@@ -2974,8 +2974,6 @@
             // ★ 先在 DocumentFragment 中构建所有新内容，再用 replaceChildren 原子替换
             // 这样不会出现 container 瞬间为空导致的闪烁
             const frag = document.createDocumentFragment();
-            // 当前屏幕及下方约两屏卡片提前请求，远处卡片继续按需懒加载。
-            const preloadUntil = Math.min(endIdx, startIdx + (VS.INITIAL + VS.BUFFER) * VS.COLS);
 
             for (let i = startIdx; i < endIdx && i < filtered.length; i++) {
                 const game = filtered[i];
@@ -2984,7 +2982,7 @@
                 card.setAttribute('data-game-id', game.id);
                 card.setAttribute('data-vs-idx', i);
                 card.onclick = () => openDetail(game.id);
-                card.innerHTML = vsBuildCardHTML(game, i, preloadUntil);
+                card.innerHTML = vsBuildCardHTML(game, i);
                 frag.appendChild(card);
             }
 
@@ -4966,59 +4964,77 @@
             if (!titleArea || !stickyHeader) return;
             let ticking = false;
             let isSticky = false;
-            const placeholder = document.createElement('div');
+            let placeholder = document.createElement('div');
             placeholder.style.display = 'none';
-            let bannerNaturalH = 0;
-
-            function resetBannerHeight(event) {
-                if (event && event.propertyName !== 'height') return;
-                banner.style.height = '';
-                bannerNaturalH = 0;
-                banner.removeEventListener('transitionend', resetBannerHeight);
-            }
+            let syncRaf = null;
+            let bannerNaturalH = 0;     // banner 收起前记录的原始高度
+            let bannerCleanupTimer = null;
 
             function update() {
-                const shouldStick = titleArea.getBoundingClientRect().bottom <= 0;
+                const rect = titleArea.getBoundingClientRect();
+                const shouldStick = rect.bottom <= 0;
                 if (shouldStick === isSticky) { ticking = false; return; }
                 isSticky = shouldStick;
 
                 if (isSticky) {
+                    cancelAnimationFrame(syncRaf);
+                    clearTimeout(bannerCleanupTimer);
+
+                    // —— 吸顶：平滑收起 banner ——
                     if (banner && banner.classList.contains('visible')) {
-                        banner.removeEventListener('transitionend', resetBannerHeight);
-                        bannerNaturalH = Math.round(banner.getBoundingClientRect().height);
+                        bannerNaturalH = banner.getBoundingClientRect().height;
+                        // 锁定当前高度，为 CSS transition 准备起点
                         banner.style.height = bannerNaturalH + 'px';
                     }
 
-                    // 固定头部前一次性保留原始空间，避免滚动帧中反复读写布局。
+                    // 先插全高占位防跳动
                     placeholder.style.height = stickyHeader.offsetHeight + 'px';
                     placeholder.style.display = 'block';
                     stickyHeader.parentNode.insertBefore(placeholder, stickyHeader);
                     document.body.classList.add('mobile-sticky');
 
-                    if (bannerNaturalH > 0) {
-                        requestAnimationFrame(() => { banner.style.height = '0px'; });
+                    // 下一帧：触发 banner 高度 → 0 的 CSS 过渡动画
+                    if (banner && banner.classList.contains('visible') && bannerNaturalH > 0) {
+                        requestAnimationFrame(() => {
+                            banner.style.height = '0px';
+                        });
                     }
+
+                    // 每帧跟随 banner 的 CSS 过渡同步缩小占位
+                    let frameCount = 0;
+                    const MAX_FRAMES = 40; // ~0.67s @ 60fps
+                    let lastH = parseFloat(placeholder.style.height);
+                    function syncLoop() {
+                        frameCount++;
+                        const targetH = stickyHeader.offsetHeight + 20;
+                        placeholder.style.height = targetH + 'px';
+                        if (frameCount >= MAX_FRAMES || Math.abs(targetH - lastH) < 0.5) {
+                            placeholder.style.height = (stickyHeader.offsetHeight + 20) + 'px';
+                            syncRaf = null;
+                            return;
+                        }
+                        lastH = targetH;
+                        syncRaf = requestAnimationFrame(syncLoop);
+                    }
+                    syncRaf = requestAnimationFrame(syncLoop);
                 } else {
+                    // —— 取消吸顶：平滑展开 banner ——
+                    cancelAnimationFrame(syncRaf);
+                    syncRaf = null;
+                    clearTimeout(bannerCleanupTimer);
+
+                    placeholder.remove();
                     document.body.classList.remove('mobile-sticky');
 
                     if (banner && banner.classList.contains('visible') && bannerNaturalH > 0) {
-                        banner.style.height = '0px';
-                        const removePlaceholder = event => {
-                            if (event.propertyName !== 'height') return;
-                            placeholder.remove();
-                            placeholder.style.display = 'none';
-                            banner.removeEventListener('transitionend', removePlaceholder);
-                        };
-                        requestAnimationFrame(() => {
-                            // Banner 展开时占位同步收起，页面总高度保持稳定。
-                            placeholder.style.height = '0px';
-                            banner.addEventListener('transitionend', resetBannerHeight);
-                            banner.addEventListener('transitionend', removePlaceholder);
-                            banner.style.height = bannerNaturalH + 'px';
-                        });
+                        // 从 0 → 原始高度 的 CSS 过渡动画
+                        banner.style.height = bannerNaturalH + 'px';
+                        // 过渡结束后清理 inline style，交还给 .visible 的 height:auto
+                        bannerCleanupTimer = setTimeout(() => {
+                            banner.style.height = '';
+                            bannerNaturalH = 0;
+                        }, 520);
                     } else {
-                        placeholder.remove();
-                        placeholder.style.display = 'none';
                         bannerNaturalH = 0;
                     }
                 }
