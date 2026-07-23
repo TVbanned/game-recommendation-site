@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://shared.akamai.steamstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.akamai.steamstatic.com" crossorigin>
     <meta name="referrer" content="no-referrer">
+    <meta name="theme-color" content="#f8fafc">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@700;900&display=swap" rel="stylesheet">
@@ -165,8 +167,8 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            content-visibility: auto;
-            contain-intrinsic-size: auto 340px;
+            contain: layout style;
+            will-change: transform;
         }
         .game-card:hover { 
             transform: translateY(-6px) scale(1.01); 
@@ -579,11 +581,9 @@
         .activity-stage-mobile-inner {
             position: relative;
             z-index: 2;
-            background: linear-gradient(105deg, rgba(11,22,48,.88), rgba(15,40,92,.78) 55%, rgba(15,40,92,.58));
+            background: linear-gradient(105deg, #0b1630, #0f285c 55%, #0d2044);
             border-radius: 14px 14px 0 0;
             box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 -1px 0 rgba(255,255,255,.1);
-            backdrop-filter: blur(22px) saturate(145%);
-            -webkit-backdrop-filter: blur(22px) saturate(145%);
         }
         /* Mobile Banner 轮播 */
         .activity-banner-mobile {
@@ -640,8 +640,12 @@
             margin-bottom: 0 !important;
         }
         .mobile-sticky .activity-banner-mobile.visible {
-            height: 0 !important;
             opacity: 0;
+        }
+        .mobile-sticky .activity-stage-mobile-inner {
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            background: linear-gradient(105deg, #0b1630, #0f285c 55%, #0d2044);
         }
         /* Mobile 主题弹层 */
         #mobile-theme-sheet.open {
@@ -2555,82 +2559,165 @@
                     if (mobileBanner && mobileBannerTrack && mobileBannerDots && mobileStage) {
                         mobileStage.classList.toggle('has-banner', hasMobileBanner);
                         if (hasMobileBanner) {
-                            mobileBannerSlide = 0;
                             mobileBannerCount = bannerUrls.length;
+                            // 无缝循环：克隆首尾 slide
+                            const mobileSlides = mobileBannerCount > 1
+                                ? [bannerUrls[mobileBannerCount - 1], ...bannerUrls, bannerUrls[0]]
+                                : bannerUrls;
+                            mobileBannerSlide = mobileBannerCount > 1 ? 1 : 0;
                             mobileBannerTrack.style.transition = 'none';
-                            mobileBannerTrack.style.transform = 'translateX(0)';
-                            mobileBannerTrack.innerHTML = bannerUrls.map((item, i) => `<div class="carousel-slide-mobile bg-slate-200"><img src="${proxyImageUrl(item.url, 800)}" loading="lazy" referrerpolicy="no-referrer" class="w-full h-full object-cover" alt="banner${i+1}" onerror="this.onerror=null;this.parentElement.style.background='linear-gradient(135deg,#1e293b,#334155)';"></div>`).join('');
+                            mobileBannerTrack.style.transform = `translateX(-${mobileBannerSlide * 100}%)`;
+                            mobileBannerTrack.innerHTML = mobileSlides.map((item, i) => `<div class="carousel-slide-mobile bg-slate-200"><img src="${proxyImageUrl(item.url, 800)}" loading="lazy" referrerpolicy="no-referrer" class="w-full h-full object-cover" alt="banner${i+1}" onerror="this.onerror=null;this.parentElement.style.background='linear-gradient(135deg,#1e293b,#334155)';"></div>`).join('');
                             mobileBannerDots.innerHTML = bannerUrls.map((_, i) => `<div class="w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === 0 ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}" onclick="goToMobileBannerSlide(${i})"></div>`).join('');
                             mobileBanner.classList.add('visible');
+                            mobileBannerSwipeReady = false;
                             initMobileBannerSwipe();
                         } else {
+                            clearInterval(mobileBannerInterval);
                             mobileBanner.classList.remove('visible');
                             mobileBannerTrack.innerHTML = '';
                             mobileBannerDots.innerHTML = '';
+                            mobileBannerSwipeReady = false;
                         }
                     }
                 }
             }
         }
 
-        // 手机端 Banner 轮播
+        // 手机端 Banner 轮播（无缝循环 + 自动播放）
         let mobileBannerSlide = 0;
         let mobileBannerCount = 0;
         let mobileBannerSwipeReady = false;
-        window.goToMobileBannerSlide = function(index) {
+        let mobileBannerInterval = null;
+        let isMobileBannerDragging = false;
+
+        function mobileBannerGoToSlide(slideIndex, animate = true) {
             const track = document.getElementById('activity-banner-mobile-track');
             const dots = document.getElementById('activity-banner-mobile-dots');
             if (!track || !dots) return;
-            mobileBannerSlide = Math.max(0, Math.min(index, mobileBannerCount - 1));
-            track.style.transition = 'transform 0.3s ease-out';
+            mobileBannerSlide = slideIndex;
+            track.style.transition = animate ? 'transform 0.3s ease-out' : 'none';
             track.style.transform = `translateX(-${mobileBannerSlide * 100}%)`;
+            const realCount = mobileBannerCount;
+            const realIndex = (() => {
+                if (mobileBannerSlide <= 0) return realCount - 1;
+                if (mobileBannerSlide > realCount) return 0;
+                return mobileBannerSlide - 1;
+            })();
             const dotEls = dots.querySelectorAll('div');
             dotEls.forEach((d, i) => {
-                d.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === mobileBannerSlide ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}`;
+                d.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === realIndex ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}`;
             });
+            // 无缝循环跳转
+            if (mobileBannerSlide <= 0) {
+                setTimeout(() => {
+                    mobileBannerSlide = realCount;
+                    track.style.transition = 'none';
+                    track.style.transform = `translateX(-${mobileBannerSlide * 100}%)`;
+                    Array.from(dots.children).forEach((d, i) => { d.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === realCount - 1 ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}`; });
+                }, animate ? 320 : 0);
+            } else if (mobileBannerSlide > realCount) {
+                setTimeout(() => {
+                    mobileBannerSlide = 1;
+                    track.style.transition = 'none';
+                    track.style.transform = 'translateX(-100%)';
+                    Array.from(dots.children).forEach((d, i) => { d.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === 0 ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}`; });
+                }, animate ? 320 : 0);
+            }
+        }
+
+        function startMobileBannerAutoSlide() {
+            if (mobileBannerCount <= 1) return;
+            clearInterval(mobileBannerInterval);
+            mobileBannerInterval = setInterval(() => {
+                if (isMobileBannerDragging) return;
+                mobileBannerGoToSlide(mobileBannerSlide + 1, true);
+            }, 3000);
+        }
+
+        window.goToMobileBannerSlide = function(index) {
+            // index 是用户看到的实际索引（0-based）
+            clearInterval(mobileBannerInterval);
+            mobileBannerGoToSlide(index + 1, true);
+            if (mobileBannerCount > 1) {
+                setTimeout(startMobileBannerAutoSlide, 3500);
+            }
         };
 
         function initMobileBannerSwipe() {
             if (mobileBannerSwipeReady) return;
             const banner = document.getElementById('activity-banner-mobile');
-            const track = document.getElementById('activity-banner-mobile-track');
-            if (!banner || !track) return;
+            if (!banner) return;
             mobileBannerSwipeReady = true;
-            let dragging = false;
-            let startX = 0;
-            let startY = 0;
-            let currentX = 0;
+            let startX = 0, startY = 0, currentX = 0;
+            const getTrack = () => document.getElementById('activity-banner-mobile-track');
+            const getDots = () => document.getElementById('activity-banner-mobile-dots');
 
             banner.addEventListener('touchstart', event => {
                 if (mobileBannerCount <= 1) return;
-                dragging = true;
+                isMobileBannerDragging = true;
                 startX = currentX = event.touches[0].clientX;
                 startY = event.touches[0].clientY;
-                track.style.transition = 'none';
+                const track = getTrack(); if (track) track.style.transition = 'none';
+                clearInterval(mobileBannerInterval);
             }, { passive: true });
 
             banner.addEventListener('touchmove', event => {
-                if (!dragging) return;
+                if (!isMobileBannerDragging) return;
                 currentX = event.touches[0].clientX;
                 const diffX = currentX - startX;
                 const diffY = event.touches[0].clientY - startY;
                 if (Math.abs(diffX) <= Math.abs(diffY)) return;
                 event.preventDefault();
                 const offset = -mobileBannerSlide * banner.offsetWidth + diffX;
-                track.style.transform = `translateX(${offset}px)`;
+                const track = getTrack(); if (track) track.style.transform = `translateX(${offset}px)`;
             }, { passive: false });
 
             banner.addEventListener('touchend', () => {
-                if (!dragging) return;
-                dragging = false;
+                if (!isMobileBannerDragging) return;
+                isMobileBannerDragging = false;
                 const diff = currentX - startX;
                 const threshold = Math.min(60, banner.offsetWidth * 0.18);
-                if (Math.abs(diff) >= threshold) {
-                    goToMobileBannerSlide(mobileBannerSlide + (diff < 0 ? 1 : -1));
-                } else {
-                    goToMobileBannerSlide(mobileBannerSlide);
+                const target = Math.abs(diff) >= threshold
+                    ? mobileBannerSlide + (diff < 0 ? 1 : -1)
+                    : mobileBannerSlide;
+                const track = getTrack();
+                const realCount = mobileBannerCount;
+                // 回到原位或进入下一张
+                track.style.transition = 'transform 0.3s ease-out';
+                track.style.transform = `translateX(-${target * 100}%)`;
+                mobileBannerSlide = target;
+                const realIndex = (() => {
+                    if (mobileBannerSlide <= 0) return realCount - 1;
+                    if (mobileBannerSlide > realCount) return 0;
+                    return mobileBannerSlide - 1;
+                })();
+                const dots = getDots();
+                if (dots) {
+                    Array.from(dots.children).forEach((d, i) => {
+                        d.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === realIndex ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}`;
+                    });
                 }
+                // 无缝循环跳转
+                if (mobileBannerSlide <= 0) {
+                    setTimeout(() => {
+                        mobileBannerSlide = realCount;
+                        track.style.transition = 'none';
+                        track.style.transform = `translateX(-${realCount * 100}%)`;
+                        if (dots) Array.from(dots.children).forEach((d, i) => { d.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === realCount - 1 ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}`; });
+                    }, 320);
+                } else if (mobileBannerSlide > realCount) {
+                    setTimeout(() => {
+                        mobileBannerSlide = 1;
+                        track.style.transition = 'none';
+                        track.style.transform = 'translateX(-100%)';
+                        if (dots) Array.from(dots.children).forEach((d, i) => { d.className = `w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === 0 ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}`; });
+                    }, 320);
+                }
+                startMobileBannerAutoSlide();
             });
+
+            startMobileBannerAutoSlide();
         }
 
         window.setActivity = function(id) {
@@ -2758,9 +2845,9 @@
             COLS: 2,
             GAP: 16,
             EST_ROW_H: 380,
-            BUFFER: 6,        // 视口上下保留行数
-            INITIAL: 20,      // 初始渲染行数（40 张卡片）
-            MAX_CARDS: 120,   // DOM 中最多保留卡片数
+            BUFFER: 12,       // 视口上下预加载行数（约 4560px，手机端约 5 屏）
+            INITIAL: 12,      // 初始渲染行数（24 张卡片）
+            MAX_CARDS: 160,   // DOM 中最多保留卡片数
             RECYCLE: 40,      // 每次回收卡片数
         };
 
@@ -2826,11 +2913,12 @@
             const container = document.getElementById('game-list-container');
             if (!container) return;
 
-            // 锁定高度防止抖动
+            // 锁定高度防止布局抖动
             const prevH = container.offsetHeight;
             if (prevH > 0) container.style.minHeight = prevH + 'px';
 
-            container.innerHTML = '';
+            // ★ 先在 DocumentFragment 中构建所有新内容，再用 replaceChildren 原子替换
+            // 这样不会出现 container 瞬间为空导致的闪烁
             const frag = document.createDocumentFragment();
 
             for (let i = startIdx; i < endIdx && i < filtered.length; i++) {
@@ -2844,7 +2932,7 @@
                 frag.appendChild(card);
             }
 
-            // 添加底部哨兵，用于触发加载更多
+            // 底部哨兵
             const sentinel = document.createElement('div');
             sentinel.id = 'vs-sentinel';
             frag.appendChild(sentinel);
@@ -2858,7 +2946,8 @@
                 frag.appendChild(loader);
             }
 
-            container.appendChild(frag);
+            // 原子替换：一次性把所有旧子节点换成新的，无中间空白帧
+            container.replaceChildren(frag);
             container.style.paddingTop = vsGetPaddingTop() + 'px';
             vsState._cachedPaddingTop = null;
 
@@ -4805,19 +4894,15 @@
         (function initMobileSticky() {
             const titleArea = document.getElementById('mobile-title-area');
             const stickyHeader = document.getElementById('mobile-sticky-header');
+            const banner = document.getElementById('activity-banner-mobile');
             if (!titleArea || !stickyHeader) return;
             let ticking = false;
             let isSticky = false;
             let placeholder = document.createElement('div');
             placeholder.style.display = 'none';
             let syncRaf = null;
-
-            function syncPlaceholder() {
-                // 每帧同步占位高度 = 吸顶模块当前实际高度 + 间距
-                placeholder.style.height = (stickyHeader.offsetHeight + 20) + 'px';
-                // 等高度稳定后停止（变化 < 1px 或持续 0.6s 后停）
-                syncRaf = requestAnimationFrame(syncPlaceholder);
-            }
+            let bannerNaturalH = 0;     // banner 收起前记录的原始高度
+            let bannerCleanupTimer = null;
 
             function update() {
                 const rect = titleArea.getBoundingClientRect();
@@ -4827,13 +4912,29 @@
 
                 if (isSticky) {
                     cancelAnimationFrame(syncRaf);
+                    clearTimeout(bannerCleanupTimer);
+
+                    // —— 吸顶：平滑收起 banner ——
+                    if (banner && banner.classList.contains('visible')) {
+                        bannerNaturalH = banner.getBoundingClientRect().height;
+                        // 锁定当前高度，为 CSS transition 准备起点
+                        banner.style.height = bannerNaturalH + 'px';
+                    }
+
                     // 先插全高占位防跳动
                     placeholder.style.height = stickyHeader.offsetHeight + 'px';
                     placeholder.style.display = 'block';
                     stickyHeader.parentNode.insertBefore(placeholder, stickyHeader);
                     document.body.classList.add('mobile-sticky');
+
+                    // 下一帧：触发 banner 高度 → 0 的 CSS 过渡动画
+                    if (banner && banner.classList.contains('visible') && bannerNaturalH > 0) {
+                        requestAnimationFrame(() => {
+                            banner.style.height = '0px';
+                        });
+                    }
+
                     // 每帧跟随 banner 的 CSS 过渡同步缩小占位
-                    // 约 0.6s 后 banner 过渡结束，自动停
                     let frameCount = 0;
                     const MAX_FRAMES = 40; // ~0.67s @ 60fps
                     let lastH = parseFloat(placeholder.style.height);
@@ -4842,7 +4943,6 @@
                         const targetH = stickyHeader.offsetHeight + 20;
                         placeholder.style.height = targetH + 'px';
                         if (frameCount >= MAX_FRAMES || Math.abs(targetH - lastH) < 0.5) {
-                            // 高度已稳定，最后一次精确设置
                             placeholder.style.height = (stickyHeader.offsetHeight + 20) + 'px';
                             syncRaf = null;
                             return;
@@ -4852,10 +4952,25 @@
                     }
                     syncRaf = requestAnimationFrame(syncLoop);
                 } else {
+                    // —— 取消吸顶：平滑展开 banner ——
                     cancelAnimationFrame(syncRaf);
                     syncRaf = null;
+                    clearTimeout(bannerCleanupTimer);
+
                     placeholder.remove();
                     document.body.classList.remove('mobile-sticky');
+
+                    if (banner && banner.classList.contains('visible') && bannerNaturalH > 0) {
+                        // 从 0 → 原始高度 的 CSS 过渡动画
+                        banner.style.height = bannerNaturalH + 'px';
+                        // 过渡结束后清理 inline style，交还给 .visible 的 height:auto
+                        bannerCleanupTimer = setTimeout(() => {
+                            banner.style.height = '';
+                            bannerNaturalH = 0;
+                        }, 520);
+                    } else {
+                        bannerNaturalH = 0;
+                    }
                 }
                 ticking = false;
             }

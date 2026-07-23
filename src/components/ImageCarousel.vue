@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" class="carousel-container relative w-full h-64 md:h-72 bg-slate-900" @mousedown="startDrag" @touchstart="startDrag">
+  <div ref="container" class="carousel-container relative w-full detail-carousel bg-slate-900" @mousedown="startDrag" @touchstart="startDrag">
     <div class="carousel-track" :style="{ transform: `translateX(${translate}px)`, transition: dragging ? 'none' : 'transform .3s cubic-bezier(.25,.46,.45,.94)' }">
       <div v-for="(image, index) in images" :key="`${image}-${index}`" class="carousel-slide bg-slate-200">
         <a v-if="links[index]" :href="links[index]" target="_blank" rel="noopener noreferrer" class="block h-full"><img :src="imageUrl(image)" :alt="`${altPrefix} ${index + 1}`" loading="lazy" decoding="async" referrerpolicy="no-referrer" class="w-full h-full object-cover" @error="onImageError"></a>
@@ -34,5 +34,7 @@ onUnmounted(() => { window.removeEventListener('resize', update); window.removeE
 
 <style scoped>
 .carousel-container { overflow: hidden; touch-action: pan-y; }.carousel-track { display: flex; height: 100%; will-change: transform; }.carousel-slide { flex: 0 0 100%; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }.carousel-slide img { pointer-events: none; }
+.detail-carousel { aspect-ratio: 2 / 1; }
+@media (min-width: 768px) { .detail-carousel { aspect-ratio: auto; height: 18rem; } }
 .mobile-banner.carousel-container { height: 12rem; border: 1px solid rgba(255,255,255,.4); border-radius: 1rem; background: linear-gradient(135deg,rgba(255,255,255,.45) 0%,rgba(255,255,255,.15) 40%,rgba(255,255,255,.25) 100%); box-shadow: 0 8px 32px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); touch-action: manipulation; }.mobile-banner :deep(.carousel-track) { height: 100%; }.mobile-banner :deep(.carousel-slide) { height: 100%; }.mobile-banner :deep(.absolute.bottom-4) { bottom: .75rem; }
 </style>

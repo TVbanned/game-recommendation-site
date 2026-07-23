@@ -1,0 +1,1 @@
+ALTER TABLE public.games ADD COLUMN IF NOT EXISTS tags JSONB DEFAULT '[]'::jsonb;
