@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -12,14 +12,12 @@
     <meta name="theme-color" content="#f8fafc">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script defer src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@700;900&display=swap');
-        
         html {
             scrollbar-gutter: stable;
         }
@@ -599,15 +597,18 @@
             overflow: hidden;
             opacity: 0;
             border-radius: 0 0 14px 14px;
-            transition: height .5s cubic-bezier(.2,.8,.2,1), opacity .45s ease;
+            transition: opacity .45s ease;
             width: 100%;
         }
         .activity-banner-mobile.visible {
-            height: auto;
-            aspect-ratio: 4.5 / 1;
+            height: 0;
+            padding-bottom: 22.222%;
             opacity: 1;
         }
         .activity-banner-mobile .carousel-track-mobile {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
         }
@@ -626,19 +627,21 @@
             height: 100%;
         }
         /* Mobile 吸顶 */
-        .mobile-sticky #mobile-sticky-header {
-            position: fixed;
+        #mobile-sticky-header {
+            position: -webkit-sticky;
+            position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
             z-index: 40;
+            background: #f8fafc;
             padding-top: 12px;
             padding-bottom: 12px;
-            background: #f8fafc;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
+            margin-left: -1rem;
+            margin-right: -1rem;
             padding-left: 1rem;
             padding-right: 1rem;
+            transition: box-shadow 0.3s ease;
+        }
+        .mobile-sticky #mobile-sticky-header {
             box-shadow: 0 2px 12px rgba(0,0,0,.06);
         }
         .mobile-sticky #mobile-title-area {
@@ -3592,7 +3595,7 @@
                 </div>`;
 
             contentContainer.innerHTML = `
-                <div class="relative w-full h-64 md:h-72 bg-slate-900 carousel-container" id="carousel-container">
+                <div class="relative w-full bg-slate-900 carousel-container" style="aspect-ratio:2/1" id="carousel-container">
                     <div class="carousel-track" id="carousel-track">
                         ${slidesHtml}
                     </div>
@@ -4962,88 +4965,18 @@
             document.body.style.overflow = '';
         }
 
-        // ====== 手机端滚动吸顶 ======
+        // ====== 手机端滚动吸顶（极简版：纯 class toggle，无 DOM 操作）======
         (function initMobileSticky() {
             const titleArea = document.getElementById('mobile-title-area');
-            const stickyHeader = document.getElementById('mobile-sticky-header');
-            const banner = document.getElementById('activity-banner-mobile');
-            if (!titleArea || !stickyHeader) return;
+            if (!titleArea) return;
             let ticking = false;
             let isSticky = false;
-            let placeholder = document.createElement('div');
-            placeholder.style.display = 'none';
-            let syncRaf = null;
-            let bannerNaturalH = 0;     // banner 收起前记录的原始高度
-            let bannerCleanupTimer = null;
 
             function update() {
-                const rect = titleArea.getBoundingClientRect();
-                const shouldStick = rect.bottom <= 0;
+                const shouldStick = titleArea.getBoundingClientRect().bottom <= 0;
                 if (shouldStick === isSticky) { ticking = false; return; }
                 isSticky = shouldStick;
-
-                if (isSticky) {
-                    cancelAnimationFrame(syncRaf);
-                    clearTimeout(bannerCleanupTimer);
-
-                    // —— 吸顶：平滑收起 banner ——
-                    if (banner && banner.classList.contains('visible')) {
-                        bannerNaturalH = banner.getBoundingClientRect().height;
-                        // 锁定当前高度，为 CSS transition 准备起点
-                        banner.style.height = bannerNaturalH + 'px';
-                    }
-
-                    // 先插全高占位防跳动
-                    placeholder.style.height = stickyHeader.offsetHeight + 'px';
-                    placeholder.style.display = 'block';
-                    stickyHeader.parentNode.insertBefore(placeholder, stickyHeader);
-                    document.body.classList.add('mobile-sticky');
-
-                    // 下一帧：触发 banner 高度 → 0 的 CSS 过渡动画
-                    if (banner && banner.classList.contains('visible') && bannerNaturalH > 0) {
-                        requestAnimationFrame(() => {
-                            banner.style.height = '0px';
-                        });
-                    }
-
-                    // 每帧跟随 banner 的 CSS 过渡同步缩小占位
-                    let frameCount = 0;
-                    const MAX_FRAMES = 40; // ~0.67s @ 60fps
-                    let lastH = parseFloat(placeholder.style.height);
-                    function syncLoop() {
-                        frameCount++;
-                        const targetH = stickyHeader.offsetHeight + 20;
-                        placeholder.style.height = targetH + 'px';
-                        if (frameCount >= MAX_FRAMES || Math.abs(targetH - lastH) < 0.5) {
-                            placeholder.style.height = (stickyHeader.offsetHeight + 20) + 'px';
-                            syncRaf = null;
-                            return;
-                        }
-                        lastH = targetH;
-                        syncRaf = requestAnimationFrame(syncLoop);
-                    }
-                    syncRaf = requestAnimationFrame(syncLoop);
-                } else {
-                    // —— 取消吸顶：平滑展开 banner ——
-                    cancelAnimationFrame(syncRaf);
-                    syncRaf = null;
-                    clearTimeout(bannerCleanupTimer);
-
-                    placeholder.remove();
-                    document.body.classList.remove('mobile-sticky');
-
-                    if (banner && banner.classList.contains('visible') && bannerNaturalH > 0) {
-                        // 从 0 → 原始高度 的 CSS 过渡动画
-                        banner.style.height = bannerNaturalH + 'px';
-                        // 过渡结束后清理 inline style，交还给 .visible 的 height:auto
-                        bannerCleanupTimer = setTimeout(() => {
-                            banner.style.height = '';
-                            bannerNaturalH = 0;
-                        }, 520);
-                    } else {
-                        bannerNaturalH = 0;
-                    }
-                }
+                document.body.classList.toggle('mobile-sticky', isSticky);
                 ticking = false;
             }
 
