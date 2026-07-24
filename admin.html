@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -31,9 +31,7 @@
         }
 
         #client-view {
-            min-height: 100vh;
-            position: relative;
-            width: 100%;
+            display: none !important;
         }
         
         .title-gradient {
@@ -669,6 +667,19 @@
     </style>
 </head>
 <body>
+    <div id="admin-login-gate" class="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950 p-4">
+        <form id="admin-login-form" class="w-full max-w-sm rounded-2xl bg-white p-8 shadow-2xl">
+            <h1 class="mb-2 text-2xl font-black text-slate-900">管理员登录</h1>
+            <p class="mb-6 text-sm text-slate-500">请使用已授权的 Supabase 账号登录。</p>
+            <label class="mb-1 block text-sm font-semibold text-slate-700" for="admin-email">邮箱</label>
+            <input id="admin-email" type="email" autocomplete="username" required class="mb-4 w-full rounded-lg border border-slate-300 p-3">
+            <label class="mb-1 block text-sm font-semibold text-slate-700" for="admin-password">密码</label>
+            <input id="admin-password" type="password" autocomplete="current-password" required class="mb-4 w-full rounded-lg border border-slate-300 p-3">
+            <p id="admin-login-error" class="mb-3 hidden text-sm text-rose-600"></p>
+            <button type="submit" class="w-full rounded-lg bg-indigo-600 py-3 font-bold text-white hover:bg-indigo-700">登录</button>
+            <a href="./index.html" class="mt-4 block text-center text-sm text-slate-500 hover:text-indigo-600">返回公开页面</a>
+        </form>
+    </div>
 
     <div id="client-view" class="min-h-screen relative w-full">
         
@@ -792,7 +803,7 @@
                 <h2 class="text-2xl font-bold text-white tracking-wide">内容配置后台 (CMS)</h2>
                 <div class="flex items-center gap-4">
                     <span class="text-slate-400 text-sm hidden sm:inline"><i class="fas fa-database mr-1"></i> 数据存储于 Supabase</span>
-                    <button onclick="toggleMode()" class="bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 rounded-lg text-sm font-bold shadow-md transition-colors">退出后台</button>
+                    <button onclick="adminSignOut()" class="bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 rounded-lg text-sm font-bold shadow-md transition-colors">退出登录</button>
                 </div>
             </div>
 
@@ -1279,13 +1290,6 @@
         const SUPABASE_URL = 'https://ihbegkpvqrtycsfmklag.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloYmVna3B2cXJ0eWNzZm1rbGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwOTkyODQsImV4cCI6MjA5OTY3NTI4NH0.6jmPv9_4S5zWzcmLo5tc2U4klU4tC4nZAeRcKrOrmVo';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        async function getAdminAccessToken() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session?.access_token) throw new Error('请先登录管理员账号');
-            return session.access_token;
-        }
-
         const appState = {
             games: [],
             wishlistEnabled: false,
@@ -2698,7 +2702,10 @@
                             mobileBannerSlide = mobileBannerCount > 1 ? 1 : 0;
                             mobileBannerTrack.style.transition = 'none';
                             mobileBannerTrack.style.transform = `translateX(-${mobileBannerSlide * 100}%)`;
-                            mobileBannerTrack.innerHTML = mobileSlides.map((item, i) => `<div class="carousel-slide-mobile bg-slate-200"><img src="${proxyImageUrl(item.url, 800)}" loading="lazy" referrerpolicy="no-referrer" class="w-full h-full object-cover" alt="banner${i+1}" onerror="this.onerror=null;this.parentElement.style.background='linear-gradient(135deg,#1e293b,#334155)';"></div>`).join('');
+                            mobileBannerTrack.innerHTML = mobileSlides.map((item, i) => {
+                                const imageUrl = proxyImageUrl(item.url, 800);
+                                return imageUrl ? `<div class="carousel-slide-mobile bg-slate-200"><img src="${escapeHtml(imageUrl)}" loading="lazy" referrerpolicy="no-referrer" class="w-full h-full object-cover" alt="banner${i+1}" onerror="this.onerror=null;this.parentElement.style.background='linear-gradient(135deg,#1e293b,#334155)';"></div>` : '<div class="carousel-slide-mobile bg-slate-800"></div>';
+                            }).join('');
                             mobileBannerDots.innerHTML = bannerUrls.map((_, i) => `<div class="w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i === 0 ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}" onclick="goToMobileBannerSlide(${i})"></div>`).join('');
                             mobileBanner.classList.add('visible');
                             mobileBannerSwipeReady = false;
@@ -2895,7 +2902,7 @@
 
         function renderActivityAdminList() {
             const container = document.getElementById('activity-admin-list');
-            container.innerHTML = appState.activities.map(activity => `<div class="rounded-xl border border-slate-200 p-4"><div class="flex items-start justify-between gap-3"><div><p class="font-bold text-slate-800">${activity.is_featured ? '<i class="fas fa-sparkles text-violet-500 mr-1"></i>' : ''}${escapeHtml(activity.title)}</p><p class="mt-1 text-xs text-slate-500">${(appState.activityGameMap[activity.id] || []).length} 款游戏 · ${activity.id === 'all-games' ? '默认活动' : activity.show_in_nav ? '已加入导航栏' : '未加入导航栏'}</p></div><div class="flex gap-2 text-sm"><button type="button" onclick="editActivity(decodeURIComponent('${encodeInlineId(activity.id)}'))" class="text-indigo-600">编辑</button>${activity.id === 'all-games' ? '' : `<button type="button" onclick="removeActivity(decodeURIComponent('${encodeInlineId(activity.id)}'))" class="text-rose-600">删除</button>`}</div></div></div>`).join('') || '<p class="text-sm text-slate-400">暂无活动，请创建第一个活动。</p>';
+            container.innerHTML = appState.activities.map(activity => `<div class="rounded-xl border border-slate-200 p-4"><div class="flex items-start justify-between gap-3"><div><p class="font-bold text-slate-800">${activity.is_featured ? '<i class="fas fa-sparkles text-violet-500 mr-1"></i>' : ''}${escapeHtml(activity.title)}</p><p class="mt-1 text-xs text-slate-500">${(appState.activityGameMap[activity.id] || []).length} 款游戏 · ${activity.id === 'all-games' ? '默认活动' : activity.show_in_nav ? '已加入导航栏' : '未加入导航栏'}</p></div><div class="flex gap-2 text-sm"><button type="button" onclick="editActivity(decodeURIComponent('${encodeInlineId(activity.id)}'))" class="text-indigo-600">编辑</button>${activity.id === 'all-games' ? '' : `<button type="button" onclick="removeActivity('${activity.id}')" class="text-rose-600">删除</button>`}</div></div></div>`).join('') || '<p class="text-sm text-slate-400">暂无活动，请创建第一个活动。</p>';
             renderActivityNavAdminList();
         }
 
@@ -3278,9 +3285,9 @@
             if (desktopBar) {
                 const tagsHtml = allTags.map(t => {
                     const isActive = t === activeType;
-                    const color = t === '全部' ? null : safeColor(getTagColor(t));
+                    const color = t === '全部' ? null : getTagColor(t);
                     const style = isActive && color ? `background:${color};border-color:${color}` : (!isActive && color ? `--tag-color:${color}` : '');
-                    return `<span class="filter-tag${isActive ? ' active' : ''}" data-type="${escapeHtml(t)}" style="${style}" onclick="setFilter(decodeURIComponent('${encodeInlineId(t)}'))">${escapeHtml(t)}</span>`;
+                    return `<span class="filter-tag${isActive ? ' active' : ''}" data-type="${t}" style="${style}" onclick="setFilter('${t.replace(/'/g, "\\'")}')">${t}</span>`;
                 }).join('');
                 desktopBar.innerHTML = `
                     <button id="desktop-sort-btn" class="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-500 shadow-sm hover:border-slate-300 hover:text-slate-700 active:scale-[0.97] transition-all shrink-0" onclick="toggleSortMode()">
@@ -3297,9 +3304,9 @@
             if (mobileTags) {
                 mobileTags.innerHTML = allTags.map(t => {
                     const isActive = t === activeType;
-                    const color = t === '全部' ? null : getTagColor(t);
+                    const color = t === '全部' ? null : safeColor(getTagColor(t));
                     const style = isActive && color ? `background:${color};border-color:${color}` : (!isActive && color ? `--tag-color:${color}` : '');
-                    return `<span class="filter-tag${isActive ? ' active' : ''}" data-type="${t}" style="${style}" onclick="selectMobileFilter('${t.replace(/'/g, "\\'")}')">${t}</span>`;
+                    return `<span class="filter-tag${isActive ? ' active' : ''}" data-type="${escapeHtml(t)}" style="${style}" onclick="selectMobileFilter(decodeURIComponent('${encodeInlineId(t)}'))">${escapeHtml(t)}</span>`;
                 }).join('');
             }
 
@@ -3500,7 +3507,6 @@
             });
             const source = document.createElement('div');
             source.innerHTML = sanitized;
-            source.querySelectorAll('script, style, noscript').forEach(el => el.remove());
             source.querySelectorAll('img').forEach(img => {
                 let src = img.getAttribute('data-src') || img.getAttribute('data-original') || img.getAttribute('src') || '';
                 if (src.startsWith('//')) src = 'https:' + src;
@@ -3526,7 +3532,7 @@
                 });
             });
 
-            if (!/<[^>]+>/.test(String(content))) {
+            if (!/<[^>]+>/.test(content)) {
                 return `<p>${escapeHtml(content).replaceAll('\n', '<br>')}</p>`;
             }
 
@@ -3617,15 +3623,13 @@
             const defaultExperienceTab = hasDeveloperContent ? 'developer' : 'player';
             const developerQuestion = game.developerQuestion || '请说出至少一个理由，为什么玩家要体验你开发的这款游戏，最好玩的点在哪里？';
             const developerBio = game.developerBio || '知乎用户';
-            const developerAvatar = safeImageUrl(game.zhihuAvatar) || 'https://placehold.co/100x100/3b82f6/ffffff?text=User';
             const playerQuestion = game.playerQuestion || `如何评价游戏《${game.title}》？体验过后你觉得它好玩吗？`;
             const playerBio = game.playerBio || '知乎用户';
-            const playerAvatar = safeImageUrl(game.playerExperienceAvatar) || 'https://placehold.co/100x100/3b82f6/ffffff?text=User';
-            const developerZhihuUrl = safeUrl(game.zhihuUrl, 'zhihu.com');
-            const playerZhihuUrl = safeUrl(game.playerExperienceZhihuUrl, 'zhihu.com');
+            const developerZhihuUrl = game.zhihuUrl || '';
+            const playerZhihuUrl = game.playerExperienceZhihuUrl || '';
             const developerPanel = `
                 <div id="experience-panel-developer" class="${defaultExperienceTab === 'developer' ? '' : 'hidden'}">
-                    <p class="font-bold text-slate-800 text-lg mb-5 leading-relaxed"><i class="fas fa-quote-left text-indigo-300 mr-1.5"></i>${developerQuestion}</p>
+                    <p class="font-bold text-slate-800 text-lg mb-5 leading-relaxed"><i class="fas fa-quote-left text-indigo-300 mr-1.5"></i>${escapeHtml(developerQuestion)}</p>
                     <div class="flex items-center gap-4 mb-4">
                         <img src="${escapeHtml(developerAvatar)}" class="w-12 h-12 rounded-full shadow-sm object-cover border-2 border-white shrink-0" alt="开发者头像" onerror="this.onerror=null;this.src='https://placehold.co/100x100/3b82f6/ffffff?text=User';">
                         <div class="min-w-0">
@@ -3651,7 +3655,7 @@
                     </div>`).join('');
             const playerPanel = `
                 <div id="experience-panel-player" class="${defaultExperienceTab === 'player' ? '' : 'hidden'}">
-                    <p class="font-bold text-slate-800 text-lg mb-5 leading-relaxed"><i class="fas fa-quote-left text-indigo-300 mr-1.5"></i>${escapeHtml(playerQuestion)}</p>
+                    <p class="font-bold text-slate-800 text-lg mb-5 leading-relaxed"><i class="fas fa-quote-left text-indigo-300 mr-1.5"></i>${playerQuestion}</p>
                     <div class="flex items-center gap-4 mb-4">
                         <img src="${escapeHtml(playerAvatar)}" class="w-12 h-12 rounded-full shadow-sm object-cover border-2 border-white shrink-0" alt="答主头像" onerror="this.onerror=null;this.src='https://placehold.co/100x100/3b82f6/ffffff?text=User';">
                         <div class="min-w-0">
@@ -4080,8 +4084,8 @@
                         </div>
                         <div class="flex items-center gap-1 text-xs">
                             <span class="text-slate-400">第</span>
-                            <input type="number" min="1" max="${allGames.length}" value="${actualIndex + 1}"
-                                onchange="moveGameTo(decodeURIComponent('${encodeInlineId(game.id)}'), 'pos', this)"
+                            <input type="number" min="1" max="${allGames.length}" value="${actualIndex + 1}" 
+                                onchange="moveGameTo(decodeURIComponent('${encodeInlineId(game.id)}'), 'pos', this)" 
                                 class="w-11 text-center border border-slate-200 rounded-md py-1.5 px-1 text-slate-600 text-xs bg-white focus:border-indigo-400 focus:ring-1 focus:ring-indigo-200 outline-none" title="输入目标位置">
                             <span class="text-slate-400">个</span>
                         </div>
@@ -5010,7 +5014,7 @@
         function handleSecretTrigger() {
             secretClickCount++;
             if (secretClickCount >= 5) {
-                window.location.href = './admin.html';
+                toggleMode();
                 secretClickCount = 0; 
             }
             clearTimeout(secretClickTimer);
@@ -5023,8 +5027,7 @@
         document.getElementById('secret-trigger-mobile').addEventListener('click', handleSecretTrigger);
 
         function toggleMode() {
-            window.location.href = './admin.html';
-            return;
+            body.classList.toggle('admin-active');
             if (body.classList.contains('admin-active')) {
                 closeDetail();
                 switchAdminTab('global');
@@ -5035,14 +5038,57 @@
             }
         }
 
+        function showAdminLoginError(message) {
+            const error = document.getElementById('admin-login-error');
+            error.textContent = message;
+            error.classList.toggle('hidden', !message);
+        }
+
+        async function verifyAdminUser() {
+            const { data: { user }, error } = await supabaseClient.auth.getUser();
+            if (error || !user) return false;
+            const { data, error: membershipError } = await supabaseClient
+                .from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
+            if (membershipError || !data) {
+                await supabaseClient.auth.signOut();
+                return false;
+            }
+            return true;
+        }
+
+        window.adminSignOut = async function() {
+            await supabaseClient.auth.signOut();
+            window.location.href = './index.html';
+        };
+
+        document.getElementById('admin-login-form').addEventListener('submit', async event => {
+            event.preventDefault();
+            showAdminLoginError('');
+            const email = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value;
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error || !(await verifyAdminUser())) {
+                showAdminLoginError(error?.message || '该账号没有管理员权限');
+                return;
+            }
+            document.getElementById('admin-login-gate').remove();
+            document.body.classList.add('admin-active');
+            await initializeApp();
+        });
+
         async function initializeApp() {
-            document.getElementById('admin-view').remove();
+            const isAdmin = await verifyAdminUser();
+            if (!isAdmin) return;
+            document.getElementById('admin-login-gate')?.remove();
+            document.body.classList.add('admin-active');
             // 远程数据返回前优先展示上次成功缓存，避免把演示数据误认为线上数据
             const cachedGames = readGamesCache();
             appState.games = cachedGames;
             totalGameCount = cachedGames.length;
             if (cachedGames.length > 0) {
                 renderClientList();
+                renderAdminList(currentAdminSearch);
+                updateGameEditorLabels(false);
             } else {
                 document.getElementById('game-list-container').innerHTML = '<div class="col-span-full py-16 text-center text-slate-400"><i class="fas fa-circle-notch fa-spin mr-2"></i>正在加载游戏数据...</div>';
             }
@@ -5053,14 +5099,18 @@
                 loadActivities()
             ]).then(() => {
                 renderActivityNav();
+                renderActivityAdminList();
+                resetActivityEditor();
                 renderWishlistSetting();
                 renderGameCircleSetting();
-                renderClientList();
+                renderTagManager();
             }).catch(error => console.error('加载页面设置失败:', error));
 
             try {
                 await loadGames();
                 renderClientList();
+                renderAdminList(currentAdminSearch);
+                updateGameEditorLabels(false);
 
                 // 首页渲染完成后，后台静默加载剩余游戏
                 if (!gamesFullyLoaded) {
@@ -5074,7 +5124,11 @@
                 totalGameCount = defaultData.length;
                 gamesFullyLoaded = true;
                 renderWishlistSetting();
+                renderTagManager();
                 renderClientList();
+                renderAdminList(currentAdminSearch);
+                updateGameEditorLabels(false);
+                showSaveStatus('Supabase 连接失败，已回退到默认数据预览');
             }
         }
 
@@ -5107,7 +5161,7 @@
         }
 
         // 支持在两个富文本编辑器中粘贴图片和知乎富文本。
-        [document.getElementById('form-zhihu-content'), document.getElementById('form-player-experience-content')].filter(Boolean).forEach(editor => {
+        [document.getElementById('form-zhihu-content'), document.getElementById('form-player-experience-content')].forEach(editor => {
             editor.addEventListener('paste', function(e) {
                 const items = e.clipboardData?.items;
                 if (!items) return;
